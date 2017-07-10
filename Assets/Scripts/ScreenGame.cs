@@ -124,18 +124,18 @@ public class ScreenGame : MonoBehaviour
 
     private void OnEnable()
     { 
-//        CarSimulator.OnGameOver += OnCrash;
+        GlobalEvents<OnGameOver>.Happened += OnGameOver;
 //        CarSimulator.OnAddPoints += OnAddPoints;
-//        RoadManager.OnGameplayStart += OnGameplayStart;
+        GlobalEvents<OnStartGame>.Happened += OnGameplayStart;
         GlobalEvents<OnGiveReward>.Happened += GetReward;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedVideoAvailable;
     }
 
     private void OnDisable()
     {
-//        CarSimulator.OnGameOver -= OnCrash;
+        GlobalEvents<OnGameOver>.Happened -= OnGameOver;
 //        CarSimulator.OnAddPoints -= OnAddPoints;
-//        RoadManager.OnGameplayStart -= OnGameplayStart;
+        GlobalEvents<OnStartGame>.Happened += OnGameplayStart;
         GlobalEvents<OnGiveReward>.Happened -= GetReward;
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedVideoAvailable;
     }
@@ -156,7 +156,7 @@ public class ScreenGame : MonoBehaviour
 //		_poinsBmScript.AddPoints (pointsCount);
     }
 
-    private void OnCrash()
+    private void OnGameOver(OnGameOver e)
     {
         if (IsGameOver)
             return;
@@ -174,7 +174,7 @@ public class ScreenGame : MonoBehaviour
         _state = 3;
     }
 
-    private void OnGameplayStart()
+    private void OnGameplayStart(OnStartGame e)
     {
         if (IsGameOver)
             return;

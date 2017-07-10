@@ -1,4 +1,9 @@
-﻿// ADS
+﻿// Menu
+// Завершение игры
+public struct OnGameOver {}
+public struct OnStartGame {}
+
+// ADS
 // Дать награду игроку
 public struct OnGiveReward { public bool isAvailable; }
 // Rewarded реклама готова к показу

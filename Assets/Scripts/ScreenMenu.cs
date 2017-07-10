@@ -12,8 +12,6 @@ public class ScreenMenu : MonoBehaviour
     public GameObject coin;
 
     public AudioClip sndBtnClick;
-
-    //public static event Action<int> OnAddCoins;
     public UIButton videoAdsButton;
 
     private void Start()
@@ -27,8 +25,8 @@ public class ScreenMenu : MonoBehaviour
     private void OnEnable()
     {
         ScreenGame.OnShowMenu += ScreenGame_OnShowMenu;
-//        RoadManager.OnGameplayStart += ScreenGame_OnHideMenu;
-
+        
+        GlobalEvents<OnStartGame>.Happened += ScreenGame_OnHideMenu;
         GlobalEvents<OnGiveReward>.Happened += GetReward;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedVideoAvailable;
     }
@@ -36,8 +34,8 @@ public class ScreenMenu : MonoBehaviour
     private void OnDisable()
     {
         ScreenGame.OnShowMenu -= ScreenGame_OnShowMenu;
-//        RoadManager.OnGameplayStart += ScreenGame_OnHideMenu;
-
+        
+        GlobalEvents<OnStartGame>.Happened += ScreenGame_OnHideMenu;
         GlobalEvents<OnGiveReward>.Happened -= GetReward;
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedVideoAvailable;
     }
@@ -64,7 +62,7 @@ public class ScreenMenu : MonoBehaviour
         showButtons();
     }
 
-    private void ScreenGame_OnHideMenu()
+    private void ScreenGame_OnHideMenu(OnStartGame e)
     {
         hideButtons();
     }

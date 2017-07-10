@@ -8,7 +8,7 @@ public class GameOverNotifications : MonoBehaviour
 
     private void OnEnable()
     {
-//        RoadManager.OnGameplayStart += HideNotifications;
+        GlobalEvents<OnStartGame>.Happened += HideNotifications;
         GlobalEvents<OnShowNotifications>.Happened += ShowNotifications;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened += IsGiftAvailable;
@@ -16,7 +16,7 @@ public class GameOverNotifications : MonoBehaviour
 
     private void OnDisable()
     {
-//        RoadManager.OnGameplayStart -= HideNotifications;
+        GlobalEvents<OnStartGame>.Happened -= HideNotifications;
         GlobalEvents<OnShowNotifications>.Happened -= ShowNotifications;
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened -= IsGiftAvailable;
@@ -41,7 +41,7 @@ public class GameOverNotifications : MonoBehaviour
         }
     }
 
-    private void HideNotifications()
+    private void HideNotifications(OnStartGame e)
     {
         UIManager.HideUiElement("NotifyShare");
         UIManager.HideUiElement("NotifyGift");
