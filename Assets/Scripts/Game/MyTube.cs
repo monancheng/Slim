@@ -1,5 +1,6 @@
 ﻿using System;
 using cakeslice;
+using DG.Tweening;
 using UnityEngine;
 
 public class MyTube : MonoBehaviour
@@ -18,19 +19,21 @@ public class MyTube : MonoBehaviour
 		Outline.enabled = false;
 	}
 
-	private void OnEnable()
-	{
-		Player.OnTubeGoodAnimation += GoodAnimation;
-	}
-
-	private void OnDisable()
-	{
-		Player.OnTubeGoodAnimation -= GoodAnimation;
-	}
+//	private void OnEnable()
+//	{
+//		Player.OnTubeGoodAnimation += GoodAnimation;
+//	}
+//
+//	private void OnDisable()
+//	{
+//		Player.OnTubeGoodAnimation -= GoodAnimation;
+//	}
 	
-	private void GoodAnimation()
+	private void GoodAnimation(int comboCounter)
 	{
-		
+//		if (!_isHaveCollision) return;
+//		if (comboCounter > 3) comboCounter = 3;
+//		transform.DOScale(1.0f + .5f*comboCounter, .15f).SetRelative().SetLoops(comboCounter*2, LoopType.Yoyo);
 	}
 
 	private void OnTriggerEnter(Collider other)

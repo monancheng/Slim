@@ -6,7 +6,6 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
 	public static event Action <float> OnTubeCreate;
-	public static event Action OnTubeGoodAnimation;
 	private float _startRadius;
 	private float _currentRadius;
 	private float _height = 6.0f;
@@ -26,7 +25,7 @@ public class Player : MonoBehaviour
 
 	private float _startDistance;
 	private float _currentAngle;
-	private const float CirclePositionY = 50f;
+	private const float CirclePositionY = 100f;
 
 	void Start ()
 	{
@@ -88,6 +87,11 @@ public class Player : MonoBehaviour
 		return Shader.Find("Diffuse");
 	}
 	
+	Shader GetTransparentDiffuseShader()
+	{
+		return Shader.Find("Transparent/Diffuse");
+	}
+	
 	private void OnTriggerEnter(Collider other)
 	{
 		if (_isHaveCollision) return;
@@ -106,6 +110,7 @@ public class Player : MonoBehaviour
 		
 		if (_currentRadius > ErrorCoeff)
 		{
+			float tubeRadius = _currentRadius;
 			if (cutSize > ErrorCoeff)
 			{
 				ChangeSize();
@@ -113,18 +118,22 @@ public class Player : MonoBehaviour
 				_comboCounter = 0;
 				other.gameObject.GetComponent<Outline>().color = 1;
 			}
-			if (_comboCounter >= 3)
-			{
-				float newSize = _currentRadius + BonusRadiusCoeff;
-				if (newSize > _startRadius) newSize = _startRadius;
-				GameEvents.Send(OnTubeCreate, newSize);
-				GameEvents.Send(OnTubeGoodAnimation);
-				other.gameObject.GetComponent<Outline>().color = 0;
-			}
 			else
 			{
-				GameEvents.Send(OnTubeCreate, _currentRadius);
+				if (_comboCounter >= 3)
+				{
+					tubeRadius = _currentRadius + BonusRadiusCoeff;
+					if (tubeRadius > _startRadius) tubeRadius = _startRadius;
+					
+					other.gameObject.GetComponent<Outline>().color = 0;
+					CreateGoodTube(_currentRadius, other.GetComponent<MyTube>().Speed);
+				}
+				else
+				{
+					CreateGoodTube(_currentRadius, other.GetComponent<MyTube>().Speed);
+				}
 			}
+			GameEvents.Send(OnTubeCreate, tubeRadius);
 		}
 		else
 		{
@@ -135,7 +144,6 @@ public class Player : MonoBehaviour
 			GlobalEvents<OnGameOver>.Call(new OnGameOver());
 		}
 		_isDontMove = true;
-//		GetComponent<Outline>().enabled = true;
 	}
 
 	private void OnCanMove()
@@ -143,13 +151,11 @@ public class Player : MonoBehaviour
 		_isDontMove = false;
 		if (_comboCounter >= 3)
 		{
-			_comboCounter = 0;
 			_currentRadius += BonusRadiusCoeff;
 			if (_currentRadius > _startRadius) _currentRadius = _startRadius;
 			ChangeSize();
 		}
 		_isHaveCollision = false;
-//		GetComponent<Outline>().enabled = false;
 	}
 	
 	private void ChangeSize()
@@ -168,11 +174,28 @@ public class Player : MonoBehaviour
 			PrimitivesPro.Primitives.PivotPosition.Center);
 		
 		GameObject go = _shapeObject.gameObject;
-		go.GetComponent<Renderer>().material = new Material(GetDiffuseShader());
+		go.GetComponent<Renderer>().material = new Material(GetTransparentDiffuseShader());
 		go.GetComponent<Renderer>().material.SetColor("_Color", new Color(255f / 255.0f, 201f / 255f, 104f / 255f));
 		go.transform.position = transform.position;
 		PlayerTube pt = go.AddComponent<PlayerTube>();
 		pt.Speed = _speed;
+	}
+	
+	
+	private void CreateGoodTube(float radius, float _speed)
+	{
+		BaseObject _shapeObject;
+		_shapeObject = Tube.Create(radius, radius + 0.5f, 0.5f, 20, 1, 0.0f, false,
+			PrimitivesPro.Primitives.NormalsType.Vertex,
+			PrimitivesPro.Primitives.PivotPosition.Center);
+		
+		GameObject go = _shapeObject.gameObject;
+		go.GetComponent<Renderer>().material = new Material(GetTransparentDiffuseShader());
+		go.GetComponent<Renderer>().material.SetColor("_Color", new Color(0f / 255.0f, 0f / 255f, 0f / 255f));
+		go.transform.position = new Vector3(transform.position.x, transform.position.y + _height*0.5f - 0.5f, transform.position.z);
+		PlayerTubeGood pt = go.AddComponent<PlayerTubeGood>();
+		pt.Speed = _speed;
+		pt.GoodAnimation(_comboCounter);
 	}
 
 	private void Update()
@@ -198,7 +221,7 @@ public class Player : MonoBehaviour
 		if (InputController.IsTouchOnScreen(TouchPhase.Moved))
 		{
 			Vector2 cursorPosition = Input.mousePosition;
-			float newX = (_startCursorPoint.x - cursorPosition.x) / 6f;
+			float newX = (_startCursorPoint.x - cursorPosition.x) / 10f;
 			_currentAngle += newX;
 			transform.position = new Vector3 (_startDistance * Mathf.Cos(_currentAngle * Mathf.Deg2Rad),
 				CirclePositionY - _startDistance * Mathf.Sin (_currentAngle * Mathf.Deg2Rad), transform.position.z);

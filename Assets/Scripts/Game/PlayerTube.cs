@@ -6,7 +6,22 @@ public class PlayerTube : MonoBehaviour
 	
 	private void Update()
 	{
-		transform.position = new Vector3(transform.position.x, transform.position.y - Speed, transform.position.z);
+		Move();
 		if (transform.position.y < - 24f) Destroy(gameObject);
+		Color color = gameObject.GetComponent<MeshRenderer>().material.color;
+		if (color.a > 0f)
+		{
+			color.a -= 0.05f;
+			gameObject.GetComponent<MeshRenderer>().material.color = color;
+		}
+		else
+		{
+			Destroy(gameObject);
+		}
+	}
+
+	protected void Move()
+	{
+		transform.position = new Vector3(transform.position.x, transform.position.y - Speed, transform.position.z);
 	}
 }

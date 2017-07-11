@@ -8,7 +8,7 @@ public class TubeManager : MonoBehaviour {
 	private const int Sides = 30;
 	private const float OuterRadiusMax = 20f;
 	private const float MaxSpeed = 1.2f;
-	private const float StartSpeed = 0.55f;
+	private const float StartSpeed = 0.6f;
 	private const float Acceleration = 0.05f;
 	private float _currentSpeed = StartSpeed;
 
