@@ -1,4 +1,5 @@
-﻿using PrimitivesPro.GameObjects;
+﻿using cakeslice;
+using PrimitivesPro.GameObjects;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -7,13 +8,13 @@ public class TubeManager : MonoBehaviour {
 	private const int Sides = 30;
 	private const float OuterRadiusMax = 20f;
 	private const float MaxSpeed = 1.2f;
-	private const float StartSpeed = 0.5f;
+	private const float StartSpeed = 0.55f;
 	private const float Acceleration = 0.05f;
 	private float _currentSpeed = StartSpeed;
 
 	private void OnEnable()
 	{
-		Player.OnCreateTube += CreateTube;
+		Player.OnTubeCreate += TubeCreate;
 		GlobalEvents<OnStartGame>.Happened += StartGame;
 	}
 
@@ -22,7 +23,7 @@ public class TubeManager : MonoBehaviour {
 		_currentSpeed = StartSpeed;
 	}
 
-	private void CreateTube(float radius)
+	private void TubeCreate(float radius)
 	{
 		float outerRadius = Random.Range(radius + 2f, OuterRadiusMax);
 		
@@ -36,7 +37,7 @@ public class TubeManager : MonoBehaviour {
 		GameObject currentTube = _shapeObject.gameObject;
 		currentTube.GetComponent<Renderer>().material = new Material(GetDiffuseShader());
 		currentTube.GetComponent<Renderer>().material.SetColor("_Color",ColorTheme.GetTubeColor());
-		currentTube.transform.position = new Vector3(Random.Range(-8f, 8f), 150f, 0f);
+		currentTube.transform.position = new Vector3(Random.Range(-8f, 8f), 125f, 0f);
 		MyTube script = currentTube.AddComponent<MyTube>();
 		_currentSpeed += Acceleration;
 		if (_currentSpeed > MaxSpeed) _currentSpeed = MaxSpeed;

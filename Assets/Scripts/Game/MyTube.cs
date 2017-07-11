@@ -1,4 +1,5 @@
 ﻿using System;
+using cakeslice;
 using UnityEngine;
 
 public class MyTube : MonoBehaviour
@@ -8,10 +9,28 @@ public class MyTube : MonoBehaviour
 	private bool _isReadyToDelete;
 	private bool _isSentMoveEvent;
 	private bool _isHaveCollision;
+	[HideInInspector] public Outline Outline;
 
 	private void Start()
 	{
 		transform.localScale = Vector3.zero;
+		Outline = gameObject.AddComponent<Outline>();
+		Outline.enabled = false;
+	}
+
+	private void OnEnable()
+	{
+		Player.OnTubeGoodAnimation += GoodAnimation;
+	}
+
+	private void OnDisable()
+	{
+		Player.OnTubeGoodAnimation -= GoodAnimation;
+	}
+	
+	private void GoodAnimation()
+	{
+		
 	}
 
 	private void OnTriggerEnter(Collider other)
@@ -22,6 +41,7 @@ public class MyTube : MonoBehaviour
 		{
 			_isHaveCollision = true;
 			Destroy(gameObject.GetComponent<Collider>());
+			Outline.enabled = true;
 		}
 	}
 
@@ -37,12 +57,13 @@ public class MyTube : MonoBehaviour
 		{
 			_isReadyToDelete = true;
 			GameEvents.Send(OnCanMove);
+			if (!_isHaveCollision) GlobalEvents<OnGameOver>.Call(new OnGameOver());
 			_isSentMoveEvent = true;
+			Outline.enabled = false;
 		}
 		
-		if (_isReadyToDelete && transform.position.y < -21f)
+		if (_isReadyToDelete && transform.position.y < -24f)
 		{
-			if (!_isHaveCollision) GlobalEvents<OnGameOver>.Call(new OnGameOver());
 			Destroy(gameObject);
 		}
 	}
