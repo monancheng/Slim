@@ -8,16 +8,16 @@ public class GameOverNotifications : MonoBehaviour
 
     private void OnEnable()
     {
-        GlobalEvents<OnStartGame>.Happened += HideNotifications;
-        GlobalEvents<OnShowNotifications>.Happened += ShowNotifications;
+//        GlobalEvents<OnStartGame>.Happened += HideNotifications;
+//        GlobalEvents<OnShowNotifications>.Happened += ShowNotifications;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened += IsGiftAvailable;
     }
 
     private void OnDisable()
     {
-        GlobalEvents<OnStartGame>.Happened -= HideNotifications;
-        GlobalEvents<OnShowNotifications>.Happened -= ShowNotifications;
+//        GlobalEvents<OnStartGame>.Happened -= HideNotifications;
+//        GlobalEvents<OnShowNotifications>.Happened -= ShowNotifications;
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened -= IsGiftAvailable;
     }
@@ -51,13 +51,13 @@ public class GameOverNotifications : MonoBehaviour
 
     private void IsRewardedAvailable(OnRewardedAvailable e)
     {
-        _isRewardedAvailable = e.isAvailable;
-        if (!e.isAvailable) UIManager.HideUiElement("NotifyRewarded");
+        _isRewardedAvailable = e.IsAvailable;
+        if (!e.IsAvailable) UIManager.HideUiElement("NotifyRewarded");
     }
 
     private void IsGiftAvailable(OnGiftAvailable e)
     {
-        _isGiftAvailable = e.isAvailable;
-        if (!e.isAvailable) UIManager.HideUiElement("NotifyGift");
+        _isGiftAvailable = e.IsAvailable;
+        if (!e.IsAvailable) UIManager.HideUiElement("NotifyGift");
     }
 }

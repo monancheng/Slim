@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ScreenGame : MonoBehaviour
 {
+    private readonly float _missDelay = 0f;
     private GameObject _backgroundNext;
     private GameObject _backgroundPrev;
     private BestScore _bestScore;
@@ -22,7 +23,6 @@ public class ScreenGame : MonoBehaviour
     private bool _isScreenShareDone;
 
     private bool _isWaitReward;
-    private readonly float _missDelay = 0f;
     private Points _points;
 
     private ScreenColorAnimation _screenAnimation;
@@ -30,7 +30,9 @@ public class ScreenGame : MonoBehaviour
     private AudioClip _sndGrab;
 
     private AudioClip _sndLose;
+
     private AudioClip _sndShowScreen;
+//    private AudioClip _sndShowScreen;
 
     private int _state = -1;
 //    private PointsBubbleManager _poinsBmScript;
@@ -75,7 +77,7 @@ public class ScreenGame : MonoBehaviour
             hint.SetActive (true);
         } */
 
-        _sndLose = Resources.Load<AudioClip>("snd/fail");
+        _sndLose = Resources.Load<AudioClip>("snd/GUI/fail");
         _sndShowScreen = Resources.Load<AudioClip>("snd/showScreen");
         _sndGrab = Resources.Load<AudioClip>("snd/grab");
         _sndClose = Resources.Load<AudioClip>("snd/button");
@@ -104,7 +106,7 @@ public class ScreenGame : MonoBehaviour
         DefsGame.GameServices.ReportProgressWithGlobalID(DefsGame.GameServices.ACHIEVEMENT_EXPLOSIVE,
             DefsGame.QUEST_BOMBS_Counter);
 
-        _points.UpdateVisual();
+//        _points.UpdateVisual();
         _coins.UpdateVisual();
         _bestScore.UpdateVisual();
 
@@ -123,37 +125,29 @@ public class ScreenGame : MonoBehaviour
     }
 
     private void OnEnable()
-    { 
+    {
         GlobalEvents<OnGameOver>.Happened += OnGameOver;
-//        CarSimulator.OnAddPoints += OnAddPoints;
+//        CarSimulator.OnPointsAdd += OnPointsAdd;
         GlobalEvents<OnStartGame>.Happened += OnGameplayStart;
+        GlobalEvents<OnPointsAdd>.Happened += OnAddPoints;
         GlobalEvents<OnGiveReward>.Happened += GetReward;
-        GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedVideoAvailable;
     }
 
     private void OnDisable()
     {
         GlobalEvents<OnGameOver>.Happened -= OnGameOver;
-//        CarSimulator.OnAddPoints -= OnAddPoints;
-        GlobalEvents<OnStartGame>.Happened += OnGameplayStart;
+//        CarSimulator.OnPointsAdd -= OnPointsAdd;
+        GlobalEvents<OnStartGame>.Happened -= OnGameplayStart;
+        GlobalEvents<OnPointsAdd>.Happened -= OnAddPoints;
         GlobalEvents<OnGiveReward>.Happened -= GetReward;
-        GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedVideoAvailable;
     }
 
-    private void IsRewardedVideoAvailable(OnRewardedAvailable e)
-    {
-        IsRewardedVideoReadyToShow = e.isAvailable;
-    }
-
-    private void OnAddPoints(int pointsCount)
+    private void OnAddPoints(OnPointsAdd e)
     {
         if (IsGameOver)
             return;
         D.Log("Ball_OnBallInBasket");
         _isNextLevel = true;
-
-        _points.AddPoint(pointsCount);
-//		_poinsBmScript.AddPoints (pointsCount);
     }
 
     private void OnGameOver(OnGameOver e)
@@ -181,11 +175,11 @@ public class ScreenGame : MonoBehaviour
 
         ++DefsGame.QUEST_THROW_Counter;
 
-        if (DefsGame.GameplayCounter == 1) _points.ShowAnimation();
+        if (DefsGame.GameplayCounter == 1) GlobalEvents<OnPointsShow>.Call(new OnPointsShow());
         if (_state == 1)
         {
             DefsGame.CurrentScreen = DefsGame.SCREEN_GAME;
-            _points.ResetCounter();
+            GlobalEvents<OnPointsReset>.Call(new OnPointsReset());
             UIManager.ShowUiElement("scrMenuWowSlider");
             _state = 2;
             FlurryEventsManager.SendStartEvent("attempt_length");
@@ -246,7 +240,6 @@ public class ScreenGame : MonoBehaviour
         //PublishingService.Instance.ShowSceneTransition();
     }
 
-    // Update is called once per frame
     private void Update()
     {
         BtnEscapeUpdate();
@@ -276,7 +269,7 @@ public class ScreenGame : MonoBehaviour
                 if (_time >= _missDelay)
                 {
                     _time = 0f;
-                    _screenAnimation.SetAlphaMax(0.93f);
+                    _screenAnimation.SetAlphaMax(0.75f);
                     _screenAnimation.SetAnimation(false, 0.1f);
                     _screenAnimation.Show();
                     _screenAnimation.SetAnimation(true, 0.02f);
@@ -375,7 +368,7 @@ public class ScreenGame : MonoBehaviour
         if (_isWaitReward)
         {
             _isWaitReward = false;
-            if (e.isAvailable)
+            if (e.IsAvailable)
             {
                 _state = 2;
                 _isNextLevel = true;

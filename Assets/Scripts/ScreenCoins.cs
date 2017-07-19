@@ -5,7 +5,6 @@ using UnityEngine;
 public class ScreenCoins : MonoBehaviour
 {
     private bool _isWaitReward;
-
     private bool isShowBtnViveoAds;
 
     [HideInInspector] public string PrevScreenName;
@@ -56,7 +55,7 @@ public class ScreenCoins : MonoBehaviour
 
     private void IsRewardedVideoAvailable(OnRewardedAvailable e)
     {
-        isShowBtnViveoAds = e.isAvailable;
+        isShowBtnViveoAds = e.IsAvailable;
         if (isShowBtnViveoAds)
         {
             if (DefsGame.CurrentScreen == DefsGame.SCREEN_IAPS)
@@ -83,7 +82,7 @@ public class ScreenCoins : MonoBehaviour
         if (_isWaitReward)
         {
             _isWaitReward = false;
-            if (e.isAvailable)
+            if (e.IsAvailable)
                 GameEvents.Send(OnAddCoinsVisual, 25);
         }
     }

@@ -1,16 +1,25 @@
 ﻿using System;
-using cakeslice;
 using PrimitivesPro.GameObjects;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Player : MonoBehaviour
 {
 	public static event Action <float> OnTubeCreate;
+	public static event Action OnTubeMove;
+	public static event Action OnTubeGetBonusTube;
+	public static event Action <int, float, GameObject> OnCombo;
+	
+	[SerializeField] private AudioClip[] SoundsGood;
+	private int _soundGoodID;
+	[SerializeField] private AudioClip[] SoundsGrow;
+	[SerializeField] private AudioClip SoundSlice;
+	
 	private float _startRadius;
 	private float _currentRadius;
-	private float _height = 6.0f;
-	private int _sides = 30;
-	private const float ErrorCoeff = 0.25f;
+	private float _height;
+	private int _sides;
+	private const float ErrorCoeff = 0.63f;
 	private bool _isDontMove;
 	private Vector3 _startPosition;
 
@@ -20,20 +29,27 @@ public class Player : MonoBehaviour
 	private float _moveToExitSpeed;
 
 	private int _comboCounter;
+	private int _comboIncreaseCounter;
 	private bool _isHaveCollision;
 	private const float BonusRadiusCoeff = 0.5f;
 
 	private float _startDistance;
 	private float _currentAngle;
-	private const float CirclePositionY = 100f;
-
+	private const int ComboForIncrease = 3;
+	private const float CirclePositionY = 80f;
+	
 	void Start ()
 	{
 		_startPosition = transform.position;
+		_script = GetComponent<Cylinder>();
+		_script.AddMeshCollider(true);
+		_height = _script.height;
+		_sides = _script.sides;
+		_startRadius = _script.radius;
+		
 		Respown();
 
 		_startDistance = Vector3.Distance(new Vector3(0f, CirclePositionY, transform.position.z), transform.position);
-		_currentAngle = Mathf.Atan2(CirclePositionY-transform.position.y, transform.position.x) * Mathf.Rad2Deg;
 	}
 
 	private void OnEnable()
@@ -51,40 +67,27 @@ public class Player : MonoBehaviour
 	private void Respown()
 	{
 		transform.position = _startPosition;
-		PepareCylinder();
+		
+		_currentAngle = Mathf.Atan2(CirclePositionY-transform.position.y, transform.position.x) * Mathf.Rad2Deg;
+		
 		_comboCounter = 0;
+		_comboIncreaseCounter = 0;
+		_isMoveToExit = false;
+		_currentRadius = _startRadius;
+		_isDontMove = false;
+		_isHaveCollision = false;
+		
+		GetComponent<Renderer>().material.SetColor("_Color", ColorTheme.GetPlayerColor());
+
+		ChangeSize();
 	}
 
 	private void StartGame(OnStartGame obj)
 	{
+		// Создаем туб
 		GameEvents.Send(OnTubeCreate, _currentRadius);
-		_isHaveCollision = false;
-	}
-
-	private void PepareCylinder()
-	{
-		_script = GetComponent<Cylinder>();
-		if (_currentRadius == 0)
-		{
-			_startRadius = _script.radius;
-		}
-		_currentRadius = _startRadius;
-		_height = _script.height;
-		_sides = _script.sides;
-		_script.AddMeshCollider(true);
-		
-		GetComponent<Renderer>().material.SetColor("_Color", ColorTheme.GetPlayerColor());
-		Rigidbody rb = GetComponent<Rigidbody>();
-		rb.isKinematic = true;
-
-		ChangeSize();
-
-		_isMoveToExit = false;
-	}
-	
-	Shader GetDiffuseShader()
-	{
-		return Shader.Find("Diffuse");
+		// Даем ему команду двигаться
+		GameEvents.Send(OnTubeMove);
 	}
 	
 	Shader GetTransparentDiffuseShader()
@@ -94,50 +97,52 @@ public class Player : MonoBehaviour
 	
 	private void OnTriggerEnter(Collider other)
 	{
+		if (other.CompareTag("Coin")) return;
+		
 		if (_isHaveCollision) return;
 		
 		_isHaveCollision = true;
-		float cutSize = Mathf.Abs(transform.position.x - other.gameObject.transform.position.x);
+		float diffX = Mathf.Abs(transform.position.x - other.gameObject.transform.position.x);
+		float cutSize = diffX - (other.gameObject.GetComponent<Tube>().radius0 - _currentRadius);
+		if (cutSize < 0f) cutSize = 0f;
+ 		
 		if (cutSize > ErrorCoeff)
 		{
 			_currentRadius -= cutSize;
 			_comboCounter = 0;
+			_comboIncreaseCounter = 0;
 		}
 		else
 		{
 			++_comboCounter;
+			++_comboIncreaseCounter;
 		}
 		
 		if (_currentRadius > ErrorCoeff)
 		{
-			float tubeRadius = _currentRadius;
 			if (cutSize > ErrorCoeff)
 			{
 				ChangeSize();
 				CreateCutTube(cutSize, other.GetComponent<MyTube>().Speed);
 				_comboCounter = 0;
-				other.gameObject.GetComponent<Outline>().color = 1;
+				_comboIncreaseCounter = 0;
+				_soundGoodID = 0;
+				Defs.PlaySound(SoundSlice, 0.3f);
 			}
 			else
 			{
-				if (_comboCounter >= 3)
+				if (_comboIncreaseCounter == ComboForIncrease && _currentRadius < _startRadius)
 				{
-					tubeRadius = _currentRadius + BonusRadiusCoeff;
-					if (tubeRadius > _startRadius) tubeRadius = _startRadius;
-					
-					other.gameObject.GetComponent<Outline>().color = 0;
-					CreateGoodTube(_currentRadius, other.GetComponent<MyTube>().Speed);
+					GameEvents.Send(OnTubeGetBonusTube);
 				}
-				else
-				{
-					CreateGoodTube(_currentRadius, other.GetComponent<MyTube>().Speed);
-				}
+				
+				GameEvents.Send(OnCombo, _comboCounter, _currentRadius, other.gameObject);
+				Defs.PlaySound(GetNextGoodSound());
 			}
-			GameEvents.Send(OnTubeCreate, tubeRadius);
+			GlobalEvents<OnPointsAdd>.Call(new OnPointsAdd{PointsCount = /*_comboCounter+*/1});
 		}
 		else
 		{
-			other.gameObject.GetComponent<Outline>().color = 2;
 			GetComponent<Renderer>().material.SetColor("_Color", new Color(1.0f, 0.0f/255f, 0f/255f));
 			_isMoveToExit = true;
 			_moveToExitSpeed = other.GetComponent<MyTube>().Speed;
@@ -149,15 +154,31 @@ public class Player : MonoBehaviour
 	private void OnCanMove()
 	{
 		_isDontMove = false;
-		if (_comboCounter >= 3)
-		{
-			_currentRadius += BonusRadiusCoeff;
-			if (_currentRadius > _startRadius) _currentRadius = _startRadius;
-			ChangeSize();
-		}
 		_isHaveCollision = false;
+
+		CheckCombo();
+		
+		// Создаем туб
+		GameEvents.Send(OnTubeCreate, _currentRadius);
+		// Даем ему команду двигаться
+		GameEvents.Send(OnTubeMove);
 	}
-	
+
+	private void CheckCombo()
+	{
+		if (_comboIncreaseCounter > ComboForIncrease)
+		{
+			_comboIncreaseCounter = 0;
+			if (_currentRadius < _startRadius)
+			{
+				_currentRadius += BonusRadiusCoeff;
+				Defs.PlaySound(GetRandomGrowSound());
+			} else _currentRadius = _startRadius;
+			ChangeSize();
+			
+		}
+	}
+
 	private void ChangeSize()
 	{
 		_script.GenerateGeometry(_currentRadius, _height, _sides, 1,
@@ -166,46 +187,29 @@ public class Player : MonoBehaviour
 		_script.FitCollider();
 	}
 	
-	private void CreateCutTube(float cutSize, float _speed)
+	private void CreateCutTube(float cutSize, float speed)
 	{
-		BaseObject _shapeObject;
-		_shapeObject = Tube.Create(_currentRadius, _currentRadius + cutSize, _height, _sides, 1, 0.0f, false,
+		BaseObject shapeObject = Tube.Create(_currentRadius, _currentRadius + cutSize, _height, 12, 1, 0.0f, false,
 			PrimitivesPro.Primitives.NormalsType.Vertex,
 			PrimitivesPro.Primitives.PivotPosition.Center);
 		
-		GameObject go = _shapeObject.gameObject;
+		GameObject go = shapeObject.gameObject;
 		go.GetComponent<Renderer>().material = new Material(GetTransparentDiffuseShader());
 		go.GetComponent<Renderer>().material.SetColor("_Color", new Color(255f / 255.0f, 201f / 255f, 104f / 255f));
 		go.transform.position = transform.position;
-		PlayerTube pt = go.AddComponent<PlayerTube>();
-		pt.Speed = _speed;
-	}
-	
-	
-	private void CreateGoodTube(float radius, float _speed)
-	{
-		BaseObject _shapeObject;
-		_shapeObject = Tube.Create(radius, radius + 0.5f, 0.5f, 20, 1, 0.0f, false,
-			PrimitivesPro.Primitives.NormalsType.Vertex,
-			PrimitivesPro.Primitives.PivotPosition.Center);
-		
-		GameObject go = _shapeObject.gameObject;
-		go.GetComponent<Renderer>().material = new Material(GetTransparentDiffuseShader());
-		go.GetComponent<Renderer>().material.SetColor("_Color", new Color(0f / 255.0f, 0f / 255f, 0f / 255f));
-		go.transform.position = new Vector3(transform.position.x, transform.position.y + _height*0.5f - 0.5f, transform.position.z);
-		PlayerTubeGood pt = go.AddComponent<PlayerTubeGood>();
-		pt.Speed = _speed;
-		pt.GoodAnimation(_comboCounter);
+		PlayerTubeBad pt = go.AddComponent<PlayerTubeBad>();
+		pt.Speed = speed;
 	}
 
 	private void Update()
 	{
 		if (_isMoveToExit)
 		{
-			transform.position = new Vector3(transform.position.x, transform.position.y - _moveToExitSpeed, transform.position.z);
-			if (transform.position.y < -24f) Respown();
+			transform.position = new Vector3(transform.position.x, transform.position.y - _moveToExitSpeed*Time.deltaTime, transform.position.z);
 			return;
 		}
+		
+		transform.Rotate(Vector3.up, -1f);
 		
 		if (_isDontMove)
 		{
@@ -221,11 +225,22 @@ public class Player : MonoBehaviour
 		if (InputController.IsTouchOnScreen(TouchPhase.Moved))
 		{
 			Vector2 cursorPosition = Input.mousePosition;
-			float newX = (_startCursorPoint.x - cursorPosition.x) / 10f;
+			float newX = (_startCursorPoint.x - cursorPosition.x) / 13f;
 			_currentAngle += newX;
 			transform.position = new Vector3 (_startDistance * Mathf.Cos(_currentAngle * Mathf.Deg2Rad),
 				CirclePositionY - _startDistance * Mathf.Sin (_currentAngle * Mathf.Deg2Rad), transform.position.z);
 			_startCursorPoint = cursorPosition;
 		}
+	}
+	
+	private AudioClip GetNextGoodSound()
+	{
+		++_soundGoodID;
+		if (_soundGoodID > SoundsGood.Length - 1) _soundGoodID = 0;
+		return SoundsGood[_soundGoodID];
+	}
+	
+	private AudioClip GetRandomGrowSound() {
+		return SoundsGrow[(int) Mathf.Round(Random.value*(SoundsGrow.Length-1))];
 	}
 }

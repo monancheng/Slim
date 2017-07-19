@@ -17,7 +17,7 @@ public class MyAds : MonoBehaviour
 
     private void IsRewardedVideoAvailable(OnRewardedAvailable e)
     {
-        if (!e.isAvailable)
+        if (!e.IsAvailable)
             _videoAdCounter = 0;
     }
 

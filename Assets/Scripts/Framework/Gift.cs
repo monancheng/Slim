@@ -32,7 +32,7 @@ public class Gift : MonoBehaviour {
 		if (_difference.TotalSeconds <= 0f) {
 			//timeText.enabled = false;
 			_isWaitGiftTime = false;
-			GlobalEvents<OnGiftAvailable>.Call(new OnGiftAvailable{isAvailable = true});
+			GlobalEvents<OnGiftAvailable>.Call(new OnGiftAvailable{IsAvailable = true});
 		} else {
 			//timeText.enabled = true;
 			_isWaitGiftTime = true;
@@ -57,7 +57,7 @@ public class Gift : MonoBehaviour {
 			TimeSpan _difference = _giftNextDate.Subtract (_currentDate);
 			if (_difference.TotalSeconds <= 0f) {
 				_isWaitGiftTime = false;
-				GlobalEvents<OnGiftAvailable>.Call(new OnGiftAvailable{isAvailable = true});
+				GlobalEvents<OnGiftAvailable>.Call(new OnGiftAvailable{IsAvailable = true});
 				FlurryEventsManager.SendEvent ("collect_prize_impression");
 			} 
 //			else {
@@ -96,7 +96,7 @@ public class Gift : MonoBehaviour {
 		_isWaitGiftTime = true;
 		//giftButton.DisableButtonClicks();
 		
-		GlobalEvents<OnGiftAvailable>.Call(new OnGiftAvailable{isAvailable = false});
+		GlobalEvents<OnGiftAvailable>.Call(new OnGiftAvailable{IsAvailable = false});
 		
 		D.Log ("Disable Button Clicks");
 	}

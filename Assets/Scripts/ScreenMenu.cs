@@ -8,17 +8,13 @@ public class ScreenMenu : MonoBehaviour
 
     private bool _isShowBtnViveoAds;
     private bool _isWaitReward;
-    private AudioClip _sndStart;
     public GameObject coin;
 
-    public AudioClip sndBtnClick;
-    public UIButton videoAdsButton;
+    [SerializeField] private AudioClip sndBtnClick;
+    [SerializeField] private UIButton videoAdsButton;
 
     private void Start()
     {
-        _sndStart = Resources.Load<AudioClip>("snd/start");
-        Defs.PlaySound(_sndStart);
-
         showButtons();
     }
 
@@ -42,7 +38,7 @@ public class ScreenMenu : MonoBehaviour
 
     private void IsRewardedVideoAvailable(OnRewardedAvailable e)
     {
-        _isShowBtnViveoAds = e.isAvailable;
+        _isShowBtnViveoAds = e.IsAvailable;
         if (_isShowBtnViveoAds)
         {
             if (DefsGame.CurrentScreen == DefsGame.SCREEN_MENU)
@@ -59,11 +55,13 @@ public class ScreenMenu : MonoBehaviour
 
     private void ScreenGame_OnShowMenu()
     {
+        UIManager.ShowUiElement("GameName");
         showButtons();
     }
 
     private void ScreenGame_OnHideMenu(OnStartGame e)
     {
+        UIManager.HideUiElement("GameName");
         hideButtons();
     }
 
@@ -74,6 +72,7 @@ public class ScreenMenu : MonoBehaviour
         FlurryEventsManager.SendStartEvent("start_screen_length");
 
         //UIManager.ShowUiElement ("MainMenu");
+        UIManager.ShowUiElement("LabelBestScore");
         UIManager.ShowUiElement("elementBestScore");
         UIManager.ShowUiElement("elementCoins");
         UIManager.ShowUiElement("BtnSkins");
@@ -114,6 +113,7 @@ public class ScreenMenu : MonoBehaviour
         _isButtonHiden = true;
         FlurryEventsManager.SendEndEvent("start_screen_length");
         //UIManager.HideUiElement ("MainMenu");
+        UIManager.HideUiElement("LabelBestScore");
         UIManager.HideUiElement("elementBestScore");
         //UIManager.HideUiElement ("elementCoins");
         UIManager.HideUiElement("BtnSkins");
@@ -160,7 +160,7 @@ public class ScreenMenu : MonoBehaviour
         if (_isWaitReward)
         {
             _isWaitReward = false;
-            if (e.isAvailable)
+            if (e.IsAvailable)
             {
                 for (var i = 0; i < 25; i++)
                 {

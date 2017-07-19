@@ -3,13 +3,13 @@ using UnityEngine.UI;
 
 public class BestScore : MonoBehaviour {
 
-	public Text textField;
-	public Image img;
+	[SerializeField] private Text textField;
+	[SerializeField] private Image img;
     private int _pointsCount = 0;
     private float _startScale;
 
     private bool _isShowAnimation = true;
-    private bool _isHideAnimation = false;
+    private bool _isHideAnimation;
     private AudioClip _sndNewHighScore;
 
     // Use this for initialization

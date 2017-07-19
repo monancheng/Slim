@@ -18,6 +18,8 @@ public class ScreenSkins : MonoBehaviour
     public GameObject skin8;
     public GameObject skin9;
     public static event Action<int> OnAddCoinsVisual;
+    public AudioClip _chooseSkin;
+    public AudioClip _buySkin;
 
     private void Awake()
     {
@@ -35,6 +37,7 @@ public class ScreenSkins : MonoBehaviour
         {
             DefsGame.CurrentFaceId = _id;
             PlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
+            Defs.PlaySound(_chooseSkin);
 //            DefsGame.CarSimulator.Car.SetNewSkin(_id);
         }
         else if (DefsGame.CoinsCount >= DefsGame.FacePrice[_id - 1])
@@ -52,7 +55,7 @@ public class ScreenSkins : MonoBehaviour
             //DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_NEW_SKIN, 1);
 
             //DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_COLLECTION, DefsGame.QUEST_CHARACTERS_Counter);
-
+            Defs.PlaySound(_buySkin);
             ChooseColorForButtons();
 
             FlurryEventsManager.SendEvent("candy_purchase_completed_<" + _id + ">");

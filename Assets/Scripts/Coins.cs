@@ -3,9 +3,9 @@ using UnityEngine.UI;
 
 public class Coins : MonoBehaviour {
 
-	public Text textField;
+	[SerializeField] private Text textField;
 	public Image img;
-    private int _pointsCount = 0;
+    private int _pointsCount;
     private bool _isShowAnimation = true;
     private float _startScale;
     private AudioClip _sndCoin;
@@ -14,7 +14,7 @@ public class Coins : MonoBehaviour {
 	void Start ()
 	{
 	    DefsGame.Coins = this;
-		_sndCoin = Resources.Load<AudioClip>("snd/bonus");
+		_sndCoin = Resources.Load<AudioClip>("snd/GUI/bonus");
 		textField.text = DefsGame.CoinsCount.ToString();
 		_pointsCount = DefsGame.CoinsCount;
 		Color color = textField.color;
@@ -25,8 +25,7 @@ public class Coins : MonoBehaviour {
 	}
 
 	void OnEnable() {
-		//Bubble.OnAddCoins += Bubble_OnAddCoins;
-		Coin.OnAddCoinsVisual += Coin_OnAddCoinsVisual;
+		CoinSensor.OnAddCoinsVisual += Coin_OnAddCoinsVisual;
 		ScreenSkins.OnAddCoinsVisual += Coin_OnAddCoinsVisual;
 		ScreenCoins.OnAddCoinsVisual += Coin_OnAddCoinsVisual;
 		//BillingManager.OnAddCoinsVisual += Coin_OnAddCoinsVisual;
@@ -34,8 +33,7 @@ public class Coins : MonoBehaviour {
 	}
 
 	void OnDisable() {
-		//Bubble.OnAddCoins -= Bubble_OnAddCoins;
-		Coin.OnAddCoinsVisual -= Coin_OnAddCoinsVisual;
+		CoinSensor.OnAddCoinsVisual -= Coin_OnAddCoinsVisual;
 		ScreenSkins.OnAddCoinsVisual -= Coin_OnAddCoinsVisual;
 		ScreenCoins.OnAddCoinsVisual -= Coin_OnAddCoinsVisual;
 		//BillingManager.OnAddCoinsVisual -= Coin_OnAddCoinsVisual;
@@ -46,11 +44,6 @@ public class Coins : MonoBehaviour {
 	{
 		AddPointVisual (value);
 	    Defs.PlaySound(_sndCoin);
-	}
-
-	void Bubble_OnAddCoins (int value)
-	{
-		AddPoint (value);
 	}
 
 	public void ResetCounter() {

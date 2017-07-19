@@ -3,14 +3,13 @@ using UnityEngine.UI;
 
 public class Points : MonoBehaviour
 {
-    private const float Delay = 0.8f;
+    private const float Delay = 0.0f;
     private bool _isPointAdded;
     private bool _isShowAnimation;
     private float _startScale;
     private float _time;
-    public Text textField;
+    [SerializeField] private Text textField;
 
-    // Use this for initialization
     private void Start()
     {
         textField.text = "0";
@@ -20,18 +19,40 @@ public class Points : MonoBehaviour
         _startScale = textField.transform.localScale.x;
     }
 
-    public void ShowAnimation()
+    private void OnEnable()
+    {
+        GlobalEvents<OnPointsShow>.Happened += OnPointsShow;
+        GlobalEvents<OnPointsAdd>.Happened += OnPointsAdd;
+        GlobalEvents<OnPointsReset>.Happened += OnPointsReset;
+    }
+
+    private void OnPointsReset(OnPointsReset obj)
+    {
+        ResetCounter();
+    }
+
+    private void OnPointsShow(OnPointsShow obj)
+    {
+        ShowAnimation();
+    }
+
+    private void OnPointsAdd(OnPointsAdd e)
+    {
+        AddPoint(e.PointsCount);
+//		_poinsBmScript.AddPoints (pointsCount);
+    }
+
+    private void ShowAnimation()
     {
         _isShowAnimation = true;
     }
 
-    public void ResetCounter()
+    private void ResetCounter()
     {
         DefsGame.CurrentPointsCount = 0;
         textField.text = "0";
     }
 
-    // Update is called once per frame
     private void Update()
     {
         if (_isShowAnimation)
@@ -65,7 +86,7 @@ public class Points : MonoBehaviour
                 textField.transform.localScale.y - 2.5f * Time.deltaTime, 1f);
     }
 
-    public void AddPoint(int count)
+    private void AddPoint(int count)
     {
         DefsGame.CurrentPointsCount += count;
         if (DefsGame.GameBestScore < DefsGame.CurrentPointsCount) DefsGame.GameBestScore = DefsGame.CurrentPointsCount;
@@ -78,8 +99,8 @@ public class Points : MonoBehaviour
         textField.transform.localScale = new Vector3(_startScale * 1.4f, _startScale * 1.4f, 1f);
     }
 
-    public void UpdateVisual()
-    {
-        textField.text = DefsGame.CurrentPointsCount.ToString();
-    }
+//    private void UpdateVisual()
+//    {
+//        textField.text = DefsGame.CurrentPointsCount.ToString();
+//    }
 }
