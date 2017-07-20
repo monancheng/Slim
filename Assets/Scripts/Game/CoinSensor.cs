@@ -96,7 +96,7 @@ public class CoinSensor : MonoBehaviour
 	   
 	    _renderer.material.SetColor("_Color",new Color(
 		    _renderer.material.color.r, _renderer.material.color.g, _renderer.material.color.b, 1f));
-	    transform.position = new Vector3(Random.Range(-11f, 11f), 200f, 0f);
+	    transform.position = new Vector3(Random.Range(-13f, 13f), 200f, 0f);
         transform.localScale = new Vector3 (0f, 0f, 0f);
 	    _isShowAnimation = true;
     }

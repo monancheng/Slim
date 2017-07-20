@@ -46,32 +46,33 @@ public class TubeManager : MonoBehaviour {
 	private void OnTubeCreate(float radius)
 	{
 		Color color;
+		float outerRadius;
+		float newRadius = radius + _radiusAddCoeff;
+		_radiusAddCoeff -= RadiusMinus;
+		if (_radiusAddCoeff < 0f) _radiusAddCoeff = 0f;
+		
 		if (_isWantBonusTube)
 		{
 			color = new Color(255f / 255.0f, 201f / 255f, 104f / 255f);
+			newRadius += 0.5f;
+			outerRadius = newRadius + 2.5f;
+			_isWantBonusTube = false;
 		}
 		else
 		{
 			color = ColorTheme.GetTubeColor();
+			outerRadius = Random.Range(newRadius + 2.5f, OuterRadiusMax);
 		}
 		
-		_isWantBonusTube = false;
-
-		float newRadius = radius + _radiusAddCoeff;
-		_radiusAddCoeff -= RadiusMinus;
-		if (_radiusAddCoeff < 0f) _radiusAddCoeff = 0f;
-
 		++_counter;
-		CreateTube(newRadius, color);
+		CreateTube(newRadius, outerRadius, color);
 		if (_counter != 0 && _counter % 5 == 0) 
 //			CreateCoin(currentTub.transform.position, newRadius + currentTub.GetComponent<Tube>().height*0.7f);
 		GameEvents.Send(OnCreateCoin);
 	}
 
-	private void CreateTube(float radius, Color color)
+	private void CreateTube(float radius, float outerRadius, Color color)
 	{
-		float outerRadius = Random.Range(radius + 2.5f, OuterRadiusMax);
-		
 		BaseObject shapeObject = Tube.Create(radius, outerRadius, Height + Random.value*2.5f, Sides, 1, 0.0f, false,
 			PrimitivesPro.Primitives.NormalsType.Vertex,
 			PrimitivesPro.Primitives.PivotPosition.Botttom);

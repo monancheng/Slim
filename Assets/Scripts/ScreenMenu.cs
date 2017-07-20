@@ -56,12 +56,14 @@ public class ScreenMenu : MonoBehaviour
     private void ScreenGame_OnShowMenu()
     {
         UIManager.ShowUiElement("GameName");
+        UIManager.HideUiElement("LabelPoints");
         showButtons();
     }
 
     private void ScreenGame_OnHideMenu(OnStartGame e)
     {
         UIManager.HideUiElement("GameName");
+        UIManager.ShowUiElement("LabelPoints");
         hideButtons();
     }
 
@@ -95,7 +97,6 @@ public class ScreenMenu : MonoBehaviour
         UIManager.ShowUiElement("BtnShare");
         UIManager.ShowUiElement("BtnPlus");
         FlurryEventsManager.SendEvent("iap_shop_impression");
-        UIManager.HideUiElement("scrMenuWowSlider");
 
         if (DefsGame.ScreenSkins)
             if (DefsGame.ScreenSkins.CheckAvailableSkinBool()) UIManager.ShowUiElement("BtnHaveNewSkin");
