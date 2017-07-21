@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class ScreenSkins : MonoBehaviour
 {
+    public AudioClip _buySkin;
+    public AudioClip _chooseSkin;
     public GameObject haveNewSkin;
     public GameObject skin10;
     public GameObject skin11;
@@ -18,8 +20,6 @@ public class ScreenSkins : MonoBehaviour
     public GameObject skin8;
     public GameObject skin9;
     public static event Action<int> OnAddCoinsVisual;
-    public AudioClip _chooseSkin;
-    public AudioClip _buySkin;
 
     private void Awake()
     {

@@ -3,25 +3,24 @@ using UnityEngine;
 
 public class ScreenMenu : MonoBehaviour
 {
-    private bool _isBtnSettingsClicked;
-    private bool _isButtonHiden;
-
-    private bool _isShowBtnViveoAds;
-    private bool _isWaitReward;
-    public GameObject coin;
-
+    [SerializeField] private GameObject coin;
     [SerializeField] private AudioClip sndBtnClick;
     [SerializeField] private UIButton videoAdsButton;
 
+    private bool _isBtnSettingsClicked;
+    private bool _isButtonHiden;
+    private bool _isShowBtnViveoAds;
+    private bool _isWaitReward;
+
     private void Start()
     {
-        showButtons();
+        ShowButtons();
     }
 
     private void OnEnable()
     {
         ScreenGame.OnShowMenu += ScreenGame_OnShowMenu;
-        
+
         GlobalEvents<OnStartGame>.Happened += ScreenGame_OnHideMenu;
         GlobalEvents<OnGiveReward>.Happened += GetReward;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedVideoAvailable;
@@ -30,7 +29,7 @@ public class ScreenMenu : MonoBehaviour
     private void OnDisable()
     {
         ScreenGame.OnShowMenu -= ScreenGame_OnShowMenu;
-        
+
         GlobalEvents<OnStartGame>.Happened += ScreenGame_OnHideMenu;
         GlobalEvents<OnGiveReward>.Happened -= GetReward;
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedVideoAvailable;
@@ -57,17 +56,17 @@ public class ScreenMenu : MonoBehaviour
     {
         UIManager.ShowUiElement("GameName");
         UIManager.HideUiElement("LabelPoints");
-        showButtons();
+        ShowButtons();
     }
 
     private void ScreenGame_OnHideMenu(OnStartGame e)
     {
         UIManager.HideUiElement("GameName");
         UIManager.ShowUiElement("LabelPoints");
-        hideButtons();
+        HideButtons();
     }
 
-    public void showButtons()
+    public void ShowButtons()
     {
         _isButtonHiden = false;
 
@@ -106,7 +105,7 @@ public class ScreenMenu : MonoBehaviour
         _isBtnSettingsClicked = false;
     }
 
-    public void hideButtons()
+    public void HideButtons()
     {
         if (_isButtonHiden)
             return;
@@ -187,7 +186,7 @@ public class ScreenMenu : MonoBehaviour
     {
 //		FlurryEventsManager.SendEvent ("rate_us_impression", "start_screen");
 //		Defs.Rate.RateUs ();
-        Defs.PlaySound(sndBtnClick, 1f);
+        Defs.PlaySound(sndBtnClick);
     }
 
     public void Share()
@@ -197,20 +196,20 @@ public class ScreenMenu : MonoBehaviour
         {
 //			Defs.shareVoxel.ShareClick ();
         }
-        Defs.PlaySound(sndBtnClick, 1f);
+        Defs.PlaySound(sndBtnClick);
     }
 
     public void BtnPlusClick()
     {
-        hideButtons();
+        HideButtons();
         DefsGame.ScreenCoins.Show("start_screen");
-        Defs.PlaySound(sndBtnClick, 1f);
+        Defs.PlaySound(sndBtnClick);
     }
 
     public void BtnSkinsClick()
     {
         FlurryEventsManager.SendEvent("candy_shop");
-        hideButtons();
-        Defs.PlaySound(sndBtnClick, 1f);
+        HideButtons();
+        Defs.PlaySound(sndBtnClick);
     }
 }

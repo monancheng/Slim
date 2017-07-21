@@ -1,14 +1,11 @@
-using System;
 using UnityEngine;
-
 
 namespace UnityStandardAssets.Effects
 {
     public class ExtinguishableParticleSystem : MonoBehaviour
     {
-        public float multiplier = 1;
-
         private ParticleSystem[] m_Systems;
+        public float multiplier = 1;
 
 
         private void Start()

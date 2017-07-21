@@ -10,8 +10,8 @@ namespace DoozyUI
     public class RadialLayout : LayoutGroup
     {
         public float fDistance;
-        [Range(0f, 360f)]
-        public float
+
+        [Range(0f, 360f)] public float
             MinAngle, MaxAngle, StartAngle;
 
         public float XMultiplier = 1f;
@@ -50,25 +50,26 @@ namespace DoozyUI
         }
 #endif
 
-        void CalculateRadial()
+        private void CalculateRadial()
         {
             m_Tracker.Clear();
             if (transform.childCount == 0)
                 return;
-            float fOffsetAngle = ((MaxAngle - MinAngle)) / (transform.childCount - 1);
+            var fOffsetAngle = (MaxAngle - MinAngle) / (transform.childCount - 1);
 
-            float fAngle = StartAngle;
-            for (int i = 0; i < transform.childCount; i++)
+            var fAngle = StartAngle;
+            for (var i = 0; i < transform.childCount; i++)
             {
-                RectTransform child = (RectTransform)transform.GetChild(i);
+                var child = (RectTransform) transform.GetChild(i);
                 if (child != null)
                 {
                     //Adding the elements to the tracker stops the user from modifiying their positions via the editor.
                     m_Tracker.Add(this, child,
-                                  DrivenTransformProperties.Anchors |
+                        DrivenTransformProperties.Anchors |
                         DrivenTransformProperties.AnchoredPosition |
                         DrivenTransformProperties.Pivot);
-                    Vector3 vPos = new Vector3(XMultiplier * Mathf.Cos(fAngle * Mathf.Deg2Rad), YMultiplier * Mathf.Sin(fAngle * Mathf.Deg2Rad), 0);
+                    var vPos = new Vector3(XMultiplier * Mathf.Cos(fAngle * Mathf.Deg2Rad),
+                        YMultiplier * Mathf.Sin(fAngle * Mathf.Deg2Rad), 0);
 
                     child.localPosition = vPos * fDistance;
                     //Force objects to be center aligned, this can be changed however I'd suggest you keep all of the objects with the same anchor points.
@@ -76,7 +77,6 @@ namespace DoozyUI
                     fAngle += fOffsetAngle;
                 }
             }
-
         }
     }
 }

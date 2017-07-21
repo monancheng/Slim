@@ -1,59 +1,62 @@
-﻿using UnityEngine;
+﻿using System.IO;
 using System.Runtime.InteropServices;
-using System.IO;
+using UnityEngine;
 
 /*
  * https://github.com/ChrisMaire/unity-native-sharing 
  */
 
-public class MyNativeShare : MonoBehaviour {
-	//public string ScreenshotName = "promo1.jpg";
-	public Texture2D image;
-	public Texture2D image2;
+public class MyNativeShare : MonoBehaviour
+{
+    //public string ScreenshotName = "promo1.jpg";
+    public Texture2D image;
 
-	void Awake() {
-		Defs.Share = this;
-		//Save Image
-		byte[] bytes = image.EncodeToPNG();
-		string path = Application.persistentDataPath + "/promo1.jpg";
-		File.WriteAllBytes(path, bytes);
+    public Texture2D image2;
 
-		bytes = image2.EncodeToPNG();
-		path = Application.persistentDataPath + "/promo2.jpg";
-		File.WriteAllBytes(path, bytes);
-		D.Log ("NativeShare.Awake()");
-	}
+    private void Awake()
+    {
+        Defs.Share = this;
+        //Save Image
+        var bytes = image.EncodeToPNG();
+        var path = Application.persistentDataPath + "/promo1.jpg";
+        File.WriteAllBytes(path, bytes);
 
-	public void ShareScreenshotWithText(string text, string _url)
+        bytes = image2.EncodeToPNG();
+        path = Application.persistentDataPath + "/promo2.jpg";
+        File.WriteAllBytes(path, bytes);
+        D.Log("NativeShare.Awake()");
+    }
+
+    public void ShareScreenshotWithText(string text, string _url)
     {
         //string screenShotPath = Application.persistentDataPath + "/" + ScreenshotName;
-		string screenShotPath = Application.persistentDataPath + "/promo1.jpg";
+        var screenShotPath = Application.persistentDataPath + "/promo1.jpg";
 
-		if (Random.value > 0.5f) {
-			screenShotPath = Application.persistentDataPath + "/promo2.jpg";
-		}
+        if (Random.value > 0.5f) screenShotPath = Application.persistentDataPath + "/promo2.jpg";
 
         //Application.CaptureScreenshot(ScreenshotName);
 
-		Share(text,screenShotPath,_url);
+        Share(text, screenShotPath, _url);
     }
 
-	public void ShareClick() {
-		D.Log ("NativeShare.ShareClick()");
+    public void ShareClick()
+    {
+        D.Log("NativeShare.ShareClick()");
 
 
-		string _shareLink = "http://smarturl.it/YummMonsters";
+        var _shareLink = "http://smarturl.it/YummMonsters";
 
-		#if UNITY_IOS
-		_shareLink = "http://smarturl.it/YummMonsters";
-		#endif
+#if UNITY_IOS
+        _shareLink = "http://smarturl.it/YummMonsters";
+#endif
 
-		string _shareText = "Wow! I Just Scored ["+DefsGame.GameBestScore.ToString()+ "] in #YummMonsters! Can You Beat Me? @AppsoluteGames " + _shareLink;
-		ShareScreenshotWithText (_shareText, "");
-	}
+        var _shareText = "Wow! I Just Scored [" + DefsGame.GameBestScore +
+                         "] in #YummMonsters! Can You Beat Me? @AppsoluteGames " + _shareLink;
+        ShareScreenshotWithText(_shareText, "");
+    }
 
-	public void Share(string shareText, string imagePath, string url, string subject = "")
-	{
+    public void Share(string shareText, string imagePath, string url, string subject = "")
+    {
 #if UNITY_ANDROID
 		AndroidJavaClass intentClass = new AndroidJavaClass("android.content.Intent");
 		AndroidJavaObject intentObject = new AndroidJavaObject("android.content.Intent");
@@ -72,48 +75,50 @@ public class MyNativeShare : MonoBehaviour {
 		AndroidJavaObject jChooser = intentClass.CallStatic<AndroidJavaObject>("createChooser", intentObject, subject);
 		currentActivity.Call("startActivity", jChooser);
 #elif UNITY_IOS
-		CallSocialShareAdvanced(shareText, subject, url, imagePath);
+        CallSocialShareAdvanced(shareText, subject, url, imagePath);
 #else
 		Debug.Log("No sharing set up for this platform.");
 #endif
-	}
+    }
 
 #if UNITY_IOS
-	public struct ConfigStruct
-	{
-		public string title;
-		public string message;
-	}
+    public struct ConfigStruct
+    {
+        public string title;
+        public string message;
+    }
 
-	[DllImport ("__Internal")] private static extern void showAlertMessage(ref ConfigStruct conf);
-	
-	public struct SocialSharingStruct
-	{
-		public string text;
-		public string url;
-		public string image;
-		public string subject;
-	}
-	
-	[DllImport ("__Internal")] private static extern void showSocialSharing(ref SocialSharingStruct conf);
-	
-	public static void CallSocialShare(string title, string message)
-	{
-		ConfigStruct conf = new ConfigStruct();
-		conf.title  = title;
-		conf.message = message;
-		showAlertMessage(ref conf);
-	}
+    [DllImport("__Internal")]
+    private static extern void showAlertMessage(ref ConfigStruct conf);
 
-	public static void CallSocialShareAdvanced(string defaultTxt, string subject, string url, string img)
-	{
-		SocialSharingStruct conf = new SocialSharingStruct();
-		conf.text = defaultTxt; 
-		conf.url = url;
-		conf.image = img;
-		conf.subject = subject;
-		
-		showSocialSharing(ref conf);
-	}
+    public struct SocialSharingStruct
+    {
+        public string text;
+        public string url;
+        public string image;
+        public string subject;
+    }
+
+    [DllImport("__Internal")]
+    private static extern void showSocialSharing(ref SocialSharingStruct conf);
+
+    public static void CallSocialShare(string title, string message)
+    {
+        var conf = new ConfigStruct();
+        conf.title = title;
+        conf.message = message;
+        showAlertMessage(ref conf);
+    }
+
+    public static void CallSocialShareAdvanced(string defaultTxt, string subject, string url, string img)
+    {
+        var conf = new SocialSharingStruct();
+        conf.text = defaultTxt;
+        conf.url = url;
+        conf.image = img;
+        conf.subject = subject;
+
+        showSocialSharing(ref conf);
+    }
 #endif
 }

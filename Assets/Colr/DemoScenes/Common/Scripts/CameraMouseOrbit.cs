@@ -1,83 +1,81 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class CameraMouseOrbit : MonoBehaviour {
+public class CameraMouseOrbit : MonoBehaviour
+{
+    [Space(20)] public bool autoMovement;
 
-		public Transform target;
-		public float distance = 5.0f;
-		public float xSpeed = 120.0f;
-		public float ySpeed = 120.0f;
+    public float autoSpeedDistance = -0.1f;
+    public float autoSpeedX = 0.2f;
+    public float autoSpeedY = 0.1f;
+    public float distance = 5.0f;
+    public float distanceMax = 15f;
 
-		public float yMinLimit = -20f;
-		public float yMaxLimit = 80f;
+    public float distanceMin = .5f;
 
-		public float distanceMin = .5f;
-		public float distanceMax = 15f;
+    public Transform target;
 
-		float x = 0.0f;
-		float y = 0.0f;
+    private float x;
+    public float xSpeed = 120.0f;
+    private float y;
+    public float yMaxLimit = 80f;
 
-        [Space(20)]
-        public bool autoMovement = false;
-        public float autoSpeedX = 0.2f;
-        public float autoSpeedY = 0.1f;
-        public float autoSpeedDistance = -0.1f;
-        
-		// Use this for initialization
-		void Start () 
-		{
-				Vector3 angles = transform.eulerAngles;
-				x = angles.y;
-				y = angles.x;
+    public float yMinLimit = -20f;
+    public float ySpeed = 120.0f;
 
-				Rigidbody rigidbody = GetComponent<Rigidbody>();
+    // Use this for initialization
+    private void Start()
+    {
+        var angles = transform.eulerAngles;
+        x = angles.y;
+        y = angles.x;
 
-				// Make the rigid body not change rotation
-				if (rigidbody != null)
-				{
-						rigidbody.freezeRotation = true;
-				}
-		}
+        var rigidbody = GetComponent<Rigidbody>();
 
-		void LateUpdate () 
-		{
-				if (target) 
-				{
-                    if (Input.GetMouseButton(0)) {
-                        x += Input.GetAxis("Mouse X") * xSpeed * distance * 0.02f;
-						y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
-                    } else if (autoMovement) {
-                        x += autoSpeedX * distance * 0.2f;
-						y += autoSpeedY;
-                        distance += autoSpeedDistance;
-                    }
-                    
-						
-                    y = ClampAngle(y, yMinLimit, yMaxLimit);
+        // Make the rigid body not change rotation
+        if (rigidbody != null)
+            rigidbody.freezeRotation = true;
+    }
 
-                    Quaternion rotation = Quaternion.Euler(y, x, 0);
+    private void LateUpdate()
+    {
+        if (target)
+        {
+            if (Input.GetMouseButton(0))
+            {
+                x += Input.GetAxis("Mouse X") * xSpeed * distance * 0.02f;
+                y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
+            }
+            else if (autoMovement)
+            {
+                x += autoSpeedX * distance * 0.2f;
+                y += autoSpeedY;
+                distance += autoSpeedDistance;
+            }
 
-                    distance = Mathf.Clamp(distance - Input.GetAxis("Mouse ScrollWheel")*5, distanceMin, distanceMax);
 
-                    RaycastHit hit;
-                    if (Physics.Linecast (target.position, transform.position, out hit)) 
-                    {
-                            distance -=  hit.distance;
-                    }
-                    Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
-                    Vector3 position = rotation * negDistance + target.position;
+            y = ClampAngle(y, yMinLimit, yMaxLimit);
 
-                    transform.rotation = rotation;
-                    transform.position = position;
-				}
-		}
+            var rotation = Quaternion.Euler(y, x, 0);
 
-		public static float ClampAngle(float angle, float min, float max)
-		{
-				if (angle < -360F)
-						angle += 360F;
-				if (angle > 360F)
-						angle -= 360F;
-				return Mathf.Clamp(angle, min, max);
-		}
+            distance = Mathf.Clamp(distance - Input.GetAxis("Mouse ScrollWheel") * 5, distanceMin, distanceMax);
+
+            RaycastHit hit;
+            if (Physics.Linecast(target.position, transform.position, out hit))
+                distance -= hit.distance;
+            var negDistance = new Vector3(0.0f, 0.0f, -distance);
+            var position = rotation * negDistance + target.position;
+
+            transform.rotation = rotation;
+            transform.position = position;
+        }
+    }
+
+    public static float ClampAngle(float angle, float min, float max)
+    {
+        if (angle < -360F)
+            angle += 360F;
+        if (angle > 360F)
+            angle -= 360F;
+        return Mathf.Clamp(angle, min, max);
+    }
 }

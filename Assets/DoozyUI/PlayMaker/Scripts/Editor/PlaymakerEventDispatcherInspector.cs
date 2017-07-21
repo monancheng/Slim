@@ -2,6 +2,7 @@
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
+
 #if dUI_PlayMaker
 using UnityEngine;
 using UnityEditor;
@@ -99,13 +100,15 @@ public class PlaymakerEventDispatcherInspector : Editor
 
         #region Show Help
         DoozyUIHelper.ResetColors();
-        playmakerEventDispacher.showHelp = EditorGUILayout.ToggleLeft("Show Help", playmakerEventDispacher.showHelp, GUILayout.Width(100));
+        playmakerEventDispacher.showHelp =
+EditorGUILayout.ToggleLeft("Show Help", playmakerEventDispacher.showHelp, GUILayout.Width(100));
         DoozyUIHelper.SetZoneColor(DoozyUIHelper.DoozyColor.Doozy);
         #endregion
 
         #region Debug This
         DoozyUIHelper.SetZoneColor(DoozyUIHelper.DoozyColor.LightOranage);
-        playmakerEventDispacher.debugThis = EditorGUILayout.ToggleLeft("Debug This", playmakerEventDispacher.debugThis, GUILayout.Width(100));
+        playmakerEventDispacher.debugThis =
+EditorGUILayout.ToggleLeft("Debug This", playmakerEventDispacher.debugThis, GUILayout.Width(100));
         DoozyUIHelper.SetZoneColor(DoozyUIHelper.DoozyColor.Doozy);
         #endregion
 
@@ -117,7 +120,8 @@ public class PlaymakerEventDispatcherInspector : Editor
         EditorGUILayout.BeginHorizontal();
 
         #region Override Target FSM
-        sp_overrideTargetFSM.boolValue = EditorGUILayout.ToggleLeft("Override Target FSM", sp_overrideTargetFSM.boolValue, GUILayout.Width(140));
+        sp_overrideTargetFSM.boolValue =
+EditorGUILayout.ToggleLeft("Override Target FSM", sp_overrideTargetFSM.boolValue, GUILayout.Width(140));
         #endregion
 
         if (sp_overrideTargetFSM.boolValue == false)
@@ -140,13 +144,15 @@ public class PlaymakerEventDispatcherInspector : Editor
         DoozyUIHelper.VerticalSpace(8);
 
         #region Dispatch Game Events
-        sp_dispatchGameEvents.boolValue = EditorGUILayout.ToggleLeft("Listen for Game Events", sp_dispatchGameEvents.boolValue);
+        sp_dispatchGameEvents.boolValue =
+EditorGUILayout.ToggleLeft("Listen for Game Events", sp_dispatchGameEvents.boolValue);
         #endregion
 
         DoozyUIHelper.VerticalSpace(8);
 
         #region Dispatch Button Clicks
-        sp_dispatchButtonClicks.boolValue = EditorGUILayout.ToggleLeft("Listen for Button Clicks", sp_dispatchButtonClicks.boolValue);
+        sp_dispatchButtonClicks.boolValue =
+EditorGUILayout.ToggleLeft("Listen for Button Clicks", sp_dispatchButtonClicks.boolValue);
         #endregion
 
         if (playmakerEventDispacher.showHelp)

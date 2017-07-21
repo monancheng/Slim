@@ -2,6 +2,7 @@
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
+
 #if dUI_PlayMaker
 using UnityEngine;
 using HutongGames.PlayMaker;
@@ -51,7 +52,8 @@ namespace HutongGames.PlayMaker.Actions
         {
             prefabName = new FsmString { UseVariable = false, Value = string.Empty };
             lifetime = new FsmFloat { UseVariable = false, Value = UINotification.defaultLifetime };
-            addToNotificationQueue = new FsmBool { UseVariable = false, Value = UINotification.defaultAddToNotificationQueue };
+            addToNotificationQueue = new FsmBool { UseVariable = false, Value =
+UINotification.defaultAddToNotificationQueue };
             title = new FsmString { UseVariable = false, Value = UINotification.defaultTitle };
             message = new FsmString { UseVariable = false, Value = UINotification.defaultMessage };
             icon = new FsmObject { UseVariable = false, Value = UINotification.defaultIcon };

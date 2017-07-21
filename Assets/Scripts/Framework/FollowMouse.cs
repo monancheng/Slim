@@ -2,86 +2,82 @@
 // Namespaces.
 // =================================
 
+using System;
 using UnityEngine;
 
 // =================================
 // Define namespace.
 // =================================
 
-            // =================================
-            // Classes.
-            // =================================
+// =================================
+// Classes.
+// =================================
 
-            //[ExecuteInEditMode]
-            [System.Serializable]
+//[ExecuteInEditMode]
+[Serializable]
 
-            //[RequireComponent(typeof(TrailRenderer))]
+//[RequireComponent(typeof(TrailRenderer))]
+public class FollowMouse : MonoBehaviour
+{
+    public float distanceFromCamera = 5.0f;
+    // =================================
+    // Nested classes and structures.
+    // =================================
 
-            public class FollowMouse : MonoBehaviour
-            {
-                // =================================
-                // Nested classes and structures.
-                // =================================
+    // ...
 
-                // ...
+    // =================================
+    // Variables.
+    // =================================
 
-                // =================================
-                // Variables.
-                // =================================
+    // ...
 
-                // ...
+    public float speed = 8.0f;
 
-                public float speed = 8.0f;
-                public float distanceFromCamera = 5.0f;
+    // =================================
+    // Functions.
+    // =================================
 
-                // =================================
-                // Functions.
-                // =================================
+    // ...
 
-                // ...
+    private void Awake()
+    {
+    }
 
-                void Awake()
-                {
+    // ...
 
-                }
+    private void Start()
+    {
+    }
 
-                // ...
+    // ...
 
-                void Start()
-                {
+    private void Update()
+    {
+        var mousePosition = Input.mousePosition;
+        mousePosition.z = distanceFromCamera;
 
-                }
+        var mouseScreenToWorld = Camera.main.ScreenToWorldPoint(mousePosition);
 
-                // ...
+        var position = Vector3.Lerp(transform.position, mouseScreenToWorld, 1.0f - Mathf.Exp(-speed * Time.deltaTime));
 
-                void Update()
-                {
-                    Vector3 mousePosition = Input.mousePosition;
-                    mousePosition.z = distanceFromCamera;
+        transform.position = position;
+    }
 
-                    Vector3 mouseScreenToWorld = Camera.main.ScreenToWorldPoint(mousePosition);
+    // ...
 
-                    Vector3 position = Vector3.Lerp(transform.position, mouseScreenToWorld, 1.0f - Mathf.Exp(-speed * Time.deltaTime));
+    private void LateUpdate()
+    {
+    }
+    // =================================
+    // End functions.
 
-                    transform.position = position;
-                }
+    // =================================
+}
 
-                // ...
-
-                void LateUpdate()
-                {
-
-                }
-
-                // =================================
-                // End functions.
-                // =================================
-
-            }
-
-            // =================================
-            // End namespace.
-            // =================================
+// =================================
+// End namespace.
+// =================================
 
 
 // =================================

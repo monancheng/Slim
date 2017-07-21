@@ -1,19 +1,21 @@
 ﻿using UnityEngine;
 
-public class DestroyByTime : MonoBehaviour {
-	public float LifeTime = 3f;
+public class DestroyByTime : MonoBehaviour
+{
+    public float LifeTime = 3f;
 
-	void Awake() {
-		Destroy (gameObject, LifeTime);
-	}
+    private void Awake()
+    {
+        Destroy(gameObject, LifeTime);
+    }
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    // Use this for initialization
+    private void Start()
+    {
+    }
+
+    // Update is called once per frame
+    private void Update()
+    {
+    }
 }

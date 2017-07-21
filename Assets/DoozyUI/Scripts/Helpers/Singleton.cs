@@ -15,11 +15,13 @@ namespace DoozyUI
 {
     public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     {
-        private static bool debugThis = false;
+        private static readonly bool debugThis = false;
 
         private static T _instance;
 
-        private static object _lock = new object();
+        private static readonly object _lock = new object();
+
+        private static bool applicationIsQuitting;
 
         public static T Instance
         {
@@ -38,7 +40,7 @@ namespace DoozyUI
                 {
                     if (_instance == null)
                     {
-                        _instance = (T)FindObjectOfType(typeof(T));
+                        _instance = (T) FindObjectOfType(typeof(T));
 
                         if (FindObjectsOfType(typeof(T)).Length > 1)
                         {
@@ -51,9 +53,9 @@ namespace DoozyUI
 
                         if (_instance == null)
                         {
-                            GameObject singleton = new GameObject();
+                            var singleton = new GameObject();
                             _instance = singleton.AddComponent<T>();
-                            singleton.name = "(singleton) " + typeof(T).ToString();
+                            singleton.name = "(singleton) " + typeof(T);
 
                             DontDestroyOnLoad(singleton);
 
@@ -75,14 +77,13 @@ namespace DoozyUI
             }
         }
 
-        private static bool applicationIsQuitting = false;
         /// <summary>
-        /// When Unity quits, it destroys objects in a random order.
-        /// In principle, a Singleton is only destroyed when application quits.
-        /// If any script calls Instance after it have been destroyed, 
-        ///   it will create a buggy ghost object that will stay on the Editor scene
-        ///   even after stopping playing the Application. Really bad!
-        /// So, this was made to be sure we're not creating that buggy ghost object.
+        ///     When Unity quits, it destroys objects in a random order.
+        ///     In principle, a Singleton is only destroyed when application quits.
+        ///     If any script calls Instance after it have been destroyed,
+        ///     it will create a buggy ghost object that will stay on the Editor scene
+        ///     even after stopping playing the Application. Really bad!
+        ///     So, this was made to be sure we're not creating that buggy ghost object.
         /// </summary>
         public void OnDestroy()
         {
