@@ -22,7 +22,7 @@ public class ComboTubeManager : MonoBehaviour
         Player.OnCombo += OnCombo;
     }
 
-    private void OnCombo(int comboCounter, float radius, GameObject go)
+    private void OnCombo(int comboCounter, float radius, Vector3 pos, float height)
     {
         D.Log("OnCombo", comboCounter);
         _comboEffectCounter = comboCounter;
@@ -30,8 +30,8 @@ public class ComboTubeManager : MonoBehaviour
         _comboEffectRadius = radius;
         _comboEffectTime = ComboEffectDelay;
 
-        _comboEffectPosition = new Vector3(go.transform.position.x,
-            go.transform.position.y - go.GetComponent<Tube>().height * 0.5f + 0.1f, go.transform.position.z);
+        _comboEffectPosition = new Vector3(pos.x,
+            pos.y - height * 0.5f + 0.1f, pos.z);
         _comboEffectPositionY = _comboEffectPosition.y;
     }
 

@@ -61,6 +61,11 @@ public struct OnShowNotifications
 {
 }
 
+// Получили нового персонажа
+public struct OnGotNewCharacter
+{
+}
+
 //example
 //событие с несколькими параметрами
 /*public struct GameSettingEvent

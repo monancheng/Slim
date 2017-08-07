@@ -11,7 +11,7 @@ public class Player : MonoBehaviour
     public static event Action<float> OnTubeCreate;
     public static event Action OnTubeMove;
     public static event Action OnTubeGetBonusTube;
-    public static event Action<int, float, GameObject> OnCombo;
+    public static event Action<int, float, Vector3, float> OnCombo;
     public static event Action<float> OnIncreaseTubeRadius;
 
     private const float MinSize = 1.0f;
@@ -146,12 +146,15 @@ public class Player : MonoBehaviour
 //                    _comboIncreaseCounter = 0;
 //                }
                 
-                GameEvents.Send(OnCombo, 1/*_comboCounter*/, _currentRadius, other.gameObject);
+                GameEvents.Send(OnCombo, 1/*_comboCounter*/, _currentRadius, 
+                    new Vector3(transform.position.x, other.gameObject.transform.position.y, other.gameObject.transform.position.z),
+                    other.gameObject.GetComponent<Tube>().height);
                 Defs.PlaySound(GetNextGoodSound());
             }
             GlobalEvents<OnPointsAdd>.Call(new OnPointsAdd {PointsCount = /*_comboCounter+*/1});
         }
         else
+        
         {
             GetComponent<Renderer>().material.SetColor("_Color", new Color(1.0f, 0.0f / 255f, 0f / 255f));
             _isMoveToExit = true;

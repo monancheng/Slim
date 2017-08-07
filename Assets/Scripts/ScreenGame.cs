@@ -16,26 +16,22 @@ public class ScreenGame : MonoBehaviour
     private bool _isReviveUsed;
 
     private bool _isScreenRateDone;
-    //int hintCounter;
-    //bool isHint = false;
+    
 
     private bool _isScreenReviveDone;
     private bool _isScreenShareDone;
 
     private bool _isWaitReward;
-    private Points _points;
 
     private ScreenColorAnimation _screenAnimation;
     private AudioClip _sndClose;
     private AudioClip _sndGrab;
-
     private AudioClip _sndLose;
-
-    private AudioClip _sndShowScreen;
-//    private AudioClip _sndShowScreen;
+    [SerializeField] private AudioClip _gameStart;
 
     private int _state = -1;
-//    private PointsBubbleManager _poinsBmScript;
+    //int hintCounter;
+    //bool isHint = false;
     //GameObject hint = null;
     //SpriteRenderer hintSprite;
 
@@ -47,7 +43,7 @@ public class ScreenGame : MonoBehaviour
     public GameObject screenAnimationObject;
 
     public static event Action OnNewGame;
-//    private Vector3 _cameraStartPos;
+    private Vector3 _cameraStartPos;
 
     public static event Action OnShowMenu;
 
@@ -61,7 +57,6 @@ public class ScreenGame : MonoBehaviour
     {
         Defs.AudioSourceMusic = GetComponent<AudioSource>();
         _screenAnimation = screenAnimationObject.GetComponent<ScreenColorAnimation>();
-        _points = GetComponent<Points>();
         _coins = GetComponent<Coins>();
         _bestScore = GetComponent<BestScore>();
 //		_poinsBmScript = GetComponent<PointsBubbleManager> ();
@@ -78,7 +73,6 @@ public class ScreenGame : MonoBehaviour
         } */
 
         _sndLose = Resources.Load<AudioClip>("snd/GUI/fail");
-        _sndShowScreen = Resources.Load<AudioClip>("snd/showScreen");
         _sndGrab = Resources.Load<AudioClip>("snd/grab");
         _sndClose = Resources.Load<AudioClip>("snd/button");
     }
@@ -106,7 +100,6 @@ public class ScreenGame : MonoBehaviour
         DefsGame.GameServices.ReportProgressWithGlobalID(DefsGame.GameServices.ACHIEVEMENT_EXPLOSIVE,
             DefsGame.QUEST_BOMBS_Counter);
 
-//        _points.UpdateVisual();
         _coins.UpdateVisual();
         _bestScore.UpdateVisual();
 
@@ -128,7 +121,7 @@ public class ScreenGame : MonoBehaviour
     {
         GlobalEvents<OnGameOver>.Happened += OnGameOver;
 //        CarSimulator.OnPointsAdd += OnPointsAdd;
-        GlobalEvents<OnStartGame>.Happened += OnGameplayStart;
+        GlobalEvents<OnStartGame>.Happened += OnStartGame;
         GlobalEvents<OnPointsAdd>.Happened += OnAddPoints;
         GlobalEvents<OnGiveReward>.Happened += GetReward;
     }
@@ -137,7 +130,7 @@ public class ScreenGame : MonoBehaviour
     {
         GlobalEvents<OnGameOver>.Happened -= OnGameOver;
 //        CarSimulator.OnPointsAdd -= OnPointsAdd;
-        GlobalEvents<OnStartGame>.Happened -= OnGameplayStart;
+        GlobalEvents<OnStartGame>.Happened -= OnStartGame;
         GlobalEvents<OnPointsAdd>.Happened -= OnAddPoints;
         GlobalEvents<OnGiveReward>.Happened -= GetReward;
     }
@@ -150,6 +143,12 @@ public class ScreenGame : MonoBehaviour
         _isNextLevel = true;
     }
 
+    public void GameStart()
+    {
+        GlobalEvents<OnStartGame>.Call(new OnStartGame());
+        Defs.PlaySound(_gameStart);
+    }
+    
     private void OnGameOver(OnGameOver e)
     {
         if (IsGameOver)
@@ -168,7 +167,7 @@ public class ScreenGame : MonoBehaviour
         _state = 3;
     }
 
-    private void OnGameplayStart(OnStartGame e)
+    private void OnStartGame(OnStartGame e)
     {
         if (IsGameOver)
             return;
@@ -277,14 +276,14 @@ public class ScreenGame : MonoBehaviour
                     _screenAnimation.SetAutoHide(true);
 
                     _state = 4;
-//		            _cameraStartPos = Camera.main.transform.position;
+		            _cameraStartPos = Camera.main.transform.position;
                 }
                 break;
             case 4:
                 if (!_screenAnimation.isActiveAndEnabled)
                 {
                     _state = 5;
-//	                Camera.main.transform.position = new Vector3(_cameraStartPos.x, _cameraStartPos.y, _cameraStartPos.z);
+	                Camera.main.transform.position = new Vector3(_cameraStartPos.x, _cameraStartPos.y, _cameraStartPos.z);
                     EndCurrentGame();
                 }
                 break;

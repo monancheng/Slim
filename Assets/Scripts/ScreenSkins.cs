@@ -40,9 +40,9 @@ public class ScreenSkins : MonoBehaviour
             Defs.PlaySound(_chooseSkin);
 //            DefsGame.CarSimulator.Car.SetNewSkin(_id);
         }
-        else if (DefsGame.CoinsCount >= DefsGame.FacePrice[_id - 1])
+        else if (DefsGame.CoinsCount >= 200/*DefsGame.FacePrice[_id - 1]*/)
         {
-            GameEvents.Send(OnAddCoinsVisual, -DefsGame.FacePrice[_id - 1]);
+            GameEvents.Send(OnAddCoinsVisual, -200);
             DefsGame.FaceAvailable[_id] = 1;
             DefsGame.CurrentFaceId = _id;
             PlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
@@ -57,6 +57,7 @@ public class ScreenSkins : MonoBehaviour
             //DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_COLLECTION, DefsGame.QUEST_CHARACTERS_Counter);
             Defs.PlaySound(_buySkin);
             ChooseColorForButtons();
+            GlobalEvents<OnGotNewCharacter>.Call(new OnGotNewCharacter());
 
             FlurryEventsManager.SendEvent("candy_purchase_completed_<" + _id + ">");
         }
@@ -194,14 +195,14 @@ public class ScreenSkins : MonoBehaviour
             else
             {
                 skin2.GetComponentInChildren<UIButton>().GetComponent<Image>().color = Color.black;
-                skin2.GetComponentInChildren<Text>().text = DefsGame.FacePrice[i - 1].ToString();
+                skin2.GetComponentInChildren<Text>().text = "200";
             }
     }
 
     public bool CheckAvailableSkinBool()
     {
         for (var i = 1; i < DefsGame.FaceAvailable.Length; i++)
-            if (DefsGame.FaceAvailable[i] == 0 && DefsGame.CoinsCount >= DefsGame.FacePrice[i - 1])
+            if (DefsGame.FaceAvailable[i] == 0 && DefsGame.CoinsCount >= 200)
             {
                 haveNewSkin.SetActive(true);
                 return true;

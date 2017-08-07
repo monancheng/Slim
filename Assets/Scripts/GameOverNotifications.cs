@@ -14,19 +14,13 @@ public class GameOverNotifications : MonoBehaviour
 
     private int _showCounter;
     private int _showCounterGlobal;
-    private int _shareCounter;
-    private bool _isShowShare;
-    [SerializeField] private int ShareFirstShow = 3;
-    [SerializeField] private int ShareSecondShow = 5;
-    [SerializeField] private int ShareThirdShow = 10;
     
     private int _isAvailableRate;
-    private bool _isShowRate;
+    private bool _isGotNewCharacter;
 
     private void Start()
     {
         _showCounterGlobal = PlayerPrefs.GetInt("showCounterGlobal", 0);
-        _shareCounter = PlayerPrefs.GetInt("shareCounter", 0);
         _isAvailableRate = PlayerPrefs.GetInt("_isAvailableRate", 0);
     }
 
@@ -36,38 +30,65 @@ public class GameOverNotifications : MonoBehaviour
         GlobalEvents<OnShowNotifications>.Happened += ShowNotifications;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened += IsGiftAvailable;
+        GlobalEvents<OnGotNewCharacter>.Happened += OnGotNewCharacter;
     }
-
+    
     private void OnDisable()
     {
         GlobalEvents<OnStartGame>.Happened -= HideNotifications;
         GlobalEvents<OnShowNotifications>.Happened -= ShowNotifications;
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened -= IsGiftAvailable;
+        GlobalEvents<OnGotNewCharacter>.Happened -= OnGotNewCharacter;
     }
 
     private void ShowNotifications(OnShowNotifications e)
     {
+        UIManager.ShowUiElement("ScreenGameOver");
         ++_showCounter;
         PlayerPrefs.SetInt("showCounterGlobal", ++_showCounterGlobal);
-        PlayerPrefs.GetInt("shareCounter", ++_shareCounter);
 
-        CheckParams();
+        float ran = Random.value;
         
-        if (_isShowShare) _activeNamesList.Add("NotifyShare");
-        if (_isShowRate) _activeNamesList.Add("NotifyRate");
-
-        if (_showCounter == 3 || (_showCounter-3) % 5 == 0 && _isRewardedAvailable)
+        if (DefsGame.CoinsCount >= 200) 
+            _activeNamesList.Add("NotifyNewCharacter");
+        
+        if (DefsGame.CoinsCount >= 100 && ran > 0.5f) 
+            _activeNamesList.Add("NotifyNextCharacter");
+        
+        if (_isGotNewCharacter&&_isAvailableRate == 0)
         {
-            _activeNamesList.Add("NotifyRewarded");
+            _activeNamesList.Add("NotifyRate");
+            _isGotNewCharacter = false;
         }
         
         if (_activeNamesList.Count < 4 && _isGiftAvailable
-            ||_activeNamesList.Count == 0 && Random.value < 0.5f
-            ||_activeNamesList.Count == 1 && Random.value < 0.25f)
+            /*||_activeNamesList.Count == 0 && Random.value < 0.5f
+            ||_activeNamesList.Count == 1 && Random.value < 0.25f*/)
         {
             _activeNamesList.Add("NotifyGift");
         }
+        
+        if ((_showCounter == 3 || (_showCounter-3) % 5 == 0) && _isRewardedAvailable)
+        {
+            _activeNamesList.Add("NotifyRewarded");
+        }
+
+        if (_activeNamesList.Count < 4 && (DefsGame.CurrentPointsCount > DefsGame.GameBestScore * 0.5f
+                                           || _isGotNewCharacter
+                                           || _activeNamesList.Count == 0 && ran < 0.3f
+                                           || _activeNamesList.Count == 1 && ran < 0.25f))
+        {
+            _activeNamesList.Add("NotifyShare");
+        }
+        
+        if (_activeNamesList.Count < 4 && (_activeNamesList.Count == 0 && ran > 0.7f
+                                           || _activeNamesList.Count == 1 && ran > 0.75f
+                                           || _activeNamesList.Count == 2 && ran > 0.80f))
+        {
+            _activeNamesList.Add("NotifyGiftWaiting");
+        }
+        
 
         float startPos = CalcStartPosition(_activeNamesList.Count);
 
@@ -81,15 +102,6 @@ public class GameOverNotifications : MonoBehaviour
                 UIManager.ShowUiElement(_activeNamesList[i]);
             }
         }
-    }
-
-    private void CheckParams()
-    {
-        if (_shareCounter == ShareFirstShow) _isShowShare = true; else
-        if (_shareCounter == ShareSecondShow) _isShowShare = true; else
-        if (_shareCounter == ShareThirdShow) _isShowShare = true;
-
-        if (_isAvailableRate == 0) _isShowRate = true;
     }
 
     private float CalcStartPosition(int notificationCounter)
@@ -109,6 +121,7 @@ public class GameOverNotifications : MonoBehaviour
 
     private void HideNotifications(OnStartGame e)
     {
+        UIManager.HideUiElement("ScreenGameOver");
         foreach (string t in _activeNamesList)
         {
             var element = GetUIElement(t);
@@ -128,5 +141,10 @@ public class GameOverNotifications : MonoBehaviour
     private void IsGiftAvailable(OnGiftAvailable e)
     {
         _isGiftAvailable = e.IsAvailable;
+    }
+    
+    private void OnGotNewCharacter(OnGotNewCharacter obj)
+    {
+        _isGotNewCharacter = true;
     }
 }

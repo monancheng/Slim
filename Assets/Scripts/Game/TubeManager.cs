@@ -7,8 +7,6 @@ using Random = UnityEngine.Random;
 
 public class TubeManager : MonoBehaviour
 {
-    [SerializeField] private AudioClip _gameStart;
-
     [HideInInspector] public const float Height = 3.0f;
     [HideInInspector] public static float CurrentSpeed = StartSpeed;
     public static event Action OnCreateCoin;
@@ -24,7 +22,7 @@ public class TubeManager : MonoBehaviour
     private const float RadiusMax = 18f;
     private const float OuterRadiusGold = 3.0f;
     
-    private const float MaxSpeed = 190f;
+    private const float MaxSpeed = 195f;
     private float _acceleration = 2.9f;
     
     private const float StartSpeed = 133f;
@@ -195,7 +193,7 @@ public class TubeManager : MonoBehaviour
     {
         if (CurrentSpeed < 140f) _acceleration = 2.8f; else
         if (CurrentSpeed < 145f) _acceleration = 2.1f; else
-        if (CurrentSpeed < 150f) _acceleration = 1.4f; else
+        if (CurrentSpeed < 150f) _acceleration = 1.5f; else
         if (CurrentSpeed < 155f) _acceleration = 1.25f; else
         if (CurrentSpeed < 165f) _acceleration = 1.10f; else
         if (CurrentSpeed < 170f) _acceleration = 1.0f; else
@@ -215,8 +213,7 @@ public class TubeManager : MonoBehaviour
         if (DefsGame.CurrentScreen == DefsGame.SCREEN_MENU
             && InputController.IsTouchOnScreen(TouchPhase.Began))
         {
-            GlobalEvents<OnStartGame>.Call(new OnStartGame());
-            Defs.PlaySound(_gameStart);
+            DefsGame.ScreenGame.GameStart();
         }
     }
 }
