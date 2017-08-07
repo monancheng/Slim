@@ -25,7 +25,9 @@ public struct OnPointsReset
 {
 }
 
+//----------
 // ADS
+//----------
 // Дать награду игроку
 public struct OnGiveReward
 {
@@ -56,6 +58,10 @@ public struct OnGiftAvailable
     public bool IsAvailable;
 }
 
+//----------
+// NOTIFICATIONS
+//----------
+
 // Показываем нотификейшины на экране
 public struct OnShowNotifications
 {
@@ -66,12 +72,27 @@ public struct OnGotNewCharacter
 {
 }
 
-//example
-//событие с несколькими параметрами
-/*public struct GameSettingEvent
+//----------
+// BUTTONS CLICKS
+//----------
+
+// Нажали на кнопку "Оценить игру"
+public struct OnBtnRateClick
 {
-    public bool useAds;
-    public bool useAnalytics;
-    public float coinsFactor;
-    public int startingCoins;
-}*/
+}
+
+// Нажали на кнопку "Поделиться игрой"
+public struct OnBtnShareClick
+{
+}
+
+// Нажали на кнопку "Получить подарок"
+public struct OnBtnGiftClick
+{
+    public int CoinsCount;
+}
+
+// Нажали на кнопку "Купить рандомный скин"
+public struct OnBtnGetRandomSkinClick
+{
+}

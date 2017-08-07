@@ -186,11 +186,7 @@ public class ScreenMenu : MonoBehaviour
 
     public void Share()
     {
-//		FlurryEventsManager.SendEvent ("share");
-        if (SystemInfo.deviceModel.Contains("iPad"))
-        {
-//			Defs.shareVoxel.ShareClick ();
-        }
+        GlobalEvents<OnBtnShareClick>.Call(new OnBtnShareClick());
         Defs.PlaySound(sndBtnClick);
     }
 

@@ -252,7 +252,7 @@ public class Player : MonoBehaviour
         if (InputController.IsTouchOnScreen(TouchPhase.Moved))
         {
             Vector2 cursorPosition = Input.mousePosition;
-            var newX = (_startCursorPoint.x - cursorPosition.x) / 11f;
+            var newX = (_startCursorPoint.x - cursorPosition.x) / 10f;
             _currentAngle += newX;
             float xCoeff = _startDistance * Mathf.Cos(_currentAngle * Mathf.Deg2Rad);
             float yCoeff = _startDistance * Mathf.Sin(_currentAngle * Mathf.Deg2Rad);

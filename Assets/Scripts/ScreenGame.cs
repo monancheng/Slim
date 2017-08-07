@@ -393,8 +393,9 @@ public class ScreenGame : MonoBehaviour
         UIManager.HideUiElement("ScreenShare");
         UIManager.HideUiElement("ScreenShareBtnShare");
         UIManager.HideUiElement("ScreenShareBtnBack");
-        if (SystemInfo.deviceModel.Contains("iPad")) Defs.ShareVoxel.ShareClick();
-        else Defs.Share.ShareClick();
+//        if (SystemInfo.deviceModel.Contains("iPad")) Defs.ShareVoxel.ShareClick();
+//        else Defs.Share.ShareClick();
+        GlobalEvents<OnBtnShareClick>.Call(new OnBtnShareClick());
         FlurryEventsManager.SendEvent("high_score_share");
         Defs.PlaySound(_sndGrab);
         EndCurrentGame();

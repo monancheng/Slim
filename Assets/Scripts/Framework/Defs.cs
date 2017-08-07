@@ -5,7 +5,6 @@ public struct Defs
     public static readonly string AndroidAppID = "com.crazylabs.monsteryumm";
     public static readonly string iOSApp_ID = "id1192223024";
 
-    public static MyNativeShare Share;
     public static Share ShareVoxel;
     public static Rate Rate;
 

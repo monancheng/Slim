@@ -13,7 +13,7 @@ public class Gift : MonoBehaviour
     private void Start()
     {
         //Grab the old time from the player prefs as a long
-        var strTime = PlayerPrefs.GetString("dateGiftClicked");
+        string strTime = PlayerPrefs.GetString("dateGiftClicked");
 
         DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER = 0;
         if (strTime == "")

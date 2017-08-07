@@ -6,6 +6,17 @@ public class Rate : MonoBehaviour
     {
         Defs.Rate = this;
     }
+    
+    private void OnEnable()
+    {
+        GlobalEvents<OnBtnRateClick>.Happened += OnBtnRateClick;
+    }
+    
+    private void OnBtnRateClick(OnBtnRateClick obj)
+    {
+        RateUs();
+        GlobalEvents<OnBtnRateClick>.Happened -= OnBtnRateClick;
+    }
 
     public void RateUs()
     {

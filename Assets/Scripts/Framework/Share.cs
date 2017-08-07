@@ -8,6 +8,17 @@ public class Share : MonoBehaviour
     {
         Defs.ShareVoxel = this;
     }
+    
+    private void OnEnable()
+    {
+        GlobalEvents<OnBtnShareClick>.Happened += OnBtnShareClick;
+    }
+    
+    private void OnBtnShareClick(OnBtnShareClick obj)
+    {
+        ShareClick();
+        GlobalEvents<OnBtnShareClick>.Happened -= OnBtnShareClick;
+    }
 
     public void ShareClick()
     {
