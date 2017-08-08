@@ -1,14 +1,13 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Gift : MonoBehaviour
 {
-    private DateTime _giftNextDate;
-
-    private bool _isWaitGiftTime;
-
-    //public Text timeText;
     public GameObject coin;
+    public Text timeText;
+    private DateTime _giftNextDate;
+    private bool _isWaitGiftTime;
 
     private void Start()
     {
@@ -46,21 +45,28 @@ public class Gift : MonoBehaviour
         {
             //timeText.enabled = true;
             _isWaitGiftTime = true;
-            //timeText.text = _difference.Hours.ToString () + ":" + _difference.Minutes.ToString ();
+            timeText.text = _difference.Hours + ":" + _difference.Minutes;
         }
     }
 
     private void OnEnable()
     {
         GlobalEvents<OnGameOver>.Happened += IsGiftAvailable;
+        GlobalEvents<OnGiftTake>.Happened += OnGiftTake;
     }
 
     private void OnDisable()
     {
         GlobalEvents<OnGameOver>.Happened -= IsGiftAvailable;
+        GlobalEvents<OnGiftTake>.Happened -= OnGiftTake;
     }
 
     private void IsGiftAvailable(OnGameOver e)
+    {
+        UpdateTmer();
+    }
+
+    private void UpdateTmer()
     {
         if (_isWaitGiftTime)
         {
@@ -72,30 +78,46 @@ public class Gift : MonoBehaviour
                 GlobalEvents<OnGiftAvailable>.Call(new OnGiftAvailable {IsAvailable = true});
                 FlurryEventsManager.SendEvent("collect_prize_impression");
             }
-//			else {
-//				string _minutes = _difference.Minutes.ToString ();
-//				if (_difference.Minutes < 10) {
-//					_minutes = "0" + _minutes;
-//				}
-//				string _seconds = _difference.Seconds.ToString ();
-//				if (_difference.Seconds < 10) {
-//					_seconds = "0" + _seconds;
-//				}
-//				timeText.text = _minutes + ":" + _seconds;
-//			}
+            else {
+                string _minutes = _difference.Minutes.ToString ();
+                if (_difference.Minutes < 10) {
+                    _minutes = "0" + _minutes;
+                }
+                string _seconds = _difference.Seconds.ToString ();
+                if (_difference.Seconds < 10) {
+                    _seconds = "0" + _seconds;
+                }
+                timeText.text = _minutes + ":" + _seconds;
+            }
+        }
+    }
+
+    private void Update()
+    {
+        UpdateTmer();
+    }
+
+    private void OnGiftTake(OnGiftTake obj)
+    {
+        TakeAGift(obj.CoinsCount);
+        if (obj.IsResetTimer)
+        {
+            ResetTimer();
         }
     }
 
     public void add10Coins()
     {
         FlurryEventsManager.SendEvent("collect_prize");
+        TakeAGift(10);
 
-        for (var i = 0; i < 10; i++)
-        {
-            var _coin = Instantiate(coin, Camera.main.ScreenToWorldPoint(Vector3.zero), Quaternion.identity);
-            var coinScript = _coin.GetComponent<Coin>();
-            coinScript.MoveToEnd();
-        }
+        ResetTimer();
+
+        D.Log("Disable Button Clicks");
+    }
+
+    private void ResetTimer()
+    {
         //Save the current system time as a string in the player prefs class
         _giftNextDate = DateTime.UtcNow;
         DefsGame.BTN_GIFT_HIDE_DELAY = DefsGame.BTN_GIFT_HIDE_DELAY_ARR[DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER];
@@ -112,7 +134,15 @@ public class Gift : MonoBehaviour
         //giftButton.DisableButtonClicks();
 
         GlobalEvents<OnGiftAvailable>.Call(new OnGiftAvailable {IsAvailable = false});
+    }
 
-        D.Log("Disable Button Clicks");
+    private void TakeAGift(int count)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            var _coin = Instantiate(coin, Camera.main.ScreenToWorldPoint(Vector3.zero), Quaternion.identity);
+            var coinScript = _coin.GetComponent<Coin>();
+            coinScript.MoveToEnd();
+        }
     }
 }

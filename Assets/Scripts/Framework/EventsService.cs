@@ -90,9 +90,22 @@ public struct OnBtnShareClick
 public struct OnBtnGiftClick
 {
     public int CoinsCount;
+    public bool IsResetTimer;
 }
 
 // Нажали на кнопку "Купить рандомный скин"
 public struct OnBtnGetRandomSkinClick
+{
+}
+
+// Высыпать на экран горсть монет
+public struct OnGiftTake
+{
+    public int CoinsCount;
+    public bool IsResetTimer;
+}
+
+// Закончилась анимация Вручения подарка
+public struct OnGiftCollected
 {
 }

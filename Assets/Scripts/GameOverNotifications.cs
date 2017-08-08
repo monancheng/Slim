@@ -23,6 +23,7 @@ public class GameOverNotifications : MonoBehaviour
 
     private bool _isGotNewCharacter;
     private int _giftValue;
+    private bool isVisual;
 
     private void Start()
     {
@@ -31,49 +32,45 @@ public class GameOverNotifications : MonoBehaviour
 
     private void OnEnable()
     {
-        GlobalEvents<OnStartGame>.Happened += HideNotifications;
+        GlobalEvents<OnStartGame>.Happened += OnStartGame;
         GlobalEvents<OnShowNotifications>.Happened += ShowNotifications;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened += IsGiftAvailable;
         GlobalEvents<OnGotNewCharacter>.Happened += OnGotNewCharacter;
         GlobalEvents<OnBtnRateClick>.Happened += OnBtnRateClick;
+        GlobalEvents<OnGiftCollected>.Happened += OnGiftCollected;
     }
 
     private void OnDisable()
     {
-        GlobalEvents<OnStartGame>.Happened -= HideNotifications;
+        GlobalEvents<OnStartGame>.Happened -= OnStartGame;
         GlobalEvents<OnShowNotifications>.Happened -= ShowNotifications;
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened -= IsGiftAvailable;
         GlobalEvents<OnGotNewCharacter>.Happened -= OnGotNewCharacter;
         GlobalEvents<OnBtnRateClick>.Happened -= OnBtnRateClick;
+        GlobalEvents<OnGiftCollected>.Happened -= OnGiftCollected;
     }
     
     private void ShowNotifications(OnShowNotifications e)
     {
-        UIManager.ShowUiElement("ScreenGameOver");
         ++_showCounter;
         PlayerPrefs.SetInt("showCounterGlobal", ++_showCounterGlobal);
 
         float ran = Random.value;
         
         // Важность - Высокая
-        
-        if (DefsGame.CoinsCount >= 200) 
+
+        if (DefsGame.CoinsCount >= 200)
+        {
             _activeNamesList.Add("NotifyNewCharacter");
-        
+        }
+
         if (_isGiftAvailable
             /*||_activeNamesList.Count == 0 && Random.value < 0.5f
             ||_activeNamesList.Count == 1 && Random.value < 0.25f*/)
         {
-            _activeNamesList.Add("NotifyGift");
-            if (DefsGame.CoinsCount > 100 && DefsGame.CoinsCount < 155)
-                _giftValue = 180-DefsGame.CoinsCount;
-            else
-            {
-                if (ran < 0.5f) _giftValue = 45;
-                else _giftValue = 50;
-            }
+            AddNoifyGift();
         }
         
         // Важность - Средняя
@@ -107,23 +104,63 @@ public class GameOverNotifications : MonoBehaviour
         
         // Важность - Низкая
         
-        if (_activeNamesList.Count < 4 && (_activeNamesList.Count == 0 && ran > 0.7f
+        if (_giftValue == 0 && _activeNamesList.Count < 4 && (_activeNamesList.Count == 0 && ran > 0.7f
                                            || _activeNamesList.Count == 1 && ran > 0.75f
                                            || _activeNamesList.Count == 2 && ran > 0.80f))
         {
             _activeNamesList.Add("NotifyGiftWaiting");
         }
 
-        if (ran > 0.5f)
+        if (_activeNamesList.Count < 4 && (_activeNamesList.Count == 0 && ran > 0.7f
+                                              || _activeNamesList.Count == 1 && ran > 0.75f
+                                              || _activeNamesList.Count == 2 && ran > 0.80f)
+        && ran > 0.5f)
         {
-            _activeNamesList.Add("NotifyNextCharacter");
-            int coinsCount = DefsGame.CoinsCount;
-            if (DefsGame.CoinsCount > 200) coinsCount = 200;
-            int toNextSkin = 200 - coinsCount;
-            _nextCharacterText.text = toNextSkin.ToString();
+            AddNotifyNextSkin();
         }
 
+        // Перемешиваем элементы списка, чтобы они располагались рандомно по оси У
+        ShuffleItems();
         SetItemsPositions();
+        ShowItems();
+    }
+
+    private void ShuffleItems()
+    {
+        // Перемешиваем 10 раз
+        for (int n = 0; n < 10; n++)
+        for (int i = 0; i < _activeNamesList.Count; i++)
+        {
+            int j = Random.Range(0, _activeNamesList.Count-1);
+            if (j != i)
+            {
+                string str = _activeNamesList[i];
+                _activeNamesList[i] = _activeNamesList[j];
+                _activeNamesList[j] = str;
+            }
+        }
+    }
+
+    private void AddNoifyGift()
+    {
+        _activeNamesList.Add("NotifyGift");
+        if (DefsGame.CoinsCount > 100 && DefsGame.CoinsCount < 155)
+            _giftValue = 180-DefsGame.CoinsCount;
+        else
+        {
+            if (Random.value < 0.5f) _giftValue = 45;
+            else _giftValue = 50;
+        }
+    }
+    
+    private void AddNotifyNextSkin()
+    {
+        if (DefsGame.CoinsCount < 200)
+        {
+            _activeNamesList.Add("NotifyNextCharacter");
+            int toNextSkin = 200 - DefsGame.CoinsCount;
+            _nextCharacterText.text = toNextSkin.ToString();
+        }
     }
 
     private void SetItemsPositions()
@@ -137,9 +174,22 @@ public class GameOverNotifications : MonoBehaviour
             {
                 element.customStartAnchoredPosition = new Vector3(0f, startPos + i*HeightStep, 0f);
                 element.useCustomStartAnchoredPosition = true;
+            }
+        }
+    }
+
+    private void ShowItems()
+    {
+        UIManager.ShowUiElement("ScreenGameOver");
+        for (int i = 0; i < _activeNamesList.Count; i++)
+        {
+            var element = GetUIElement(_activeNamesList[i]);
+            if (element)
+            {
                 UIManager.ShowUiElement(_activeNamesList[i]);
             }
         }
+        isVisual = true;
     }
 
     private float CalcStartPosition(int notificationCounter)
@@ -157,9 +207,15 @@ public class GameOverNotifications : MonoBehaviour
         return null;
     }
 
-    private void HideNotifications(OnStartGame e)
+    private void HideAndRemoveNotifications()
     {
+        HideNotifications();
+        _activeNamesList.Clear();
         UIManager.HideUiElement("ScreenGameOver");
+    }
+
+    private void HideNotifications()
+    {
         foreach (string t in _activeNamesList)
         {
             var element = GetUIElement(t);
@@ -168,7 +224,12 @@ public class GameOverNotifications : MonoBehaviour
                 UIManager.HideUiElement(t);
             }
         }
-        _activeNamesList.Clear();
+        isVisual = false;
+    }
+
+    private void OnStartGame(OnStartGame e)
+    {
+        HideAndRemoveNotifications();
     }
 
     private void IsRewardedAvailable(OnRewardedAvailable e)
@@ -179,6 +240,27 @@ public class GameOverNotifications : MonoBehaviour
     private void IsGiftAvailable(OnGiftAvailable e)
     {
         _isGiftAvailable = e.IsAvailable;
+
+        if (!_isGiftAvailable || !isVisual) return;
+
+        AddNoifyGift();
+   
+        int idNotifyOld = _activeNamesList.IndexOf("NotifyGiftWaiting");
+        if (idNotifyOld != -1)
+        {
+            
+            var element = GetUIElement(_activeNamesList[idNotifyOld]);
+            UIManager.HideUiElement(_activeNamesList[idNotifyOld]);
+            var element2 = GetUIElement("NotifyGift");
+            if (element)
+            {
+                element2.customStartAnchoredPosition = element.customStartAnchoredPosition;
+                element2.useCustomStartAnchoredPosition = true;
+            }
+            _activeNamesList.RemoveAt(idNotifyOld);
+        }
+        
+        UIManager.ShowUiElement("NotifyGift");
     }
     
     private void OnGotNewCharacter(OnGotNewCharacter obj)
@@ -186,6 +268,11 @@ public class GameOverNotifications : MonoBehaviour
         _isGotNewCharacter = true;
     }
     
+    private void OnGiftCollected(OnGiftCollected obj)
+    {
+        SetItemsPositions();
+        ShowItems();
+    }
     
     //----------------------------------------------------
     // Touches
@@ -211,14 +298,25 @@ public class GameOverNotifications : MonoBehaviour
     
     public void BtnNewSkinClick()
     {
+        HideNotifications();
+        int id = _activeNamesList.IndexOf("NotifyNewCharacter"); 
+        if (id != -1) _activeNamesList.RemoveAt(id);
+
+        AddNotifyNextSkin();
+        
         GlobalEvents<OnBtnGetRandomSkinClick>.Call(new OnBtnGetRandomSkinClick());
-        UIManager.HideUiElement("NotifyNewCharacter");
     }
     
     public void BtnGiftClick()
     {
-        GlobalEvents<OnBtnGiftClick>.Call(new OnBtnGiftClick{CoinsCount = _giftValue});
-        UIManager.HideUiElement("NotifyGift");
+        HideNotifications();
+        int id = _activeNamesList.IndexOf("NotifyGift"); 
+        if (id != -1) _activeNamesList.RemoveAt(id);
+        
+        _activeNamesList.Add("NotifyGiftWaiting");
+            
+        GlobalEvents<OnBtnGiftClick>.Call(new OnBtnGiftClick{CoinsCount = _giftValue, IsResetTimer = true});
+        _giftValue = 0;
     }
     
     public void BtnRewardedClick()
