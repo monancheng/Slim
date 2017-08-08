@@ -26,14 +26,12 @@ public class Coin : MonoBehaviour
     {
         _isHideAnimation = isAnimation;
 
-        if (!_isHideAnimation) Destroy(gameObject);
+        if (!_isHideAnimation) Destroy(transform.parent.gameObject);
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if (!_isMoveToTarget) if (ParentObj) transform.position = ParentObj.transform.position;
-
         if (_isShowAnimation)
         {
             transform.localScale = new Vector3(transform.localScale.x - 0.2f, transform.localScale.y - 0.2f, 1f);
@@ -46,16 +44,13 @@ public class Coin : MonoBehaviour
         else if (_isHideAnimation)
         {
             transform.localScale = new Vector3(transform.localScale.x - 0.1f, transform.localScale.y - 0.1f, 1f);
-            if (transform.localScale.x <= 0f) Destroy(gameObject);
+            if (transform.localScale.x <= 0f) Destroy(transform.parent.gameObject);
         }
         else if (_isMoveToTarget)
         {
             if (transform.localScale.x >= 1)
                 transform.localScale = new Vector3(transform.localScale.x - 0.1f,
                     transform.localScale.y - 0.1f, 1f);
-
-            var newPos = Camera.main.ScreenToWorldPoint(DefsGame.Coins.img.transform.position);
-            _targetPos = new Vector3(newPos.x, newPos.y, transform.position.z);
 
             var ang = Mathf.Atan2(_targetPos.y - transform.position.y, _targetPos.x - transform.position.x);
 
@@ -78,29 +73,27 @@ public class Coin : MonoBehaviour
             transform.position = new Vector3(transform.position.x + _velocity * Mathf.Cos(_moveAngle),
                 transform.position.y + _velocity * Mathf.Sin(_moveAngle), 1f);
 
-            if (Vector2.Distance(transform.position, _targetPos) <= 0.45f)
+            if (Vector2.Distance(transform.position, _targetPos) <= 6.5f)
             {
                 _isMoveToTarget = false;
 
                 GameEvents.Send(OnAddCoinsVisual, 1);
-                Destroy(gameObject);
-                //DefsGame.btnBuyCoinsComponent.addOneCoinVisual();
-                //Defs.soundEngine.playSound(sndTouch);
+                Destroy(transform.parent.gameObject);
             }
         }
     }
 
     public void MoveToEnd()
     {
-//	    Vector3 newPos = Camera.main.ScreenToWorldPoint(DefsGame.Coins.img.transform.position);
-//	    _targetPos = new Vector3(newPos.x, newPos.y, gameObject.transform.position.z);
-        _velocity = 0.05f + Random.value * 0.05f;
+        transform.position = new Vector3(Screen.width*0.5f + Random.Range(-25, 25), Screen.height*0.5f + Random.Range(-25, 25), 0f);
+	    _targetPos = new Vector3(ParentObj.transform.position.x, ParentObj.transform.position.y, transform.position.z);
+        _velocity = 6.5f + Random.value * 6.5f;
         if (Random.value < 0.5f) _moveAngle = Random.value * 180f * Mathf.Deg2Rad;
         else _moveAngle = -Random.value * 180f * Mathf.Deg2Rad;
 
         _isAnglePlus = !(Random.value < 0.5f);
 
-        _addAngleCoeff = 5f;
+        _addAngleCoeff = 4f;
 
         _isMoveToTarget = true;
 

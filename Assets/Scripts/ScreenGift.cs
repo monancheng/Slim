@@ -52,7 +52,7 @@ public class ScreenGift : MonoBehaviour
 	
 	private void MakeAGiftRandomSkin()
 	{
-//		GlobalEvents<OnGiftTake>.Call(new OnGiftTake{CoinsCount = _coinsCount, IsResetTimer = _isResetTimer});
+		GlobalEvents<OnGiftTake>.Call(new OnGiftTake{CoinsCount = _coinsCount, IsResetTimer = _isResetTimer});
 		Invoke("HideGiftScreen", 2f);	
 	}
 	

@@ -30,6 +30,7 @@ public class Coins : MonoBehaviour
         CoinSensor.OnAddCoinsVisual += Coin_OnAddCoinsVisual;
         ScreenSkins.OnAddCoinsVisual += Coin_OnAddCoinsVisual;
         ScreenCoins.OnAddCoinsVisual += Coin_OnAddCoinsVisual;
+        Coin.OnAddCoinsVisual += Coin_OnAddCoinsVisual;
         //BillingManager.OnAddCoinsVisual += Coin_OnAddCoinsVisual;
         //ScreenMenu.OnAddCoins += Bubble_OnAddCoins;
     }
@@ -39,6 +40,7 @@ public class Coins : MonoBehaviour
         CoinSensor.OnAddCoinsVisual -= Coin_OnAddCoinsVisual;
         ScreenSkins.OnAddCoinsVisual -= Coin_OnAddCoinsVisual;
         ScreenCoins.OnAddCoinsVisual -= Coin_OnAddCoinsVisual;
+        Coin.OnAddCoinsVisual -= Coin_OnAddCoinsVisual;
         //BillingManager.OnAddCoinsVisual -= Coin_OnAddCoinsVisual;
         //ScreenMenu.OnAddCoins -= Bubble_OnAddCoins;
     }

@@ -22,7 +22,7 @@ public struct DefsGame
     public static int BTN_GIFT_HIDE_DELAY_COUNTER;
 
 //    public static readonly int[] BTN_GIFT_HIDE_DELAY_ARR = {1, 2, 5, 10, 15, 20, 25, 30, 60};
-    public static readonly int[] BTN_GIFT_HIDE_DELAY_ARR = {1, 1, 1, 1, 1, 1, 1, 1, 1};
+    public static readonly int[] BTN_GIFT_HIDE_DELAY_ARR = {1, 1};
 
 
     public static int CurrentScreen = 0;

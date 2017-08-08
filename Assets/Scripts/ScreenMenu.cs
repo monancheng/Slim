@@ -5,7 +5,6 @@ public class ScreenMenu : MonoBehaviour
 {
     [SerializeField] private GameObject coin;
     [SerializeField] private AudioClip sndBtnClick;
-    [SerializeField] private UIButton videoAdsButton;
 
     private bool _isBtnSettingsClicked;
     private bool _isButtonHiden;
@@ -22,7 +21,6 @@ public class ScreenMenu : MonoBehaviour
         ScreenGame.OnShowMenu += ScreenGame_OnShowMenu;
 
         GlobalEvents<OnStartGame>.Happened += ScreenGame_OnHideMenu;
-        GlobalEvents<OnGiveReward>.Happened += GetReward;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedVideoAvailable;
     }
 
@@ -30,7 +28,6 @@ public class ScreenMenu : MonoBehaviour
     {
         ScreenGame.OnShowMenu -= ScreenGame_OnShowMenu;
         GlobalEvents<OnStartGame>.Happened += ScreenGame_OnHideMenu;
-        GlobalEvents<OnGiveReward>.Happened -= GetReward;
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedVideoAvailable;
     }
 
@@ -148,26 +145,6 @@ public class ScreenMenu : MonoBehaviour
     {
         //PublishingService.Instance.ShowAppShelf();
         FlurryEventsManager.SendEvent("more_games");
-    }
-
-    private void GetReward(OnGiveReward e)
-    {
-        if (_isWaitReward)
-        {
-            _isWaitReward = false;
-            if (e.IsAvailable)
-            {
-                for (var i = 0; i < 25; i++)
-                {
-                    var _coin = Instantiate(coin,
-                        Camera.main.ScreenToWorldPoint(videoAdsButton.transform.position),
-                        Quaternion.identity);
-                    var coinScript = _coin.GetComponent<Coin>();
-                    coinScript.MoveToEnd();
-                }
-                FlurryEventsManager.SendEvent("RV_strawberries_complete", "start_screen", true, 25);
-            }
-        }
     }
 
     public void OnVideoAdsClicked()

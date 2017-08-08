@@ -1,10 +1,12 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class Gift : MonoBehaviour
 {
     public GameObject coin;
+    [SerializeField] private GameObject _coinIndicator;
     public Text timeText;
     private DateTime _giftNextDate;
     private bool _isWaitGiftTime;
@@ -140,8 +142,9 @@ public class Gift : MonoBehaviour
     {
         for (var i = 0; i < count; i++)
         {
-            var _coin = Instantiate(coin, Camera.main.ScreenToWorldPoint(Vector3.zero), Quaternion.identity);
-            var coinScript = _coin.GetComponent<Coin>();
+            var _coin = Instantiate(coin, Vector3.zero, Quaternion.identity);
+            var coinScript = _coin.GetComponentInChildren<Coin>();
+            coinScript.ParentObj = _coinIndicator;
             coinScript.MoveToEnd();
         }
     }
