@@ -73,7 +73,7 @@ public class Coin : MonoBehaviour
             transform.position = new Vector3(transform.position.x + _velocity * Mathf.Cos(_moveAngle),
                 transform.position.y + _velocity * Mathf.Sin(_moveAngle), 1f);
 
-            if (Vector2.Distance(transform.position, _targetPos) <= 6.5f)
+            if (Vector2.Distance(transform.position, _targetPos) <= 8.5f)
             {
                 _isMoveToTarget = false;
 
@@ -87,7 +87,7 @@ public class Coin : MonoBehaviour
     {
         transform.position = new Vector3(Screen.width*0.5f + Random.Range(-25, 25), Screen.height*0.5f + Random.Range(-25, 25), 0f);
 	    _targetPos = new Vector3(ParentObj.transform.position.x, ParentObj.transform.position.y, transform.position.z);
-        _velocity = 6.5f + Random.value * 6.5f;
+        _velocity = 8.5f + Random.value * 8.5f;
         if (Random.value < 0.5f) _moveAngle = Random.value * 180f * Mathf.Deg2Rad;
         else _moveAngle = -Random.value * 180f * Mathf.Deg2Rad;
 

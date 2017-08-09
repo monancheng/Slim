@@ -9,6 +9,10 @@ public struct OnStartGame
 {
 }
 
+public struct OnShowMenu
+{
+}
+
 // Игрок заработал очки
 public struct OnPointsAdd
 {
@@ -99,13 +103,30 @@ public struct OnBtnGetRandomSkinClick
 }
 
 // Высыпать на экран горсть монет
-public struct OnGiftTake
+public struct OnGiftShowCoinsAnimation
 {
     public int CoinsCount;
     public bool IsResetTimer;
 }
 
+// Показать на экран Скин, который игрок получает после нажатия на ленточку "Получить скин за 200 монет"
+public struct OnGiftShowRandomSkinAnimation
+{
+}
+
+// Показать на экран Скин, который игрок получает после нажатия на ленточку "Получить скин за 200 монет"
+public struct OnBuySkin
+{
+    public int Id;
+}
+
 // Закончилась анимация Вручения подарка
 public struct OnGiftCollected
 {
+}
+
+// Скрыть экран подарка
+public struct OnHideGiftScreen
+{
+    public int Type;
 }

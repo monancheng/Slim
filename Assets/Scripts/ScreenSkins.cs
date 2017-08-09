@@ -8,17 +8,7 @@ public class ScreenSkins : MonoBehaviour
     public AudioClip _buySkin;
     public AudioClip _chooseSkin;
     public GameObject haveNewSkin;
-    public GameObject skin10;
-    public GameObject skin11;
-    public GameObject skin12;
-    public GameObject skin2;
-    public GameObject skin3;
-    public GameObject skin4;
-    public GameObject skin5;
-    public GameObject skin6;
-    public GameObject skin7;
-    public GameObject skin8;
-    public GameObject skin9;
+    [SerializeField] private GameObject[] _skinBtns;
     public static event Action<int> OnAddCoinsVisual;
 
     private void Awake()
@@ -26,31 +16,33 @@ public class ScreenSkins : MonoBehaviour
         DefsGame.ScreenSkins = this;
     }
 
-    private void SetSkin(int _id)
+    private void OnEnable()
     {
-        FlurryEventsManager.SendEvent("candy_purchase_<" + _id + ">");
+        GlobalEvents<OnBuySkin>.Happened += OnBuySkin;
+    }
 
-        if (_id == DefsGame.CurrentFaceId)
+    private void OnBuySkin(OnBuySkin obj)
+    {
+        BuySkin(obj.Id);
+    }
+
+    private void SetSkin(int id)
+    {
+        FlurryEventsManager.SendEvent("candy_purchase_<" + id + ">");
+
+        if (id == DefsGame.CurrentFaceId)
             return;
 
-        if (DefsGame.FaceAvailable[_id] == 1)
+        if (DefsGame.FaceAvailable[id] == 1)
         {
-            DefsGame.CurrentFaceId = _id;
+            DefsGame.CurrentFaceId = id;
             PlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
             Defs.PlaySound(_chooseSkin);
 //            DefsGame.CarSimulator.Car.SetNewSkin(_id);
         }
         else if (DefsGame.CoinsCount >= 200/*DefsGame.FacePrice[_id - 1]*/)
         {
-            GameEvents.Send(OnAddCoinsVisual, -200);
-            DefsGame.FaceAvailable[_id] = 1;
-            DefsGame.CurrentFaceId = _id;
-            PlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
-            PlayerPrefs.SetInt("faceAvailable_" + _id, 1);
-//            DefsGame.CarSimulator.Car.SetNewSkin(_id);
-
-            ++DefsGame.QUEST_CHARACTERS_Counter;
-            PlayerPrefs.SetInt("QUEST_CHARACTERS_Counter", DefsGame.QUEST_CHARACTERS_Counter);
+            GlobalEvents<OnBuySkin>.Call(new OnBuySkin{Id = id});
 
             //DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_NEW_SKIN, 1);
 
@@ -59,7 +51,7 @@ public class ScreenSkins : MonoBehaviour
             ChooseColorForButtons();
             GlobalEvents<OnGotNewCharacter>.Call(new OnGotNewCharacter());
 
-            FlurryEventsManager.SendEvent("candy_purchase_completed_<" + _id + ">");
+            FlurryEventsManager.SendEvent("candy_purchase_completed_<" + id + ">");
         }
         else
         {
@@ -70,8 +62,22 @@ public class ScreenSkins : MonoBehaviour
         }
     }
 
+    private void BuySkin(int id)
+    {
+        GameEvents.Send(OnAddCoinsVisual, -200);
+        DefsGame.FaceAvailable[id] = 1;
+        DefsGame.CurrentFaceId = id;
+        PlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
+        PlayerPrefs.SetInt("faceAvailable_" + id, 1);
+//      DefsGame.CarSimulator.Car.SetNewSkin(_id);
+
+        ++DefsGame.QUEST_CHARACTERS_Counter;
+        PlayerPrefs.SetInt("QUEST_CHARACTERS_Counter", DefsGame.QUEST_CHARACTERS_Counter);
+    }
+
     private void ShowButtons()
     {
+        UIManager.ShowUiElement("ScreenSkins");
         UIManager.ShowUiElement("ScreenSkinsBtnBack");
         UIManager.ShowUiElement("BtnSkin1");
         UIManager.ShowUiElement("BtnSkin2");
@@ -89,6 +95,7 @@ public class ScreenSkins : MonoBehaviour
 
     private void HideButtons()
     {
+        UIManager.HideUiElement("ScreenSkins");
         UIManager.HideUiElement("ScreenSkinsBtnBack");
         UIManager.HideUiElement("BtnSkin1");
         UIManager.HideUiElement("BtnSkin2");
@@ -189,13 +196,13 @@ public class ScreenSkins : MonoBehaviour
         for (var i = 1; i < DefsGame.FaceAvailable.Length; i++)
             if (DefsGame.FaceAvailable[i] == 1)
             {
-                skin2.GetComponentInChildren<UIButton>().GetComponent<Image>().color = Color.white;
-                skin2.GetComponentInChildren<Text>().text = "";
+                _skinBtns[i-1].GetComponentInChildren<UIButton>().GetComponent<Image>().color = Color.white;
+                _skinBtns[i-1].GetComponentInChildren<Text>().text = "";
             }
             else
             {
-                skin2.GetComponentInChildren<UIButton>().GetComponent<Image>().color = Color.black;
-                skin2.GetComponentInChildren<Text>().text = "200";
+                _skinBtns[i-1].GetComponentInChildren<UIButton>().GetComponent<Image>().color = Color.black;
+                _skinBtns[i-1].GetComponentInChildren<Text>().text = "200";
             }
     }
 

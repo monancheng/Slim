@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class ScreenMenu : MonoBehaviour
 {
-    [SerializeField] private GameObject coin;
     [SerializeField] private AudioClip sndBtnClick;
 
     private bool _isBtnSettingsClicked;
@@ -21,14 +20,21 @@ public class ScreenMenu : MonoBehaviour
         ScreenGame.OnShowMenu += ScreenGame_OnShowMenu;
 
         GlobalEvents<OnStartGame>.Happened += ScreenGame_OnHideMenu;
+        GlobalEvents<OnShowMenu>.Happened += OnShowMenu;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedVideoAvailable;
     }
 
     private void OnDisable()
     {
         ScreenGame.OnShowMenu -= ScreenGame_OnShowMenu;
+        GlobalEvents<OnShowMenu>.Happened += OnShowMenu;
         GlobalEvents<OnStartGame>.Happened += ScreenGame_OnHideMenu;
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedVideoAvailable;
+    }
+
+    private void OnShowMenu(OnShowMenu obj)
+    {
+        ShowButtons();
     }
 
     private void IsRewardedVideoAvailable(OnRewardedAvailable e)

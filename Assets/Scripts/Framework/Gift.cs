@@ -54,13 +54,13 @@ public class Gift : MonoBehaviour
     private void OnEnable()
     {
         GlobalEvents<OnGameOver>.Happened += IsGiftAvailable;
-        GlobalEvents<OnGiftTake>.Happened += OnGiftTake;
+        GlobalEvents<OnGiftShowCoinsAnimation>.Happened += OnGiftTake;
     }
 
     private void OnDisable()
     {
         GlobalEvents<OnGameOver>.Happened -= IsGiftAvailable;
-        GlobalEvents<OnGiftTake>.Happened -= OnGiftTake;
+        GlobalEvents<OnGiftShowCoinsAnimation>.Happened -= OnGiftTake;
     }
 
     private void IsGiftAvailable(OnGameOver e)
@@ -99,7 +99,7 @@ public class Gift : MonoBehaviour
         UpdateTmer();
     }
 
-    private void OnGiftTake(OnGiftTake obj)
+    private void OnGiftTake(OnGiftShowCoinsAnimation obj)
     {
         TakeAGift(obj.CoinsCount);
         if (obj.IsResetTimer)
@@ -147,5 +147,11 @@ public class Gift : MonoBehaviour
             coinScript.ParentObj = _coinIndicator;
             coinScript.MoveToEnd();
         }
+        
+        Invoke("BackToGiftScreen", 1);
+    }
+
+    private void BackToGiftScreen() {
+        GlobalEvents<OnHideGiftScreen>.Call(new OnHideGiftScreen());
     }
 }

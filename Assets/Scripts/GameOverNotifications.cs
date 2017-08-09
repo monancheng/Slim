@@ -61,7 +61,7 @@ public class GameOverNotifications : MonoBehaviour
         
         // Важность - Высокая
 
-        if (DefsGame.CoinsCount >= 200)
+        if (DefsGame.CoinsCount >= 200 && DefsGame.QUEST_CHARACTERS_Counter < DefsGame.FaceAvailable.Length - 1)
         {
             _activeNamesList.Add("NotifyNewCharacter");
         }
@@ -153,12 +153,12 @@ public class GameOverNotifications : MonoBehaviour
         }
     }
     
-    private void AddNotifyNextSkin()
+    private void AddNotifyNextSkin(int spendMoneyCount = 0)
     {
-        if (DefsGame.CoinsCount < 200)
+        if (DefsGame.CoinsCount - spendMoneyCount < 200 && DefsGame.QUEST_CHARACTERS_Counter < DefsGame.FaceAvailable.Length - 1)
         {
             _activeNamesList.Add("NotifyNextCharacter");
-            int toNextSkin = 200 - DefsGame.CoinsCount;
+            int toNextSkin = 200 - DefsGame.CoinsCount-spendMoneyCount;
             _nextCharacterText.text = toNextSkin.ToString();
         }
     }
@@ -302,7 +302,7 @@ public class GameOverNotifications : MonoBehaviour
         int id = _activeNamesList.IndexOf("NotifyNewCharacter"); 
         if (id != -1) _activeNamesList.RemoveAt(id);
 
-        AddNotifyNextSkin();
+        AddNotifyNextSkin(200);
         
         GlobalEvents<OnBtnGetRandomSkinClick>.Call(new OnBtnGetRandomSkinClick());
     }

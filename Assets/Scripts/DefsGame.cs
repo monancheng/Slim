@@ -24,14 +24,12 @@ public struct DefsGame
 //    public static readonly int[] BTN_GIFT_HIDE_DELAY_ARR = {1, 2, 5, 10, 15, 20, 25, 30, 60};
     public static readonly int[] BTN_GIFT_HIDE_DELAY_ARR = {1, 1};
 
-
     public static int CurrentScreen = 0;
     public static int SCREEN_MENU = 0;
     public static int SCREEN_GAME = 1;
     public static int SCREEN_SKINS = 2;
     public static int SCREEN_IAPS = 3;
     public static int SCREEN_EXIT = 10;
-
 
     public static int IS_ACHIEVEMENT_FIRST_WIN;
     public static int IS_ACHIEVEMENT_NEW_SKIN;
@@ -52,14 +50,6 @@ public struct DefsGame
     public static int QUEST_BOMBS_Counter;
     public static int QUEST_MISS_Counter;
 
-    public const int BUBBLE_COLOR_ONE = 0;
-    public const int BUBBLE_COLOR_TWO = 1;
-    public const int BUBBLE_COLOR_THREE = 2;
-    public const int BUBBLE_COLOR_FOUR = 3;
-    public const int BUBBLE_COLOR_MULTI = 4;
-    public const int BUBBLE_COLOR_TIMER = 5;
-    public const int BUBBLE_COLOR_HEAVY = 6;
-
     public static int RateCounter;
     public static Coins Coins { get; set; }
     public static bool IsNeedToShowCoin = false;
@@ -73,12 +63,15 @@ public struct DefsGame
         GameBestScore = PlayerPrefs.GetInt("BestScore", 0);
         //gameBestScore = 0;
         CoinsCount = PlayerPrefs.GetInt("coinsCount", 0);
-        //coinsCount = 0;
+        CoinsCount = 201;
         RateCounter = PlayerPrefs.GetInt("rateCounter", 0);
 
         //loadRewardedClock();
         //loadGiftClock();
 
+        for (var i = 0; i < FaceAvailable.Length; i++)
+            PlayerPrefs.SetInt("faceAvailable_" + i, 0);
+        
         for (var i = 0; i < FaceAvailable.Length; i++)
             if (i == 0)
                 FaceAvailable[0] = 1;
