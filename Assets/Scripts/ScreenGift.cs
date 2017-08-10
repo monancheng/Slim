@@ -10,8 +10,6 @@ public class ScreenGift : MonoBehaviour
 	private bool isFirstTime;
 	
 	private float _centerPointY = 20f;
-	private const float ItemHeightHalf = 50f;
-	private const float HeightStep = 120f;
 
 	private void OnEnable()
 	{
@@ -29,29 +27,28 @@ public class ScreenGift : MonoBehaviour
 
 	private void OnHideGiftScreen(OnHideGiftScreen obj)
 	{
+		// Предлагаем Еще оди подарок
 		if (isFirstTime)
 		{
 			isFirstTime = false;
 			
-			UIManager.ShowUiElement("ScreenGiftBtnBack");
+			UIManager.ShowUiElement("ScreenGameOverBtnBack");
 			UIElement element = null;
 			if (_giftType == 1)
 			{
 				UIManager.ShowUiElement("NotifyGiftExtra");
 				element = GetUIElement("NotifyGiftExtra");
-				
 			}
 			else
 			if (_giftType == 2)
 			{
-				UIManager.ShowUiElement("NotifyOneMoreSkin");
-				element = GetUIElement("NotifyOneMoreSkin");
+				UIManager.ShowUiElement("NotifySkinExtra");
+				element = GetUIElement("NotifySkinExtra");
 			}
 			
-			float startPos = CalcStartPosition(1);
 			if (element)
 			{
-				element.customStartAnchoredPosition = new Vector3(0f, startPos + HeightStep, 0f);
+				element.customStartAnchoredPosition = new Vector3(0f, _centerPointY, 0f);
 				element.useCustomStartAnchoredPosition = true;
 			}
 			
@@ -61,11 +58,6 @@ public class ScreenGift : MonoBehaviour
 		UIManager.HideUiElement("ScreenGift");
 		GlobalEvents<OnGiftCollected>.Call(new OnGiftCollected());
 		GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
-	}
-	
-	private float CalcStartPosition(int notificationCounter)
-	{
-		return _centerPointY - notificationCounter * HeightStep * 0.5f + ItemHeightHalf;
 	}
 	
 	private UIElement GetUIElement(string elementName)
@@ -111,7 +103,6 @@ public class ScreenGift : MonoBehaviour
 		GlobalEvents<OnGiftShowCoinsAnimation>.Call(new OnGiftShowCoinsAnimation{CoinsCount = _coinsCount, IsResetTimer = _isResetTimer});
 	}
 	
-	
 	private void MakeAGiftRandomSkin()
 	{
 		GlobalEvents<OnGiftShowRandomSkinAnimation>.Call(new OnGiftShowRandomSkinAnimation());
@@ -119,6 +110,9 @@ public class ScreenGift : MonoBehaviour
 
 	public void BtnClose()
 	{
+		UIManager.HideUiElement("ScreenGameOverBtnBack");
+		UIManager.HideUiElement("NotifyGiftExtra");
+		UIManager.HideUiElement("NotifySkinExtra");
 		GlobalEvents<OnHideGiftScreen>.Call(new OnHideGiftScreen());
 	}
 }

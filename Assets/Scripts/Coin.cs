@@ -4,7 +4,7 @@ using Random = UnityEngine.Random;
 
 public class Coin : MonoBehaviour
 {
-    private const float VelocityMax = 0.45f;
+    private const float VelocityMax = 30.0f;
     private float _addAngleCoeff;
     private bool _isAnglePlus;
     private bool _isHideAnimation;
@@ -69,11 +69,11 @@ public class Coin : MonoBehaviour
 
             if (Mathf.Abs(_moveAngle - ang) < _addAngleCoeff * 1.5f * Mathf.Deg2Rad) _moveAngle = ang;
 
-            if (_velocity < VelocityMax) _velocity += 0.008f;
+            if (_velocity < VelocityMax) _velocity += 0.5f;
             transform.position = new Vector3(transform.position.x + _velocity * Mathf.Cos(_moveAngle),
                 transform.position.y + _velocity * Mathf.Sin(_moveAngle), 1f);
 
-            if (Vector2.Distance(transform.position, _targetPos) <= 8.5f)
+            if (Vector2.Distance(transform.position, _targetPos) <= VelocityMax)
             {
                 _isMoveToTarget = false;
 
@@ -87,7 +87,7 @@ public class Coin : MonoBehaviour
     {
         transform.position = new Vector3(Screen.width*0.5f + Random.Range(-25, 25), Screen.height*0.5f + Random.Range(-25, 25), 0f);
 	    _targetPos = new Vector3(ParentObj.transform.position.x, ParentObj.transform.position.y, transform.position.z);
-        _velocity = 8.5f + Random.value * 8.5f;
+        _velocity = 5.0f + Random.value * 5.0f;
         if (Random.value < 0.5f) _moveAngle = Random.value * 180f * Mathf.Deg2Rad;
         else _moveAngle = -Random.value * 180f * Mathf.Deg2Rad;
 

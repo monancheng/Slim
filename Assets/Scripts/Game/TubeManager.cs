@@ -210,7 +210,7 @@ public class TubeManager : MonoBehaviour
 
     private void Update()
     {
-        if (DefsGame.CurrentScreen == DefsGame.SCREEN_MENU
+        if (DefsGame.GameplayCounter == 1
             && InputController.IsTouchOnScreen(TouchPhase.Began))
         {
             DefsGame.ScreenGame.GameStart();

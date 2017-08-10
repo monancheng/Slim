@@ -30,6 +30,7 @@ public struct DefsGame
     public static int SCREEN_SKINS = 2;
     public static int SCREEN_IAPS = 3;
     public static int SCREEN_EXIT = 10;
+    public static int SCREEN_NOTIFICATIONS = 11;
 
     public static int IS_ACHIEVEMENT_FIRST_WIN;
     public static int IS_ACHIEVEMENT_NEW_SKIN;
@@ -95,6 +96,7 @@ public struct DefsGame
         QUEST_GOALS_Counter = PlayerPrefs.GetInt("QUEST_GOALS_Counter", 0);
         QUEST_THROW_Counter = PlayerPrefs.GetInt("QUEST_THROW_Counter", 0);
         QUEST_CHARACTERS_Counter = PlayerPrefs.GetInt("QUEST_CHARACTERS_Counter", 0);
+        QUEST_CHARACTERS_Counter = 0;
         QUEST_BOMBS_Counter = PlayerPrefs.GetInt("QUEST_BOMBS_Counter", 0);
         QUEST_MISS_Counter = PlayerPrefs.GetInt("QUEST_MISS_Counter", 0);
     }

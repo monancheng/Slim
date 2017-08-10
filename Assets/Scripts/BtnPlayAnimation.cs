@@ -13,15 +13,15 @@ public class BtnPlayAnimation : MonoBehaviour {
 
 	private void OnEnable()
 	{
-		ScreenGame.OnShowMenu += ScreenGame_OnShowMenu;
+		GlobalEvents<OnShowMenu>.Happened += OnShowMenu;
 	}
 
 	private void OnDisable()
 	{
-		ScreenGame.OnShowMenu -= ScreenGame_OnShowMenu;
+		GlobalEvents<OnShowMenu>.Happened += OnShowMenu;
 	}
-	
-	private void ScreenGame_OnShowMenu()
+
+	private void OnShowMenu(OnShowMenu obj)
 	{
 		_isAnimate = true;
 	}

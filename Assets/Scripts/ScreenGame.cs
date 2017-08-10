@@ -45,8 +45,6 @@ public class ScreenGame : MonoBehaviour
     public static event Action OnNewGame;
     private Vector3 _cameraStartPos;
 
-    public static event Action OnShowMenu;
-
     private void Awake()
     {
         DefsGame.ScreenGame = this;
@@ -302,7 +300,7 @@ public class ScreenGame : MonoBehaviour
                 HintCheck();
                 IsGameOver = false;
                 NextBackground();
-                GameEvents.Send(OnShowMenu);
+                GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
                 DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
 
                 Init();
@@ -435,7 +433,6 @@ public class ScreenGame : MonoBehaviour
         FlurryEventsManager.SendEvent("high_score_home");
     }
 
-
     public void RateClose()
     {
         UIManager.HideUiElement("ScreenRate");
@@ -519,12 +516,12 @@ public class ScreenGame : MonoBehaviour
             else if (DefsGame.CurrentScreen == DefsGame.SCREEN_SKINS)
             {
                 DefsGame.ScreenSkins.Hide();
-                GameEvents.Send(OnShowMenu);
+                GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
             }
             else if (DefsGame.CurrentScreen == DefsGame.SCREEN_IAPS)
             {
                 DefsGame.ScreenCoins.Hide();
-                GameEvents.Send(OnShowMenu);
+                GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
             }
     }
 

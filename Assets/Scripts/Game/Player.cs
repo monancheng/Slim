@@ -65,7 +65,13 @@ public class Player : MonoBehaviour
 
     private void GameOver(OnGameOver e)
     {
-        Invoke("Respown", 1f);
+        Invoke("RespownAndWait", 1f);
+    }
+
+    private void RespownAndWait()
+    {
+        Respown();
+        _isDontMove = true;
     }
 
     private void Respown()
@@ -92,6 +98,7 @@ public class Player : MonoBehaviour
         // Создаем туб
 //        GameEvents.Send(OnTubeCreate, _startRadius);
         // Даем ему команду двигаться
+        _isDontMove = false;
         GameEvents.Send(OnTubeMove);
     }
 

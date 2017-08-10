@@ -17,24 +17,39 @@ public class ScreenMenu : MonoBehaviour
 
     private void OnEnable()
     {
-        ScreenGame.OnShowMenu += ScreenGame_OnShowMenu;
-
         GlobalEvents<OnStartGame>.Happened += ScreenGame_OnHideMenu;
         GlobalEvents<OnShowMenu>.Happened += OnShowMenu;
+        GlobalEvents<OnHideMenu>.Happened += OnHideMenu;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedVideoAvailable;
     }
 
     private void OnDisable()
     {
-        ScreenGame.OnShowMenu -= ScreenGame_OnShowMenu;
-        GlobalEvents<OnShowMenu>.Happened += OnShowMenu;
-        GlobalEvents<OnStartGame>.Happened += ScreenGame_OnHideMenu;
+        GlobalEvents<OnShowMenu>.Happened -= OnShowMenu;
+        GlobalEvents<OnHideMenu>.Happened -= OnHideMenu;
+        GlobalEvents<OnStartGame>.Happened -= ScreenGame_OnHideMenu;
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedVideoAvailable;
     }
 
     private void OnShowMenu(OnShowMenu obj)
     {
+        UIManager.ShowUiElement("GameName");
+        UIManager.HideUiElement("LabelPoints");
         ShowButtons();
+    }
+    
+    private void OnHideMenu(OnHideMenu obj)
+    {
+        UIManager.HideUiElement("GameName");
+        UIManager.ShowUiElement("LabelPoints");
+        HideButtons();
+    }
+    
+    private void ScreenGame_OnHideMenu(OnStartGame obj)
+    {
+        UIManager.HideUiElement("GameName");
+        UIManager.ShowUiElement("LabelPoints");
+        HideButtons();
     }
 
     private void IsRewardedVideoAvailable(OnRewardedAvailable e)
@@ -52,20 +67,6 @@ public class ScreenMenu : MonoBehaviour
         {
             UIManager.HideUiElement("BtnVideoAds");
         }
-    }
-
-    private void ScreenGame_OnShowMenu()
-    {
-        UIManager.ShowUiElement("GameName");
-        UIManager.HideUiElement("LabelPoints");
-        ShowButtons();
-    }
-
-    private void ScreenGame_OnHideMenu(OnStartGame e)
-    {
-        UIManager.HideUiElement("GameName");
-        UIManager.ShowUiElement("LabelPoints");
-        HideButtons();
     }
 
     public void ShowButtons()

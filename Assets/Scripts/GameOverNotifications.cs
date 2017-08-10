@@ -32,10 +32,13 @@ public class GameOverNotifications : MonoBehaviour
 
     private void OnEnable()
     {
-        GlobalEvents<OnStartGame>.Happened += OnStartGame;
-        GlobalEvents<OnShowNotifications>.Happened += ShowNotifications;
+        // Глобальные
+        GlobalEvents<OnStartGame>.Happened += OnHideNotifications;
+        GlobalEvents<OnShowNotifications>.Happened += OnShowNotifications;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened += IsGiftAvailable;
+        
+        // Внутренние
         GlobalEvents<OnGotNewCharacter>.Happened += OnGotNewCharacter;
         GlobalEvents<OnBtnRateClick>.Happened += OnBtnRateClick;
         GlobalEvents<OnGiftCollected>.Happened += OnGiftCollected;
@@ -43,8 +46,8 @@ public class GameOverNotifications : MonoBehaviour
 
     private void OnDisable()
     {
-        GlobalEvents<OnStartGame>.Happened -= OnStartGame;
-        GlobalEvents<OnShowNotifications>.Happened -= ShowNotifications;
+        GlobalEvents<OnStartGame>.Happened -= OnHideNotifications;
+        GlobalEvents<OnShowNotifications>.Happened -= OnShowNotifications;
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened -= IsGiftAvailable;
         GlobalEvents<OnGotNewCharacter>.Happened -= OnGotNewCharacter;
@@ -52,8 +55,11 @@ public class GameOverNotifications : MonoBehaviour
         GlobalEvents<OnGiftCollected>.Happened -= OnGiftCollected;
     }
     
-    private void ShowNotifications(OnShowNotifications e)
+    private void OnShowNotifications(OnShowNotifications e)
     {
+
+        DefsGame.CurrentScreen = DefsGame.SCREEN_NOTIFICATIONS;
+            
         ++_showCounter;
         PlayerPrefs.SetInt("showCounterGlobal", ++_showCounterGlobal);
 
@@ -81,7 +87,7 @@ public class GameOverNotifications : MonoBehaviour
             _isGotNewCharacter = false;
         }
         
-        if (_activeNamesList.Count < 4 && (_showCounter == 3 || (_showCounter-3) % 5 == 0) && _isRewardedAvailable)
+        if (_activeNamesList.Count < 4 && (DefsGame.GameplayCounter == 3 || (DefsGame.GameplayCounter-3) % 5 == 0)/* && _isRewardedAvailable*/)
         {
             _activeNamesList.Add("NotifyRewarded");
         }
@@ -158,7 +164,7 @@ public class GameOverNotifications : MonoBehaviour
         if (DefsGame.CoinsCount - spendMoneyCount < 200 && DefsGame.QUEST_CHARACTERS_Counter < DefsGame.FaceAvailable.Length - 1)
         {
             _activeNamesList.Add("NotifyNextCharacter");
-            int toNextSkin = 200 - DefsGame.CoinsCount-spendMoneyCount;
+            int toNextSkin = 200 - (DefsGame.CoinsCount-spendMoneyCount);
             _nextCharacterText.text = toNextSkin.ToString();
         }
     }
@@ -227,7 +233,7 @@ public class GameOverNotifications : MonoBehaviour
         isVisual = false;
     }
 
-    private void OnStartGame(OnStartGame e)
+    private void OnHideNotifications(OnStartGame e)
     {
         HideAndRemoveNotifications();
     }
@@ -241,7 +247,7 @@ public class GameOverNotifications : MonoBehaviour
     {
         _isGiftAvailable = e.IsAvailable;
 
-        if (!_isGiftAvailable || !isVisual) return;
+        if (!_isGiftAvailable || !isVisual || _activeNamesList.IndexOf("NotifyGiftWaiting") == -1) return;
 
         AddNoifyGift();
    
@@ -272,6 +278,7 @@ public class GameOverNotifications : MonoBehaviour
     {
         SetItemsPositions();
         ShowItems();
+        DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
     }
     
     //----------------------------------------------------
@@ -305,6 +312,7 @@ public class GameOverNotifications : MonoBehaviour
         AddNotifyNextSkin(200);
         
         GlobalEvents<OnBtnGetRandomSkinClick>.Call(new OnBtnGetRandomSkinClick());
+        GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
     }
     
     public void BtnGiftClick()
@@ -317,6 +325,7 @@ public class GameOverNotifications : MonoBehaviour
             
         GlobalEvents<OnBtnGiftClick>.Call(new OnBtnGiftClick{CoinsCount = _giftValue, IsResetTimer = true});
         _giftValue = 0;
+        GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
     }
     
     public void BtnRewardedClick()
