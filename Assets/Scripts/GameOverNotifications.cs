@@ -37,6 +37,7 @@ public class GameOverNotifications : MonoBehaviour
         GlobalEvents<OnShowNotifications>.Happened += OnShowNotifications;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened += IsGiftAvailable;
+        GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
         
         // Внутренние
         GlobalEvents<OnGotNewCharacter>.Happened += OnGotNewCharacter;
@@ -50,6 +51,7 @@ public class GameOverNotifications : MonoBehaviour
         GlobalEvents<OnShowNotifications>.Happened -= OnShowNotifications;
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened -= IsGiftAvailable;
+        GlobalEvents<OnCoinsAdded>.Happened -= OnCoinsAdded;
         GlobalEvents<OnGotNewCharacter>.Happened -= OnGotNewCharacter;
         GlobalEvents<OnBtnRateClick>.Happened -= OnBtnRateClick;
         GlobalEvents<OnGiftCollected>.Happened -= OnGiftCollected;
@@ -69,7 +71,7 @@ public class GameOverNotifications : MonoBehaviour
 
         if (DefsGame.CoinsCount >= 200 && DefsGame.QUEST_CHARACTERS_Counter < DefsGame.FaceAvailable.Length - 1)
         {
-            _activeNamesList.Add("NotifyNewCharacter");
+            AddNotifyNewGift();
         }
 
         if (_isGiftAvailable
@@ -128,7 +130,12 @@ public class GameOverNotifications : MonoBehaviour
         // Перемешиваем элементы списка, чтобы они располагались рандомно по оси У
         ShuffleItems();
         SetItemsPositions();
-        ShowItems();
+        ShowNotifications();
+    }
+
+    private void AddNotifyNewGift()
+    {
+        _activeNamesList.Add("NotifyNewCharacter");
     }
 
     private void ShuffleItems()
@@ -164,8 +171,6 @@ public class GameOverNotifications : MonoBehaviour
         if (DefsGame.CoinsCount - spendMoneyCount < 200 && DefsGame.QUEST_CHARACTERS_Counter < DefsGame.FaceAvailable.Length - 1)
         {
             _activeNamesList.Add("NotifyNextCharacter");
-            int toNextSkin = 200 - (DefsGame.CoinsCount-spendMoneyCount);
-            _nextCharacterText.text = toNextSkin.ToString();
         }
     }
 
@@ -184,8 +189,14 @@ public class GameOverNotifications : MonoBehaviour
         }
     }
 
-    private void ShowItems()
+    public void ShowNotifications()
     {
+        if (_activeNamesList.Count == 0)
+        {
+            GlobalEvents<OnNoGameOverButtons>.Call(new OnNoGameOverButtons());
+            return;
+        } 
+        
         UIManager.ShowUiElement("ScreenGameOver");
         for (int i = 0; i < _activeNamesList.Count; i++)
         {
@@ -195,6 +206,7 @@ public class GameOverNotifications : MonoBehaviour
                 UIManager.ShowUiElement(_activeNamesList[i]);
             }
         }
+        
         isVisual = true;
     }
 
@@ -220,7 +232,7 @@ public class GameOverNotifications : MonoBehaviour
         UIManager.HideUiElement("ScreenGameOver");
     }
 
-    private void HideNotifications()
+    public void HideNotifications()
     {
         foreach (string t in _activeNamesList)
         {
@@ -269,6 +281,34 @@ public class GameOverNotifications : MonoBehaviour
         UIManager.ShowUiElement("NotifyGift");
     }
     
+    private void OnCoinsAdded(OnCoinsAdded obj)
+    {
+        int idNotifyOld = _activeNamesList.IndexOf("NotifyNextCharacter");
+        if (idNotifyOld != -1)
+        {
+            if (obj.Total >= 200)
+            {
+                AddNotifyNewGift();
+                var element = GetUIElement(_activeNamesList[idNotifyOld]);
+                UIManager.HideUiElement(_activeNamesList[idNotifyOld]);
+                var element2 = GetUIElement("NotifyNewCharacter");
+                if (element)
+                {
+                    element2.customStartAnchoredPosition = element.customStartAnchoredPosition;
+                    element2.useCustomStartAnchoredPosition = true;
+                }
+                _activeNamesList.RemoveAt(idNotifyOld);
+            }
+            else
+            {
+                int toNextSkin = 200 - obj.Total;
+                _nextCharacterText.text = toNextSkin.ToString();
+            }
+        }
+        
+        UIManager.ShowUiElement("NotifyNewCharacter");
+    }
+
     private void OnGotNewCharacter(OnGotNewCharacter obj)
     {
         _isGotNewCharacter = true;
@@ -277,7 +317,7 @@ public class GameOverNotifications : MonoBehaviour
     private void OnGiftCollected(OnGiftCollected obj)
     {
         SetItemsPositions();
-        ShowItems();
+        ShowNotifications();
         DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
     }
     

@@ -10,11 +10,13 @@ public class ScreenGift : MonoBehaviour
 	private bool isFirstTime;
 	
 	private float _centerPointY = 20f;
+	[SerializeField] private Object _gift;
 
 	private void OnEnable()
 	{
 		GlobalEvents<OnBtnGiftClick>.Happened += OnBtnGiftClick;
 		GlobalEvents<OnBtnGetRandomSkinClick>.Happened += OnBtnGetRandomSkinClick;
+		GlobalEvents<OnGiftAnimationDone>.Happened += OnGiftAnimationDone;
 		GlobalEvents<OnHideGiftScreen>.Happened += OnHideGiftScreen;
 	}
 
@@ -22,6 +24,7 @@ public class ScreenGift : MonoBehaviour
 	{
 		GlobalEvents<OnBtnGiftClick>.Happened -= OnBtnGiftClick;
 		GlobalEvents<OnBtnGetRandomSkinClick>.Happened -= OnBtnGetRandomSkinClick;
+		GlobalEvents<OnGiftAnimationDone>.Happened -= OnGiftAnimationDone;
 		GlobalEvents<OnHideGiftScreen>.Happened -= OnHideGiftScreen;
 	}
 
@@ -74,7 +77,8 @@ public class ScreenGift : MonoBehaviour
 	{
 		isFirstTime = true;
 		_giftType = 2;
-		ShowGiftAnimation();
+
+		CreateGiftAnimation();
 	}
 
 	private void OnBtnGiftClick(OnBtnGiftClick obj)
@@ -83,15 +87,16 @@ public class ScreenGift : MonoBehaviour
 		_coinsCount = obj.CoinsCount;
 		_isResetTimer = obj.IsResetTimer;
 		_giftType = 1;
-		ShowGiftAnimation();
-	}
 
-	private void ShowGiftAnimation()
+		CreateGiftAnimation();
+	}
+	
+	private void CreateGiftAnimation()
 	{
-		EndShowing();
+		Instantiate(_gift);
 	}
-
-	private void EndShowing()
+	
+	private void OnGiftAnimationDone(OnGiftAnimationDone obj)
 	{
 		UIManager.ShowUiElement("ScreenGift");
 		if (_giftType == 1) MakeAGift();

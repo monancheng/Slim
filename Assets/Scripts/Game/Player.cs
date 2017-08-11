@@ -2,7 +2,6 @@
 using PrimitivesPro.GameObjects;
 using PrimitivesPro.Primitives;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class Player : MonoBehaviour
 {
@@ -40,6 +39,9 @@ public class Player : MonoBehaviour
     private Vector3 _cameraStartPosition;
     private bool _isIncreaseSize;
 
+    [SerializeField] private Material[] _materials;
+    [SerializeField] private Renderer _renderer;
+
     private void Start()
     {
         _cameraStartPosition = Camera.main.transform.position;
@@ -61,6 +63,12 @@ public class Player : MonoBehaviour
         BonusIncrease.OnBonusGrow += OnGrow;
         GlobalEvents<OnStartGame>.Happened += StartGame;
         GlobalEvents<OnGameOver>.Happened += GameOver;
+        GlobalEvents<OnChangeSkin>.Happened += OnChangeSkin;
+    }
+
+    private void OnChangeSkin(OnChangeSkin obj)
+    {
+        _renderer.material = _materials[obj.Id];
     }
 
     private void GameOver(OnGameOver e)
@@ -77,7 +85,7 @@ public class Player : MonoBehaviour
     private void Respown()
     {
         transform.position = _startPosition;
-
+        Camera.main.transform.position = _cameraStartPosition;
         _currentAngle = Mathf.Atan2(CirclePositionY - transform.position.y, transform.position.x) * Mathf.Rad2Deg;
 
 //        _comboCounter = 0;
@@ -99,6 +107,7 @@ public class Player : MonoBehaviour
 //        GameEvents.Send(OnTubeCreate, _startRadius);
         // Даем ему команду двигаться
         _isDontMove = false;
+        _startCursorPoint = Vector3.zero;
         GameEvents.Send(OnTubeMove);
     }
 
@@ -217,10 +226,12 @@ public class Player : MonoBehaviour
 
     private void ChangeSize()
     {
-        _script.GenerateGeometry(_currentRadius, _height, _sides, 1,
-            NormalsType.Vertex,
-            PivotPosition.Center);
-        _script.FitCollider();
+//        _script.GenerateGeometry(_currentRadius, _height, _sides, 1,
+//            NormalsType.Vertex,
+//            PivotPosition.Center);
+//        _script.FitCollider();
+        Transform t = GetComponentInChildren<Transform>();
+        t.localScale = new Vector3(_currentRadius / _startRadius,t.localScale.y, _currentRadius / _startRadius);
     }
 
     private void CreateCutTube(float cutSize)
@@ -258,15 +269,18 @@ public class Player : MonoBehaviour
 
         if (InputController.IsTouchOnScreen(TouchPhase.Moved))
         {
+            if (_startCursorPoint == Vector3.zero) _startCursorPoint = Input.mousePosition;
+            
             Vector2 cursorPosition = Input.mousePosition;
             var newX = (_startCursorPoint.x - cursorPosition.x) / 10f;
             _currentAngle += newX;
             float xCoeff = _startDistance * Mathf.Cos(_currentAngle * Mathf.Deg2Rad);
             float yCoeff = _startDistance * Mathf.Sin(_currentAngle * Mathf.Deg2Rad);
+            
             transform.position = new Vector3(xCoeff,
                 CirclePositionY - yCoeff, transform.position.z);
             
-            Camera.main.transform.position = new Vector3(_cameraStartPosition.x + xCoeff*0.1f, _cameraStartPosition.y, _cameraStartPosition.z);
+            Camera.main.transform.position = new Vector3(_cameraStartPosition.x + xCoeff*0.05f, _cameraStartPosition.y, _cameraStartPosition.z);
             _startCursorPoint = cursorPosition;
         }
     }

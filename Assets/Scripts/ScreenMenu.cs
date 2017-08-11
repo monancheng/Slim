@@ -21,6 +21,14 @@ public class ScreenMenu : MonoBehaviour
         GlobalEvents<OnShowMenu>.Happened += OnShowMenu;
         GlobalEvents<OnHideMenu>.Happened += OnHideMenu;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedVideoAvailable;
+        GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
+    }
+
+    private void OnCoinsAdded(OnCoinsAdded obj)
+    {
+            if (DefsGame.ScreenSkins.CheckAvailableSkinBool()) UIManager.ShowUiElement("BtnHaveNewSkin");
+            else
+                UIManager.HideUiElement("BtnHaveNewSkin");
     }
 
     private void OnDisable()

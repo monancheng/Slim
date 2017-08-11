@@ -86,6 +86,7 @@ public class Coins : MonoBehaviour
         _pointsCount += count;
         DefsGame.CoinsCount += count;
         PlayerPrefs.SetInt("coinsCount", DefsGame.CoinsCount);
+        GlobalEvents<OnCoinsAdded>.Call(new OnCoinsAdded{Total = DefsGame.CoinsCount});
     }
 
     private void AddPointVisual(int value)

@@ -18,7 +18,6 @@ public class BonusIncrease : MonoBehaviour
     [SerializeField] private AudioClip[] SoundsGrow;
 
     [HideInInspector] public bool IsVisible;
-    public static event Action<int> OnAddCoinsVisual;
 
     private void Awake()
     {

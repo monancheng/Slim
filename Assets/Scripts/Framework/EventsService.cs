@@ -66,6 +66,12 @@ public struct OnGiftAvailable
     public bool IsAvailable;
 }
 
+// Добавили монеток
+public struct OnCoinsAdded
+{
+    public int Total;
+}
+
 //----------
 // NOTIFICATIONS
 //----------
@@ -124,6 +130,12 @@ public struct OnBuySkin
     public int Id;
 }
 
+// Изменяем Скин
+public struct OnChangeSkin
+{
+    public int Id;
+}
+
 // Закончилась анимация Вручения подарка
 public struct OnGiftCollected
 {
@@ -133,4 +145,14 @@ public struct OnGiftCollected
 public struct OnHideGiftScreen
 {
     public int Type;
+}
+
+// Закончили проигрывание анимации подарка
+public struct OnGiftAnimationDone
+{
+}
+
+// На финишном эране нет кнопок для показа
+public struct OnNoGameOverButtons
+{
 }

@@ -43,7 +43,7 @@ public class ScreenGame : MonoBehaviour
     public GameObject screenAnimationObject;
 
     public static event Action OnNewGame;
-    private Vector3 _cameraStartPos;
+//    private Vector3 _cameraStartPos;
 
     private void Awake()
     {
@@ -73,6 +73,8 @@ public class ScreenGame : MonoBehaviour
         _sndLose = Resources.Load<AudioClip>("snd/GUI/fail");
         _sndGrab = Resources.Load<AudioClip>("snd/grab");
         _sndClose = Resources.Load<AudioClip>("snd/button");
+        
+//        _cameraStartPos = Camera.main.transform.position;
     }
 
     private void Init()
@@ -274,14 +276,14 @@ public class ScreenGame : MonoBehaviour
                     _screenAnimation.SetAutoHide(true);
 
                     _state = 4;
-		            _cameraStartPos = Camera.main.transform.position;
+		            
                 }
                 break;
             case 4:
                 if (!_screenAnimation.isActiveAndEnabled)
                 {
                     _state = 5;
-	                Camera.main.transform.position = new Vector3(_cameraStartPos.x, _cameraStartPos.y, _cameraStartPos.z);
+//                    Camera.main.transform.position = _cameraStartPos;
                     EndCurrentGame();
                 }
                 break;

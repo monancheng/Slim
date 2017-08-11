@@ -34,6 +34,7 @@ public class TubeManager : MonoBehaviour
     private readonly List<MyTube> _itemList = new List<MyTube>();
     private int _coinCounter;
     private int _increaseCounter;
+    private bool _isFingerStart;
 
     private void Start()
     {
@@ -51,6 +52,12 @@ public class TubeManager : MonoBehaviour
         Player.OnTubeGetBonusTube += OnTubeGetBonusTube;
         GlobalEvents<OnStartGame>.Happened += StartGame;
         GlobalEvents<OnGameOver>.Happened += OnGameOver;
+        GlobalEvents<OnNoGameOverButtons>.Happened += OnNoGameOverButtons;
+    }
+
+    private void OnNoGameOverButtons(OnNoGameOverButtons obj)
+    {
+        _isFingerStart = true;
     }
 
     private void RemoveItem(int id)
@@ -210,10 +217,13 @@ public class TubeManager : MonoBehaviour
 
     private void Update()
     {
-        if (DefsGame.GameplayCounter == 1
-            && InputController.IsTouchOnScreen(TouchPhase.Began))
+        if ((DefsGame.GameplayCounter == 1||_isFingerStart)
+            && (DefsGame.CurrentScreen == DefsGame.SCREEN_MENU || DefsGame.CurrentScreen == DefsGame.SCREEN_NOTIFICATIONS)
+            && InputController.IsTouchOnScreen(TouchPhase.Began)
+            && InputController.GetPosition().y > 220)
         {
             DefsGame.ScreenGame.GameStart();
+            _isFingerStart = false;
         }
     }
 }

@@ -19,11 +19,18 @@ public class ScreenSkins : MonoBehaviour
     private void OnEnable()
     {
         GlobalEvents<OnBuySkin>.Happened += OnBuySkin;
+        GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
+    }
+
+    private void OnCoinsAdded(OnCoinsAdded obj)
+    {
+        CheckAvailableSkinBool();
     }
 
     private void OnBuySkin(OnBuySkin obj)
     {
         BuySkin(obj.Id);
+        GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = obj.Id});
     }
 
     private void SetSkin(int id)
@@ -36,6 +43,7 @@ public class ScreenSkins : MonoBehaviour
         if (DefsGame.FaceAvailable[id] == 1)
         {
             DefsGame.CurrentFaceId = id;
+            GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = id});
             PlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
             Defs.PlaySound(_chooseSkin);
 //            DefsGame.CarSimulator.Car.SetNewSkin(_id);
