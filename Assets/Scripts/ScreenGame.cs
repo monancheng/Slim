@@ -1,4 +1,5 @@
 ﻿using System;
+using AppAdvisory.VSGIF;
 using DoozyUI;
 using UnityEngine;
 
@@ -147,6 +148,7 @@ public class ScreenGame : MonoBehaviour
     {
         GlobalEvents<OnStartGame>.Call(new OnStartGame());
         Defs.PlaySound(_gameStart);
+        Record.DORec();
     }
     
     private void OnGameOver(OnGameOver e)
@@ -154,6 +156,8 @@ public class ScreenGame : MonoBehaviour
         if (IsGameOver)
             return;
 
+        Record.DORec();
+        Record.DOSave();
         Defs.PlaySound(_sndLose);
 
         if (DefsGame.IS_ACHIEVEMENT_MISS_CLICK == 0)
