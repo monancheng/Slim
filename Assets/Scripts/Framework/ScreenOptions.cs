@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [ExecuteInEditMode]
-public class ScreenSettings : MonoBehaviour
+public class ScreenOptions : MonoBehaviour
 {
     public int FrameRate = 60;
     public float GameHeight = 9f;

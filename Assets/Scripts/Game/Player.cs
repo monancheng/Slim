@@ -1,4 +1,5 @@
 ﻿using System;
+using DG.Tweening;
 using PrimitivesPro.GameObjects;
 using PrimitivesPro.Primitives;
 using UnityEngine;
@@ -41,6 +42,10 @@ public class Player : MonoBehaviour
 
     [SerializeField] private Material[] _materials;
     [SerializeField] private Renderer _renderer;
+    [SerializeField] private Mesh[] _meshes;
+    [SerializeField] private MeshFilter _mesh;
+    [SerializeField] private Transform _modelTransform;
+    
 
     private void Start()
     {
@@ -69,6 +74,7 @@ public class Player : MonoBehaviour
     private void OnChangeSkin(OnChangeSkin obj)
     {
         _renderer.material = _materials[obj.Id];
+        _mesh.mesh = _meshes[obj.Id];
     }
 
     private void GameOver(OnGameOver e)
@@ -256,7 +262,7 @@ public class Player : MonoBehaviour
             return;
         }
 
-        transform.Rotate(Vector3.up, -1f);
+//        transform.Rotate(Vector3.up, -1f);
 
         if (_isDontMove)
         {

@@ -64,7 +64,7 @@ public struct DefsGame
         GameBestScore = PlayerPrefs.GetInt("BestScore", 0);
         //gameBestScore = 0;
         CoinsCount = PlayerPrefs.GetInt("coinsCount", 0);
-        CoinsCount = 180;
+        CoinsCount = 401;
         RateCounter = PlayerPrefs.GetInt("rateCounter", 0);
 
         //loadRewardedClock();

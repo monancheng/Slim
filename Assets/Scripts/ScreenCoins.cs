@@ -37,10 +37,10 @@ public class ScreenCoins : MonoBehaviour
             UIManager.ShowUiElement("ScreenCoinsBtnVideo");
             FlurryEventsManager.SendEvent("RV_strawberries_impression", "shop");
         }
-        if (MyAds.noAds < 1) UIManager.ShowUiElement("ScreenCoinsBtnNoAds");
-#if UNITY_IPHONE
-        UIManager.ShowUiElement("ScreenCoinsBtnRestore");
-#endif
+//        if (MyAds.noAds < 1) UIManager.ShowUiElement("ScreenCoinsBtnNoAds");
+//#if UNITY_IPHONE
+//        UIManager.ShowUiElement("ScreenCoinsBtnRestore");
+//#endif
     }
 
     public void HideButtons()
@@ -49,8 +49,8 @@ public class ScreenCoins : MonoBehaviour
         UIManager.HideUiElement("BtnTier1");
         UIManager.HideUiElement("BtnTier2");
         UIManager.HideUiElement("ScreenCoinsBtnVideo");
-        UIManager.HideUiElement("ScreenCoinsBtnNoAds");
-        UIManager.HideUiElement("ScreenCoinsBtnRestore");
+//        UIManager.HideUiElement("ScreenCoinsBtnNoAds");
+//        UIManager.HideUiElement("ScreenCoinsBtnRestore");
     }
 
     private void IsRewardedVideoAvailable(OnRewardedAvailable e)
