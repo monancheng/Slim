@@ -284,6 +284,7 @@ public class GameOverNotifications : MonoBehaviour
     private void OnCoinsAdded(OnCoinsAdded obj)
     {
         int idNotifyOld = _activeNamesList.IndexOf("NotifyNextCharacter");
+
         if (idNotifyOld != -1)
         {
             if (obj.Total >= 200)
@@ -298,15 +299,13 @@ public class GameOverNotifications : MonoBehaviour
                     element2.useCustomStartAnchoredPosition = true;
                 }
                 _activeNamesList.RemoveAt(idNotifyOld);
-            }
-            else
+                UIManager.ShowUiElement("NotifyNewCharacter");
+            } else 
             {
                 int toNextSkin = 200 - obj.Total;
                 _nextCharacterText.text = toNextSkin.ToString();
             }
         }
-        
-        UIManager.ShowUiElement("NotifyNewCharacter");
     }
 
     private void OnGotNewCharacter(OnGotNewCharacter obj)
