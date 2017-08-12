@@ -59,6 +59,8 @@ public class Player : MonoBehaviour
 
         Respown();
 
+        _modelTransform.DORotate(new Vector3(0, 0, 20f), 1, RotateMode.LocalAxisAdd).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
+
         _startDistance = Vector3.Distance(new Vector3(0f, CirclePositionY, transform.position.z), transform.position);
     }
 
