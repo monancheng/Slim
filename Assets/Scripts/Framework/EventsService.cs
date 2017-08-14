@@ -100,6 +100,11 @@ public struct OnBtnShareClick
 {
 }
 
+// Нажали на кнопку "Поделиться Gif"
+public struct OnBtnShareGifClick
+{
+}
+
 // Нажали на кнопку "Получить подарок"
 public struct OnBtnGiftClick
 {
@@ -141,6 +146,12 @@ public struct OnGiftCollected
 {
 }
 
+
+// Закончилась анимация Вручения подарка
+public struct OnGifShared
+{
+}
+
 // Скрыть экран подарка
 public struct OnHideGiftScreen
 {
@@ -154,5 +165,21 @@ public struct OnGiftAnimationDone
 
 // На финишном эране нет кнопок для показа
 public struct OnNoGameOverButtons
+{
+}
+
+//--------------------------------------------------------
+//							GIF
+//--------------------------------------------------------
+
+// На финишном эране нет кнопок для показа
+public struct OnGifSetName
+{
+	public string FilePathWithName;
+}
+
+
+// На финишном эране нет кнопок для показа
+public struct OnGifSaved
 {
 }

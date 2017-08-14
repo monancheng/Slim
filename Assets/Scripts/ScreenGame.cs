@@ -125,6 +125,8 @@ public class ScreenGame : MonoBehaviour
         GlobalEvents<OnStartGame>.Happened += OnStartGame;
         GlobalEvents<OnPointsAdd>.Happened += OnAddPoints;
         GlobalEvents<OnGiveReward>.Happened += GetReward;
+		GlobalEvents<OnGifSaved>.Happened += OnGifSaved;
+		Record.OnSavedGIFEvent += OnSavedGIFEvent;
     }
 
     private void OnDisable()
@@ -135,6 +137,18 @@ public class ScreenGame : MonoBehaviour
         GlobalEvents<OnPointsAdd>.Happened -= OnAddPoints;
         GlobalEvents<OnGiveReward>.Happened -= GetReward;
     }
+
+	void OnSavedGIFEvent (SaveState saveState)
+	{
+		if(saveState == SaveState.Done)
+		{
+			
+		}
+	}
+
+	private void OnGifSaved(OnGifSaved obj) {
+		
+	}
 
     private void OnAddPoints(OnPointsAdd e)
     {
@@ -148,7 +162,7 @@ public class ScreenGame : MonoBehaviour
     {
         GlobalEvents<OnStartGame>.Call(new OnStartGame());
         Defs.PlaySound(_gameStart);
-        Record.DORec();
+//        Record.DORec();
     }
     
     private void OnGameOver(OnGameOver e)
@@ -156,8 +170,8 @@ public class ScreenGame : MonoBehaviour
         if (IsGameOver)
             return;
 
-        Record.DORec();
-        Record.DOSave();
+
+//        Record.DOSave();
         Defs.PlaySound(_sndLose);
 
         if (DefsGame.IS_ACHIEVEMENT_MISS_CLICK == 0)

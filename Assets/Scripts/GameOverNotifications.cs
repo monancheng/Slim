@@ -3,6 +3,7 @@ using DoozyUI;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+using AppAdvisory.VSGIF;
 
 public class GameOverNotifications : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class GameOverNotifications : MonoBehaviour
     private int _showCounter;
     private int _showCounterGlobal;
     
-    private int shareRewardValue;
+    private int _shareRewardValue;
 
     private bool _isGotNewCharacter;
     private int _giftValue;
@@ -43,6 +44,8 @@ public class GameOverNotifications : MonoBehaviour
         GlobalEvents<OnGotNewCharacter>.Happened += OnGotNewCharacter;
         GlobalEvents<OnBtnRateClick>.Happened += OnBtnRateClick;
         GlobalEvents<OnGiftCollected>.Happened += OnGiftCollected;
+		GlobalEvents<OnGifShared>.Happened += OnGifShared;
+//		Record.OnShareGIFEvent += OnShareGIFEvent;
     }
 
     private void OnDisable()
@@ -100,14 +103,15 @@ public class GameOverNotifications : MonoBehaviour
                                            || _activeNamesList.Count == 1 && ran < 0.25f))
         {
             _activeNamesList.Add("NotifyShare");
+			UIManager.ShowUiElement ("ScreenGameOverImageShareGif");
             if (DefsGame.CoinsCount > 100 && DefsGame.CoinsCount < 155)
-                shareRewardValue = 180-DefsGame.CoinsCount;
+				_shareRewardValue = 180-DefsGame.CoinsCount;
             else
             {
-                if (ran < 0.5f) shareRewardValue = 45;
-                else shareRewardValue = 50;
+				if (ran < 0.5f) _shareRewardValue = 25;
+				else _shareRewardValue = 30;
             }
-            _shareText.text = shareRewardValue.ToString();
+			_shareText.text = _shareRewardValue.ToString();
         }
         
         // Важность - Низкая
@@ -229,6 +233,7 @@ public class GameOverNotifications : MonoBehaviour
     {
         HideNotifications();
         _activeNamesList.Clear();
+
         UIManager.HideUiElement("ScreenGameOver");
     }
 
@@ -243,6 +248,9 @@ public class GameOverNotifications : MonoBehaviour
             }
         }
         isVisual = false;
+
+		// TEMP
+		UIManager.HideUiElement ("ScreenGameOverImageShareGif");
     }
 
     private void OnHideNotifications(OnStartGame e)
@@ -319,6 +327,25 @@ public class GameOverNotifications : MonoBehaviour
         ShowNotifications();
         DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
     }
+
+//	private void OnShareGIFEvent ()
+	private void OnGifShared(OnGifShared obj)
+	{
+		int id = _activeNamesList.IndexOf("NotifyShare"); 
+		if (id != -1) {
+			_activeNamesList.RemoveAt (id);
+
+//			Record.DOReset ();
+
+			GlobalEvents<OnBtnGiftClick>.Call (new OnBtnGiftClick{ CoinsCount = _shareRewardValue, IsResetTimer = false });
+			_shareRewardValue = 0;
+
+			HideNotifications ();
+
+			UIManager.HideUiElement ("NotifyShare");
+			GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
+		}
+	}
     
     //----------------------------------------------------
     // Touches
@@ -338,8 +365,7 @@ public class GameOverNotifications : MonoBehaviour
     
     public void BtnShareClick()
     {
-        GlobalEvents<OnBtnShareClick>.Call(new OnBtnShareClick());
-        UIManager.HideUiElement("NotifyShare");
+		
     }
     
     public void BtnNewSkinClick()

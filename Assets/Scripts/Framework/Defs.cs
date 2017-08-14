@@ -17,7 +17,7 @@ public struct Defs
     public static void PlaySound(AudioClip audioClip, float volume = 1f)
     {
         AudioSource.volume = volume * AudioListener.volume;
-        if (AudioSource.volume > 0f) AudioSource.PlayOneShot(audioClip);
+		if (AudioSource.volume > 0f) AudioSource.PlayOneShot(audioClip);
     }
 
     public static void MuteSounds(bool flag)

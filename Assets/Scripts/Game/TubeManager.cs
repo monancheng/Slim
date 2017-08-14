@@ -10,7 +10,8 @@ public class TubeManager : MonoBehaviour
     [HideInInspector] public const float Height = 3.0f;
     [HideInInspector] public static float CurrentSpeed = StartSpeed;
     public static event Action OnCreateCoin;
-    public static event Action OnCreateBonusIncrease;
+	public static event Action OnCreateBonusIncrease;
+	public static event Action OnCreateChar;
     public static float RotateSpeed = 1f;
 
     private const int Sides = 32;
@@ -87,6 +88,7 @@ public class TubeManager : MonoBehaviour
     private void StartGame(OnStartGame obj)
     {
         CurrentSpeed = StartSpeed;
+		_coinCounter = 0;
     }
 
     private void CreateTubeStart()
@@ -165,16 +167,26 @@ public class TubeManager : MonoBehaviour
             }
         }
 
-        if (!isBonusCreated)
-        {
-            ++_coinCounter;
-            if (_coinCounter >= 5 && Random.value > 0.5f)
-            {
-                GameEvents.Send(OnCreateCoin);
-                isBonusCreated = true;
-                _coinCounter = 0;
-            }
-        }
+		++_coinCounter;
+
+		if (!isBonusCreated) {
+			
+			if (_coinCounter % 5 == 0) {
+				if (Random.value > 0.5f) {
+					GameEvents.Send (OnCreateCoin);
+					isBonusCreated = true;
+				}
+			}
+		}
+			
+		if (!isBonusCreated) {
+			if (_coinCounter % 7 == 0) {
+				if (Random.value > 0.5f) {
+					GameEvents.Send (OnCreateChar);
+					isBonusCreated = true;
+				}
+			}
+		}
     }
 
     private void CreateTube(float radius, float outerRadius, Color color, float posY = 600f, bool isIncreaseSize = false)
