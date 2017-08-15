@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ItemBonus : MonoBehaviour {
-	[HideInInspector] public bool IsVisible;
+	protected bool IsVisible;
 
 	protected Collider _collider;
 	protected float _currentAngle;
@@ -22,12 +22,12 @@ public class ItemBonus : MonoBehaviour {
 		Hide(false);
 	}
 
-	protected void OnCreate()
+	virtual protected void OnCreate()
 	{
 		_isTimeToCreate = true;
 	}
 
-	protected void OnCanSpawnBonus()
+	virtual protected void OnCanSpawn()
 	{
 		if (!IsVisible && _isTimeToCreate)
 			Show();
@@ -100,20 +100,7 @@ public class ItemBonus : MonoBehaviour {
 		}else
 			if (_isHideAnimation)
 			{
-				transform.localScale = new Vector3(transform.localScale.x - 0.1f, transform.localScale.y - 0.1f,
-					transform.localScale.z - 0.1f);
-				if (_renderer.material.color.a > 0f)
-				{
-					_renderer.material.SetColor("_Color", new Color(
-						_renderer.material.color.r, _renderer.material.color.g, _renderer.material.color.b,
-						_renderer.material.color.a - 0.1f));
-				}
-				else
-				{
-					_isHideAnimation = false;
-					transform.localScale = Vector3.zero;
-					IsVisible = false;
-				}
+				HideAnimation ();
 			}
 			else if (IsVisible)
 			{
@@ -122,16 +109,32 @@ public class ItemBonus : MonoBehaviour {
 				if (transform.position.y < -24f)
 					Hide(false);
 			}
-		if (_isShowAnimation)
-		if (transform.localScale.x < 2.1f)
-		{
-			transform.localScale = new Vector3(transform.localScale.x + 0.2f, transform.localScale.y + 0.2f,
-				transform.localScale.z + 0.2f);
+		if (_isShowAnimation) {
+			ShowAnimation ();
 		}
-		else
-		{
+	}
+
+	virtual protected void HideAnimation() {
+		transform.localScale = new Vector3 (transform.localScale.x - 0.1f, transform.localScale.y - 0.1f,
+			transform.localScale.z - 0.1f);
+		if (_renderer.material.color.a > 0f) {
+			_renderer.material.SetColor ("_Color", new Color (
+				_renderer.material.color.r, _renderer.material.color.g, _renderer.material.color.b,
+				_renderer.material.color.a - 0.1f));
+		} else {
+			_isHideAnimation = false;
+			transform.localScale = Vector3.zero;
+			IsVisible = false;
+		}
+	}
+
+	virtual protected void ShowAnimation() {
+		if (transform.localScale.x < 2.1f) {
+			transform.localScale = new Vector3 (transform.localScale.x + 0.2f, transform.localScale.y + 0.2f,
+				transform.localScale.z + 0.2f);
+		} else {
 			_isShowAnimation = false;
-			transform.localScale = new Vector3(2f, 2f, 2f);
+			transform.localScale = new Vector3 (2f, 2f, 2f);
 		}
 	}
 }

@@ -126,7 +126,7 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Coin")) return;
+		if (other.CompareTag("Coin")||other.CompareTag("BonusIncrease")||other.CompareTag("BonusChar")) return;
 
         if (_isHaveCollision) return;
 

@@ -3,7 +3,6 @@ using DoozyUI;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
-using AppAdvisory.VSGIF;
 
 public class GameOverNotifications : MonoBehaviour
 {

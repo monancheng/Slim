@@ -27,7 +27,7 @@ public class Coins : MonoBehaviour
 
     private void OnEnable()
     {
-        CoinSensor.OnAddCoinsVisual += Coin_OnAddCoinsVisual;
+        BonusCoin.OnAddCoinsVisual += Coin_OnAddCoinsVisual;
         ScreenSkins.OnAddCoinsVisual += Coin_OnAddCoinsVisual;
         ScreenCoins.OnAddCoinsVisual += Coin_OnAddCoinsVisual;
         Coin.OnAddCoinsVisual += Coin_OnAddCoinsVisual;
@@ -37,7 +37,7 @@ public class Coins : MonoBehaviour
 
     private void OnDisable()
     {
-        CoinSensor.OnAddCoinsVisual -= Coin_OnAddCoinsVisual;
+        BonusCoin.OnAddCoinsVisual -= Coin_OnAddCoinsVisual;
         ScreenSkins.OnAddCoinsVisual -= Coin_OnAddCoinsVisual;
         ScreenCoins.OnAddCoinsVisual -= Coin_OnAddCoinsVisual;
         Coin.OnAddCoinsVisual -= Coin_OnAddCoinsVisual;

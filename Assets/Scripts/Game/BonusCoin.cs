@@ -2,20 +2,22 @@
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class BonusIncrease : ItemBonus
+public class BonusCoin : ItemBonus
 {
-    public static event Action OnBonusGrow;
-    [SerializeField] private AudioClip[] SoundsGrow;
+	public static event Action<int> OnAddCoinsVisual;
 
-    private void Awake()
-    {
+    [SerializeField] private AudioClip _sndTakeCoin;
+	[SerializeField] private AudioClip[] SoundsGrow;
+
+	private void Awake()
+	{
 		Init ();
-    }
+	}
 
     private void OnEnable()
     {
         MyTube.OnCanSpawnBonus += OnCanSpawn;
-        TubeManager.OnCreateBonusIncrease += OnCreate;
+        TubeManager.OnCreateCoin += OnCreate;
         GlobalEvents<OnGameOver>.Happened += GameOver;
     }
 
@@ -29,14 +31,9 @@ public class BonusIncrease : ItemBonus
     {
         if (other.CompareTag("Player"))
         {
-            Defs.PlaySound(GetRandomGrowSound());
-            GameEvents.Send(OnBonusGrow);
+            GameEvents.Send(OnAddCoinsVisual, 1);
+            Defs.PlaySound(_sndTakeCoin);
             Activate();
         }
-    }
-
-    private AudioClip GetRandomGrowSound()
-    {
-        return SoundsGrow[(int) Mathf.Round(Random.value * (SoundsGrow.Length - 1))];
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using AppAdvisory.VSGIF;
 using DoozyUI;
 using UnityEngine;
 
@@ -126,7 +125,6 @@ public class ScreenGame : MonoBehaviour
         GlobalEvents<OnPointsAdd>.Happened += OnAddPoints;
         GlobalEvents<OnGiveReward>.Happened += GetReward;
 		GlobalEvents<OnGifSaved>.Happened += OnGifSaved;
-		Record.OnSavedGIFEvent += OnSavedGIFEvent;
     }
 
     private void OnDisable()
@@ -137,14 +135,6 @@ public class ScreenGame : MonoBehaviour
         GlobalEvents<OnPointsAdd>.Happened -= OnAddPoints;
         GlobalEvents<OnGiveReward>.Happened -= GetReward;
     }
-
-	void OnSavedGIFEvent (SaveState saveState)
-	{
-		if(saveState == SaveState.Done)
-		{
-			
-		}
-	}
 
 	private void OnGifSaved(OnGifSaved obj) {
 		

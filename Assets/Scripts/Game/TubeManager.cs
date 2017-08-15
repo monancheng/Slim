@@ -41,7 +41,6 @@ public class TubeManager : MonoBehaviour
     {
         _radiusAddCoeff = 5f;
         _counter = 0;
-        _coinCounter = 0;
         
         CreateTubeStart();
     }
@@ -50,7 +49,7 @@ public class TubeManager : MonoBehaviour
     {
         MyTube.OnDestroy += RemoveItem;
         Player.OnTubeCreate += OnTubeCreate;
-        Player.OnTubeGetBonusTube += OnTubeGetBonusTube;
+//        Player.OnTubeGetBonusTube += OnTubeGetBonusTube;
         GlobalEvents<OnStartGame>.Happened += StartGame;
         GlobalEvents<OnGameOver>.Happened += OnGameOver;
         GlobalEvents<OnNoGameOverButtons>.Happened += OnNoGameOverButtons;
@@ -112,10 +111,10 @@ public class TubeManager : MonoBehaviour
         _increaseCounter = 1;
     }
 
-    private void OnTubeGetBonusTube()
-    {
-        _isWantBonusTube = true;
-    }
+//    private void OnTubeGetBonusTube()
+//    {
+//        _isWantBonusTube = true;
+//    }
 
     private void OnTubeCreate(float radius)
     {
@@ -134,23 +133,23 @@ public class TubeManager : MonoBehaviour
         _radiusAddCoeff -= StartRadiusMinus;
         if (_radiusAddCoeff < 0f) _radiusAddCoeff = 0f;
 
-        if (_isWantBonusTube)
-        {
-            isIncreaseSize = true;
-            color = new Color(255f / 255.0f, 201f / 255f, 104f / 255f);
-            newRadius += 0.5f;
-            outerRadius = newRadius+OuterRadiusGold;
-            _isWantBonusTube = false;
-        }
-        else
-        {
+//        if (_isWantBonusTube)
+//        {
+//            isIncreaseSize = true;
+//            color = new Color(255f / 255.0f, 201f / 255f, 104f / 255f);
+//            newRadius += 0.5f;
+//            outerRadius = newRadius+OuterRadiusGold;
+//            _isWantBonusTube = false;
+//        }
+//        else
+//        {
             color = ColorTheme.GetTubeColor();
             outerRadius = Random.Range(newRadius, newRadius*OuterRadiusMul) - newRadius;
             if (outerRadius > OuterRadiusMaxAdd) outerRadius = OuterRadiusMaxAdd;
             if (outerRadius < OuterRadiusMinAdd) outerRadius = OuterRadiusMinAdd;
             if (newRadius + outerRadius < RadiusMin) outerRadius = RadiusMin - newRadius;
             if (newRadius + outerRadius > RadiusMax) outerRadius = RadiusMax - newRadius;
-        }
+//        }
 
         
         CreateTube(newRadius, outerRadius, color, 600f, isIncreaseSize);
@@ -180,11 +179,12 @@ public class TubeManager : MonoBehaviour
 		}
 			
 		if (!isBonusCreated) {
-			if (_coinCounter % 7 == 0) {
-				if (Random.value > 0.5f) {
+			if (_coinCounter % 3 == 0) {
+//				if (Random.value > 0.5f) {
 					GameEvents.Send (OnCreateChar);
 					isBonusCreated = true;
-				}
+					D.Log ("CHAR!");
+//				}
 			}
 		}
     }
