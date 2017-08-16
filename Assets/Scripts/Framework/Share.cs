@@ -14,7 +14,7 @@ public class Share : MonoBehaviour
     private void OnEnable()
     {
         GlobalEvents<OnBtnShareClick>.Happened += OnBtnShareClick;
-		GlobalEvents<OnBtnShareGifClick>.Happened += OnBtnShareGifClick;
+//		GlobalEvents<OnBtnShareGifClick>.Happened += OnBtnShareGifClick;
 		GlobalEvents<OnGifSetName>.Happened += OnGifSetName;
     }
 
@@ -22,10 +22,10 @@ public class Share : MonoBehaviour
 		_gifName = obj.FilePathWithName;
 	}
 
-	private void OnBtnShareGifClick(OnBtnShareGifClick obj)
-	{
-		ShareGifClick();
-	}
+//	private void OnBtnShareGifClick(OnBtnShareGifClick obj)
+//	{
+//		ShareGifClick();
+//	}
 
 	public void ShareGifClick()
     {

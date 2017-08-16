@@ -11,6 +11,8 @@ public class BonusChar : ItemBonus
 
 	private Material _material;
 
+	private string _nextChar;
+
     private void Awake()
     {
 		Init ();
@@ -25,10 +27,18 @@ public class BonusChar : ItemBonus
 
         GlobalEvents<OnGameOver>.Happened += GameOver;
     }
-
-	void OnWordSetChar (String obj)
+	
+	override protected void OnCanSpawn()
 	{
-		_textMesh.text = obj;
+		if (!IsVisible && _isTimeToCreate)
+			_textMesh.text = _nextChar;
+		
+		base.OnCanSpawn();
+	}
+
+	void OnWordSetChar (string obj)
+	{
+		_nextChar = obj;
 	}
 
     // Update is called once per frame

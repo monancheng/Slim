@@ -8,6 +8,8 @@ public class GameOverNotifications : MonoBehaviour
 {
     [SerializeField] private Text _nextCharacterText;
     [SerializeField] private Text _shareText;
+    [SerializeField] private Text _wordsProgressText;
+    [SerializeField] private Text _wordsText;
     
     private float _centerPointY = 20f;
     private const float ItemHeightHalf = 50f;
@@ -24,6 +26,10 @@ public class GameOverNotifications : MonoBehaviour
     private bool _isGotNewCharacter;
     private int _giftValue;
     private bool isVisual;
+    private bool _isGotWord;
+    private int _wordRewardValue;
+    private bool _isWaitNewWord;
+    private bool _isWordActive;
 
     private void Start()
     {
@@ -38,6 +44,10 @@ public class GameOverNotifications : MonoBehaviour
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened += IsGiftAvailable;
         GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
+        GlobalEvents<OnWordCollected>.Happened += OnWordCollected;
+        GlobalEvents<OnWordUpdateProgress>.Happened += OnWordGotChar;
+        GlobalEvents<OnWordNeedToWait>.Happened += OnWordNeedToWait;
+        GlobalEvents<OnWordsAvailable>.Happened += OnWordsAvailable;
         
         // Внутренние
         GlobalEvents<OnGotNewCharacter>.Happened += OnGotNewCharacter;
@@ -54,11 +64,15 @@ public class GameOverNotifications : MonoBehaviour
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened -= IsGiftAvailable;
         GlobalEvents<OnCoinsAdded>.Happened -= OnCoinsAdded;
+        GlobalEvents<OnWordCollected>.Happened -= OnWordCollected;
+        GlobalEvents<OnWordUpdateProgress>.Happened -= OnWordGotChar;
+        GlobalEvents<OnWordNeedToWait>.Happened -= OnWordNeedToWait;
+        GlobalEvents<OnWordsAvailable>.Happened -= OnWordsAvailable;
         GlobalEvents<OnGotNewCharacter>.Happened -= OnGotNewCharacter;
         GlobalEvents<OnBtnRateClick>.Happened -= OnBtnRateClick;
         GlobalEvents<OnGiftCollected>.Happened -= OnGiftCollected;
     }
-    
+
     private void OnShowNotifications(OnShowNotifications e)
     {
 
@@ -76,11 +90,14 @@ public class GameOverNotifications : MonoBehaviour
             AddNotifyNewGift();
         }
 
-        if (_isGiftAvailable
-            /*||_activeNamesList.Count == 0 && Random.value < 0.5f
-            ||_activeNamesList.Count == 1 && Random.value < 0.25f*/)
+        if (_isGiftAvailable)
         {
-            AddNoifyGift();
+            AddNotifyGift();
+        }
+        
+        if (_isGotWord)
+        {
+            AddNotifyWord();
         }
         
         // Важность - Средняя
@@ -95,6 +112,8 @@ public class GameOverNotifications : MonoBehaviour
         {
             _activeNamesList.Add("NotifyRewarded");
         }
+        
+        if (Random.value > 0.5f) AddWordTimerOrProgress();
 
         if (_activeNamesList.Count < 4 && (DefsGame.CurrentPointsCount > DefsGame.GameBestScore * 0.5f
                                            || _isGotNewCharacter
@@ -114,7 +133,7 @@ public class GameOverNotifications : MonoBehaviour
         }
         
         // Важность - Низкая
-        
+        ran = Random.value;
         if (_giftValue == 0 && _activeNamesList.Count < 4 && (_activeNamesList.Count == 0 && ran > 0.7f
                                            || _activeNamesList.Count == 1 && ran > 0.75f
                                            || _activeNamesList.Count == 2 && ran > 0.80f))
@@ -134,6 +153,21 @@ public class GameOverNotifications : MonoBehaviour
         ShuffleItems();
         SetItemsPositions();
         ShowNotifications();
+    }
+
+    private void AddWordTimerOrProgress()
+    {
+        if (_activeNamesList.Count < 4 && _isWordActive && !_isGotWord)
+        {
+            if (_isWaitNewWord)
+            {
+                _activeNamesList.Add("NotifyWordTimer");
+            }
+            else
+            {
+                _activeNamesList.Add("NotifyWordProgress");
+            }
+        }
     }
 
     private void AddNotifyNewGift()
@@ -157,16 +191,28 @@ public class GameOverNotifications : MonoBehaviour
         }
     }
 
-    private void AddNoifyGift()
+    private void AddNotifyGift()
     {
         _activeNamesList.Add("NotifyGift");
         if (DefsGame.CoinsCount > 100 && DefsGame.CoinsCount < 155)
-            _giftValue = 180-DefsGame.CoinsCount;
+            _giftValue = 190-DefsGame.CoinsCount;
         else
         {
-            if (Random.value < 0.5f) _giftValue = 45;
-            else _giftValue = 50;
+            if (Random.value < 0.5f) _giftValue = 40;
+            else _giftValue = 45;
         }
+    }
+    
+    private void AddNotifyWord()
+    {
+        if (DefsGame.CoinsCount > 100 && DefsGame.CoinsCount < 155)
+            _wordRewardValue = 190-DefsGame.CoinsCount;
+        else
+        {
+            if (Random.value < 0.5f) _wordRewardValue = 40;
+            else _wordRewardValue = 45;
+        }
+        _activeNamesList.Add("NotifyWord");
     }
     
     private void AddNotifyNextSkin(int spendMoneyCount = 0)
@@ -265,25 +311,22 @@ public class GameOverNotifications : MonoBehaviour
     private void IsGiftAvailable(OnGiftAvailable e)
     {
         _isGiftAvailable = e.IsAvailable;
-
-        if (!_isGiftAvailable || !isVisual || _activeNamesList.IndexOf("NotifyGiftWaiting") == -1) return;
-
-        AddNoifyGift();
-   
+        
         int idNotifyOld = _activeNamesList.IndexOf("NotifyGiftWaiting");
-        if (idNotifyOld != -1)
-        {
+        if (!_isGiftAvailable || !isVisual || idNotifyOld == -1) return;
+
+        AddNotifyGift();
+   
             
-            var element = GetUIElement(_activeNamesList[idNotifyOld]);
-            UIManager.HideUiElement(_activeNamesList[idNotifyOld]);
-            var element2 = GetUIElement("NotifyGift");
-            if (element)
-            {
-                element2.customStartAnchoredPosition = element.customStartAnchoredPosition;
-                element2.useCustomStartAnchoredPosition = true;
-            }
-            _activeNamesList.RemoveAt(idNotifyOld);
+        var element = GetUIElement(_activeNamesList[idNotifyOld]);
+        UIManager.HideUiElement(_activeNamesList[idNotifyOld]);
+        var element2 = GetUIElement("NotifyGift");
+        if (element)
+        {
+            element2.customStartAnchoredPosition = element.customStartAnchoredPosition;
+            element2.useCustomStartAnchoredPosition = true;
         }
+        _activeNamesList.RemoveAt(idNotifyOld);
         
         UIManager.ShowUiElement("NotifyGift");
     }
@@ -291,27 +334,26 @@ public class GameOverNotifications : MonoBehaviour
     private void OnCoinsAdded(OnCoinsAdded obj)
     {
         int idNotifyOld = _activeNamesList.IndexOf("NotifyNextCharacter");
+        
+        if (!isVisual || idNotifyOld == -1) return;
 
-        if (idNotifyOld != -1)
+        if (obj.Total >= 200)
         {
-            if (obj.Total >= 200)
+            AddNotifyNewGift();
+            var element = GetUIElement(_activeNamesList[idNotifyOld]);
+            UIManager.HideUiElement(_activeNamesList[idNotifyOld]);
+            var element2 = GetUIElement("NotifyNewCharacter");
+            if (element)
             {
-                AddNotifyNewGift();
-                var element = GetUIElement(_activeNamesList[idNotifyOld]);
-                UIManager.HideUiElement(_activeNamesList[idNotifyOld]);
-                var element2 = GetUIElement("NotifyNewCharacter");
-                if (element)
-                {
-                    element2.customStartAnchoredPosition = element.customStartAnchoredPosition;
-                    element2.useCustomStartAnchoredPosition = true;
-                }
-                _activeNamesList.RemoveAt(idNotifyOld);
-                UIManager.ShowUiElement("NotifyNewCharacter");
-            } else 
-            {
-                int toNextSkin = 200 - obj.Total;
-                _nextCharacterText.text = toNextSkin.ToString();
+                element2.customStartAnchoredPosition = element.customStartAnchoredPosition;
+                element2.useCustomStartAnchoredPosition = true;
             }
+            _activeNamesList.RemoveAt(idNotifyOld);
+            UIManager.ShowUiElement("NotifyNewCharacter");
+        } else 
+        {
+            int toNextSkin = 200 - obj.Total;
+            _nextCharacterText.text = toNextSkin.ToString();
         }
     }
 
@@ -322,9 +364,44 @@ public class GameOverNotifications : MonoBehaviour
     
     private void OnGiftCollected(OnGiftCollected obj)
     {
+        int idNotifyOld = _activeNamesList.IndexOf("NotifyWord");
+        if (idNotifyOld != -1)
+        { 
+            _activeNamesList.RemoveAt(idNotifyOld);
+            AddWordTimerOrProgress();
+        }
+
         SetItemsPositions();
         ShowNotifications();
         DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
+    }
+    
+    private void OnWordsAvailable(OnWordsAvailable obj)
+    {
+        _isWordActive = obj.IsAvailable;
+    }
+    
+    private void OnWordNeedToWait(OnWordNeedToWait obj)
+    {
+        _isWaitNewWord = obj.IsWait;
+        
+        int idNotifyOld = _activeNamesList.IndexOf("NotifyWordTimer");
+        
+        if (!isVisual || idNotifyOld == -1) return;
+
+        _activeNamesList.Add("NotifyWordProgress");
+        
+        var element = GetUIElement(_activeNamesList[idNotifyOld]);
+        UIManager.HideUiElement(_activeNamesList[idNotifyOld]);
+        var element2 = GetUIElement("NotifyWordProgress");
+        if (element)
+        {
+            element2.customStartAnchoredPosition = element.customStartAnchoredPosition;
+            element2.useCustomStartAnchoredPosition = true;
+        }
+        _activeNamesList.RemoveAt(idNotifyOld);
+        
+        UIManager.ShowUiElement("NotifyWordProgress");
     }
 
 //	private void OnShareGIFEvent ()
@@ -336,7 +413,7 @@ public class GameOverNotifications : MonoBehaviour
 
 //			Record.DOReset ();
 
-			GlobalEvents<OnBtnGiftClick>.Call (new OnBtnGiftClick{ CoinsCount = _shareRewardValue, IsResetTimer = false });
+			GlobalEvents<OnBtnShareGifClick>.Call (new OnBtnShareGifClick{CoinsCount = _shareRewardValue});
 			_shareRewardValue = 0;
 
 			HideNotifications ();
@@ -345,6 +422,17 @@ public class GameOverNotifications : MonoBehaviour
 			GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
 		}
 	}
+    
+    private void OnWordGotChar(OnWordUpdateProgress obj)
+    {
+        _wordsProgressText.text = obj.Text;
+    }
+    
+    private void OnWordCollected(OnWordCollected obj)
+    {
+        _wordsText.text = obj.Text;
+        _isGotWord = true;
+    }
     
     //----------------------------------------------------
     // Touches
@@ -362,11 +450,6 @@ public class GameOverNotifications : MonoBehaviour
         PlayerPrefs.SetInt("RateCounter", 1);
     }
     
-    public void BtnShareClick()
-    {
-		
-    }
-    
     public void BtnNewSkinClick()
     {
         HideNotifications();
@@ -376,6 +459,19 @@ public class GameOverNotifications : MonoBehaviour
         AddNotifyNextSkin(200);
         
         GlobalEvents<OnBtnGetRandomSkinClick>.Call(new OnBtnGetRandomSkinClick());
+        GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
+    }
+    
+    
+    public void BtnWordClick()
+    {
+        HideNotifications();
+
+        _isGotWord = false;
+//        AddNotifyNextSkin(200);
+        
+        GlobalEvents<OnBtnWordClick>.Call(new OnBtnWordClick{CoinsCount = _wordRewardValue, IsResetTimer = false});
+        _wordRewardValue = 0;
         GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
     }
     

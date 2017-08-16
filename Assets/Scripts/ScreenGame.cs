@@ -144,7 +144,7 @@ public class ScreenGame : MonoBehaviour
     {
         if (IsGameOver)
             return;
-        D.Log("Ball_OnBallInBasket");
+
         _isNextLevel = true;
     }
 

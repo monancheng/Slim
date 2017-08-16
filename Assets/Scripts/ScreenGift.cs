@@ -15,7 +15,9 @@ public class ScreenGift : MonoBehaviour
 	private void OnEnable()
 	{
 		GlobalEvents<OnBtnGiftClick>.Happened += OnBtnGiftClick;
+		GlobalEvents<OnBtnWordClick>.Happened += OnBtnWordClick;
 		GlobalEvents<OnBtnGetRandomSkinClick>.Happened += OnBtnGetRandomSkinClick;
+		GlobalEvents<OnBtnShareGifClick>.Happened += OnBtnShareGifClick;
 		GlobalEvents<OnGiftAnimationDone>.Happened += OnGiftAnimationDone;
 		GlobalEvents<OnHideGiftScreen>.Happened += OnHideGiftScreen;
 	}
@@ -23,6 +25,7 @@ public class ScreenGift : MonoBehaviour
 	private void OnDisable()
 	{
 		GlobalEvents<OnBtnGiftClick>.Happened -= OnBtnGiftClick;
+		GlobalEvents<OnBtnWordClick>.Happened -= OnBtnWordClick;
 		GlobalEvents<OnBtnGetRandomSkinClick>.Happened -= OnBtnGetRandomSkinClick;
 		GlobalEvents<OnGiftAnimationDone>.Happened -= OnGiftAnimationDone;
 		GlobalEvents<OnHideGiftScreen>.Happened -= OnHideGiftScreen;
@@ -30,7 +33,7 @@ public class ScreenGift : MonoBehaviour
 
 	private void OnHideGiftScreen(OnHideGiftScreen obj)
 	{
-		// Предлагаем Еще оди подарок
+		// Предлагаем Еще один подарок
 		if (isFirstTime)
 		{
 			isFirstTime = false;
@@ -47,6 +50,12 @@ public class ScreenGift : MonoBehaviour
 			{
 				UIManager.ShowUiElement("NotifySkinExtra");
 				element = GetUIElement("NotifySkinExtra");
+			}
+			else
+			if (_giftType == 3)
+			{
+				UIManager.ShowUiElement("NotifyWordExtra");
+				element = GetUIElement("NotifyWordExtra");
 			}
 			
 			if (element)
@@ -91,6 +100,26 @@ public class ScreenGift : MonoBehaviour
 		CreateGiftAnimation();
 	}
 	
+	private void OnBtnShareGifClick(OnBtnShareGifClick obj)
+	{
+		isFirstTime = false;
+		_coinsCount = obj.CoinsCount;
+		_giftType = 4;
+
+		CreateGiftAnimation();
+	}
+	
+	
+	private void OnBtnWordClick(OnBtnWordClick obj)
+	{
+		isFirstTime = true;
+		_coinsCount = obj.CoinsCount;
+		_isResetTimer = obj.IsResetTimer;
+		_giftType = 3;
+
+		CreateGiftAnimation();
+	}
+	
 	private void CreateGiftAnimation()
 	{
 		Instantiate(_gift);
@@ -101,16 +130,30 @@ public class ScreenGift : MonoBehaviour
 		UIManager.ShowUiElement("ScreenGift");
 		if (_giftType == 1) MakeAGift();
 		else if (_giftType == 2) MakeAGiftRandomSkin();
+		else if (_giftType == 3) MakeAGiftWord();
+		else if (_giftType == 4) MakeAShareGift();
 	}
 
 	private void MakeAGift()
 	{
-		GlobalEvents<OnGiftShowCoinsAnimation>.Call(new OnGiftShowCoinsAnimation{CoinsCount = _coinsCount, IsResetTimer = _isResetTimer});
+		GlobalEvents<OnGiftResetTimer>.Call(new OnGiftResetTimer{IsResetTimer = _isResetTimer});
+		GlobalEvents<OnCoinsAddToScreen>.Call(new OnCoinsAddToScreen{CoinsCount = _coinsCount});
 	}
 	
 	private void MakeAGiftRandomSkin()
 	{
 		GlobalEvents<OnGiftShowRandomSkinAnimation>.Call(new OnGiftShowRandomSkinAnimation());
+	}
+	
+	private void MakeAGiftWord()
+	{
+		GlobalEvents<OnWordStartTimer>.Call(new OnWordStartTimer());
+		GlobalEvents<OnCoinsAddToScreen>.Call(new OnCoinsAddToScreen{CoinsCount = _coinsCount});
+	}
+	
+	private void MakeAShareGift()
+	{
+		GlobalEvents<OnCoinsAddToScreen>.Call(new OnCoinsAddToScreen{CoinsCount = _coinsCount});
 	}
 
 	public void BtnClose()
@@ -118,6 +161,7 @@ public class ScreenGift : MonoBehaviour
 		UIManager.HideUiElement("ScreenGameOverBtnBack");
 		UIManager.HideUiElement("NotifyGiftExtra");
 		UIManager.HideUiElement("NotifySkinExtra");
+		UIManager.HideUiElement("NotifyWordExtra");
 		GlobalEvents<OnHideGiftScreen>.Call(new OnHideGiftScreen());
 	}
 }

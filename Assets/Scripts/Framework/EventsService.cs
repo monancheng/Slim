@@ -1,6 +1,8 @@
-﻿// Menu
-// Завершение игры
+﻿//--------------------------------------------------------
+// Menu
+//--------------------------------------------------------
 
+// Завершение игры
 public struct OnGameOver
 {
 }
@@ -33,9 +35,9 @@ public struct OnPointsReset
 {
 }
 
-//----------
+//--------------------------------------------------------
 // ADS
-//----------
+//--------------------------------------------------------
 // Дать награду игроку
 public struct OnGiveReward
 {
@@ -72,9 +74,9 @@ public struct OnCoinsAdded
     public int Total;
 }
 
-//----------
+//--------------------------------------------------------
 // NOTIFICATIONS
-//----------
+//--------------------------------------------------------
 
 // Показываем нотификейшины на экране
 public struct OnShowNotifications
@@ -86,9 +88,9 @@ public struct OnGotNewCharacter
 {
 }
 
-//----------
+//--------------------------------------------------------
 // BUTTONS CLICKS
-//----------
+//--------------------------------------------------------
 
 // Нажали на кнопку "Оценить игру"
 public struct OnBtnRateClick
@@ -103,6 +105,7 @@ public struct OnBtnShareClick
 // Нажали на кнопку "Поделиться Gif"
 public struct OnBtnShareGifClick
 {
+    public int CoinsCount;
 }
 
 // Нажали на кнопку "Получить подарок"
@@ -112,20 +115,15 @@ public struct OnBtnGiftClick
     public bool IsResetTimer;
 }
 
-// Нажали на кнопку "Купить рандомный скин"
-public struct OnBtnGetRandomSkinClick
-{
-}
-
-// Высыпать на экран горсть монет
-public struct OnGiftShowCoinsAnimation
+// Нажали на кнопку "Получить подарок за СЛОВО"
+public struct OnBtnWordClick
 {
     public int CoinsCount;
     public bool IsResetTimer;
 }
 
-// Показать на экран Скин, который игрок получает после нажатия на ленточку "Получить скин за 200 монет"
-public struct OnGiftShowRandomSkinAnimation
+// Нажали на кнопку "Купить рандомный скин"
+public struct OnBtnGetRandomSkinClick
 {
 }
 
@@ -141,14 +139,28 @@ public struct OnChangeSkin
     public int Id;
 }
 
+// На финишном эране нет кнопок для показа
+public struct OnNoGameOverButtons
+{
+}
+
+//--------------------------------------------------------
+//						    Gift
+//--------------------------------------------------------
+
+// Высыпать на экран горсть монет
+public struct OnCoinsAddToScreen
+{
+    public int CoinsCount;
+}
+
 // Закончилась анимация Вручения подарка
 public struct OnGiftCollected
 {
 }
 
-
-// Закончилась анимация Вручения подарка
-public struct OnGifShared
+// Показать на экран Скин, который игрок получает после нажатия на ленточку "Получить скин за 200 монет"
+public struct OnGiftShowRandomSkinAnimation
 {
 }
 
@@ -163,9 +175,43 @@ public struct OnGiftAnimationDone
 {
 }
 
-// На финишном эране нет кнопок для показа
-public struct OnNoGameOverButtons
+// Высыпать на экран горсть монет
+public struct OnGiftResetTimer
 {
+    public bool IsResetTimer;
+}
+
+//--------------------------------------------------------
+//						    WORDS
+//--------------------------------------------------------
+
+// Еще есть доступные слова
+public struct OnWordsAvailable
+{
+    public bool IsAvailable;
+}
+
+// Собрали новое слово
+public struct OnWordUpdateProgress
+{
+    public string Text;
+}
+
+// Собрали новое слово
+public struct OnWordCollected
+{
+    public string Text;
+}
+
+// Высыпать на экран горсть монет
+public struct OnWordStartTimer
+{
+}
+
+// Нужно ли ждать пока новое Слово будет доступно
+public struct OnWordNeedToWait
+{
+    public bool IsWait;
 }
 
 //--------------------------------------------------------
@@ -175,11 +221,15 @@ public struct OnNoGameOverButtons
 // На финишном эране нет кнопок для показа
 public struct OnGifSetName
 {
-	public string FilePathWithName;
+    public string FilePathWithName;
 }
-
 
 // На финишном эране нет кнопок для показа
 public struct OnGifSaved
+{
+}
+
+// Закончилась анимация Вручения подарка
+public struct OnGifShared
 {
 }

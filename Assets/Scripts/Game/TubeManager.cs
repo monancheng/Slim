@@ -36,6 +36,8 @@ public class TubeManager : MonoBehaviour
     private int _coinCounter;
     private int _increaseCounter;
     private bool _isFingerStart;
+    private bool _isWordWait;
+    private bool _isWordActive;
 
     private void Start()
     {
@@ -53,6 +55,24 @@ public class TubeManager : MonoBehaviour
         GlobalEvents<OnStartGame>.Happened += StartGame;
         GlobalEvents<OnGameOver>.Happened += OnGameOver;
         GlobalEvents<OnNoGameOverButtons>.Happened += OnNoGameOverButtons;
+        GlobalEvents<OnWordNeedToWait>.Happened += OnWordNeedToWait;
+        GlobalEvents<OnWordCollected>.Happened += OnWordCollected;
+        GlobalEvents<OnWordsAvailable>.Happened += OnWordsAvailable;
+    }
+
+    private void OnWordsAvailable(OnWordsAvailable obj)
+    {
+        _isWordActive = obj.IsAvailable;
+    }
+
+    private void OnWordNeedToWait(OnWordNeedToWait obj)
+    {
+        _isWordWait = obj.IsWait;
+    }
+    
+    private void OnWordCollected(OnWordCollected obj)
+    {
+        _isWordWait = true;
     }
 
     private void OnNoGameOverButtons(OnNoGameOverButtons obj)
@@ -178,12 +198,11 @@ public class TubeManager : MonoBehaviour
 			}
 		}
 			
-		if (!isBonusCreated) {
-			if (_coinCounter % 3 == 0) {
+		if (!isBonusCreated && !_isWordWait && _isWordActive) {
+			if (_coinCounter % 4 == 0) {
 //				if (Random.value > 0.5f) {
 					GameEvents.Send (OnCreateChar);
 					isBonusCreated = true;
-					D.Log ("CHAR!");
 //				}
 			}
 		}

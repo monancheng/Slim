@@ -24,7 +24,7 @@ public class ComboTubeManager : MonoBehaviour
 
     private void OnCombo(int comboCounter, float radius, Vector3 pos, float height)
     {
-        D.Log("OnCombo", comboCounter);
+//        D.Log("OnCombo", comboCounter);
         _comboEffectCounter = comboCounter;
         if (_comboEffectCounter > 3) _comboEffectCounter = 3;
         _comboEffectRadius = radius;

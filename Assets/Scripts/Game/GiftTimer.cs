@@ -1,13 +1,10 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
-public class Gift : MonoBehaviour
+public class GiftTimer : MonoBehaviour
 {
-    public GameObject coin;
-    [SerializeField] private GameObject _coinIndicator;
-    public Text timeText;
+    [SerializeField] private  Text timeText;
     private DateTime _giftNextDate;
     private bool _isWaitGiftTime;
 
@@ -53,17 +50,17 @@ public class Gift : MonoBehaviour
 
     private void OnEnable()
     {
-        GlobalEvents<OnGameOver>.Happened += IsGiftAvailable;
-        GlobalEvents<OnGiftShowCoinsAnimation>.Happened += OnGiftTake;
+        GlobalEvents<OnGameOver>.Happened += OnGameOver;
+        GlobalEvents<OnGiftResetTimer>.Happened += OnGiftResetTimer;
     }
 
     private void OnDisable()
     {
-        GlobalEvents<OnGameOver>.Happened -= IsGiftAvailable;
-        GlobalEvents<OnGiftShowCoinsAnimation>.Happened -= OnGiftTake;
+        GlobalEvents<OnGameOver>.Happened -= OnGameOver;
+        GlobalEvents<OnGiftResetTimer>.Happened -= OnGiftResetTimer;
     }
 
-    private void IsGiftAvailable(OnGameOver e)
+    private void OnGameOver(OnGameOver e)
     {
         UpdateTmer();
     }
@@ -78,7 +75,6 @@ public class Gift : MonoBehaviour
             {
                 _isWaitGiftTime = false;
                 GlobalEvents<OnGiftAvailable>.Call(new OnGiftAvailable {IsAvailable = true});
-                FlurryEventsManager.SendEvent("collect_prize_impression");
             }
             else {
                 string _minutes = _difference.Minutes.ToString ();
@@ -99,23 +95,12 @@ public class Gift : MonoBehaviour
         UpdateTmer();
     }
 
-    private void OnGiftTake(OnGiftShowCoinsAnimation obj)
+    private void OnGiftResetTimer(OnGiftResetTimer obj)
     {
-        TakeAGift(obj.CoinsCount);
         if (obj.IsResetTimer)
         {
             ResetTimer();
         }
-    }
-
-    public void add10Coins()
-    {
-        FlurryEventsManager.SendEvent("collect_prize");
-        TakeAGift(10);
-
-        ResetTimer();
-
-        D.Log("Disable Button Clicks");
     }
 
     private void ResetTimer()
@@ -130,28 +115,8 @@ public class Gift : MonoBehaviour
         }
         _giftNextDate = _giftNextDate.AddMinutes(DefsGame.BTN_GIFT_HIDE_DELAY);
         PlayerPrefs.SetString("dateGiftClicked", _giftNextDate.ToBinary().ToString());
-        //timeText.enabled = true;
-        //giftButton.enabled = false;
         _isWaitGiftTime = true;
-        //giftButton.DisableButtonClicks();
 
         GlobalEvents<OnGiftAvailable>.Call(new OnGiftAvailable {IsAvailable = false});
-    }
-
-    private void TakeAGift(int count)
-    {
-        for (var i = 0; i < count; i++)
-        {
-            var _coin = Instantiate(coin, Vector3.zero, Quaternion.identity);
-            var coinScript = _coin.GetComponentInChildren<Coin>();
-            coinScript.ParentObj = _coinIndicator;
-            coinScript.MoveToEnd();
-        }
-        
-        Invoke("BackToGiftScreen", 1);
-    }
-
-    private void BackToGiftScreen() {
-        GlobalEvents<OnHideGiftScreen>.Call(new OnHideGiftScreen());
     }
 }
