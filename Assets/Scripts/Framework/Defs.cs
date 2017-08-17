@@ -30,14 +30,14 @@ public struct Defs
         if (Volume == 0)
         {
             Volume = 1;
-            MasterAudio.MuteEverything();
-            D.Log("Sound OFF");
+            MasterAudio.UnmuteEverything();
+            D.Log("Sound ON");
         }
         else
         {
             Volume = 0;
-            MasterAudio.UnmuteEverything();
-            D.Log("Sound ON");
+            MasterAudio.MuteEverything();
+            D.Log("Sound OFF");
         }
         
         PlayerPrefs.SetInt("SoundVolume", 0);

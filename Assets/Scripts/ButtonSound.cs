@@ -1,25 +1,20 @@
-﻿using DoozyUI;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class ButtonSound : MonoBehaviour
 {
     public Sprite spriteOff;
-
     public Sprite spriteOn;
     // Use this for initialization
 
     private void Start()
     {
-        AudioListener.volume = PlayerPrefs.GetFloat("SoundVolume", 1f);
+        Defs.Volume = PlayerPrefs.GetInt("SoundVolume", 1);
+        if (Defs.Volume == 0)
+        {
+            Defs.MuteSounds(true);
+        }
         SetSoundImage();
-    }
-
-    public void SwitchSound(bool state)
-    {
-        if (UIManager.isSoundOn && !state) UIManager.ToggleSound();
-        
-            
     }
     
     public void Click()
@@ -30,7 +25,7 @@ public class ButtonSound : MonoBehaviour
 
     private void SetSoundImage()
     {
-        if (AudioListener.volume > 0f) GetComponent<Image>().sprite = spriteOn;
+        if (Defs.Volume == 1) GetComponent<Image>().sprite = spriteOn;
         else GetComponent<Image>().sprite = spriteOff;
     }
 }
