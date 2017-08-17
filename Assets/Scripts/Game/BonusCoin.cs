@@ -1,13 +1,11 @@
 ﻿using System;
+using DarkTonic.MasterAudio;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class BonusCoin : ItemBonus
 {
 	public static event Action<int> OnAddCoinsVisual;
-
-    [SerializeField] private AudioClip _sndTakeCoin;
-	[SerializeField] private AudioClip[] SoundsGrow;
 
 	private void Awake()
 	{
@@ -32,7 +30,7 @@ public class BonusCoin : ItemBonus
         if (other.CompareTag("Player"))
         {
             GameEvents.Send(OnAddCoinsVisual, 1);
-            Defs.PlaySound(_sndTakeCoin);
+            MasterAudio.PlaySoundAndForget("CoinTake");
             Activate();
         }
     }

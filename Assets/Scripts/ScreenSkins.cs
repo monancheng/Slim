@@ -5,8 +5,6 @@ using UnityEngine.UI;
 
 public class ScreenSkins : MonoBehaviour
 {
-    public AudioClip _buySkin;
-    public AudioClip _chooseSkin;
     public GameObject haveNewSkin;
     [SerializeField] private GameObject[] _skinBtns;
     public static event Action<int> OnAddCoinsVisual;
@@ -45,7 +43,6 @@ public class ScreenSkins : MonoBehaviour
             DefsGame.CurrentFaceId = id;
             GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = id});
             PlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
-            Defs.PlaySound(_chooseSkin);
 //            DefsGame.CarSimulator.Car.SetNewSkin(_id);
         }
         else if (DefsGame.CoinsCount >= 200/*DefsGame.FacePrice[_id - 1]*/)
@@ -55,7 +52,6 @@ public class ScreenSkins : MonoBehaviour
             //DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_NEW_SKIN, 1);
 
             //DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_COLLECTION, DefsGame.QUEST_CHARACTERS_Counter);
-            Defs.PlaySound(_buySkin);
             ChooseColorForButtons();
             GlobalEvents<OnGotNewCharacter>.Call(new OnGotNewCharacter());
 

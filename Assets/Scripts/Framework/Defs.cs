@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DarkTonic.MasterAudio;
+using UnityEngine;
 
 public struct Defs
 {
@@ -8,56 +9,37 @@ public struct Defs
     public static Share ShareVoxel;
     public static Rate Rate;
 
-    // Sound
-    public static AudioSource AudioSource;
-
-    public static AudioSource AudioSourceMusic;
-    public static bool Mute;
-
-    public static void PlaySound(AudioClip audioClip, float volume = 1f)
-    {
-        AudioSource.volume = volume * AudioListener.volume;
-		if (AudioSource.volume > 0f) AudioSource.PlayOneShot(audioClip);
-    }
-
+    public static int Volume;
+    
     public static void MuteSounds(bool flag)
     {
-        if (Mute == flag)
-            return;
-
-        Mute = flag;
-
-        if (Mute)
-        {
-            AudioListener.volume = 0f;
+        if (flag) {
+            MasterAudio.MuteEverything();
+            Volume = 0;
         }
         else
         {
-            AudioListener.volume = PlayerPrefs.GetFloat("SoundVolume", 1f);
-            if (AudioListener.volume > 0f) AudioSourceMusic.Play();
+            MasterAudio.UnmuteEverything();
+            Volume = 1;
         }
+        PlayerPrefs.SetInt("SoundVolume", 1);
     }
 
     public static void SwitchSounds()
     {
-        if (AudioListener.volume > 0f)
+        if (Volume == 0)
         {
-            //Camera.main.GetComponent<AudioListener> ().enabled = false;
-            AudioListener.volume = 0f;
-            //audioSource.enabled = false;
-            //audioSourceMusic.enabled = false;
+            Volume = 1;
+            MasterAudio.MuteEverything();
             D.Log("Sound OFF");
         }
         else
         {
-            //Camera.main.GetComponent<AudioListener> ().enabled = true;
-            AudioListener.volume = 1f;
-            //audioSource.enabled = true;
-            //audioSourceMusic.enabled = true;
-            AudioSourceMusic.Play();
+            Volume = 0;
+            MasterAudio.UnmuteEverything();
             D.Log("Sound ON");
         }
-
-        PlayerPrefs.SetFloat("SoundVolume", AudioListener.volume);
+        
+        PlayerPrefs.SetInt("SoundVolume", 0);
     }
 }

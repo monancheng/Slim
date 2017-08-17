@@ -1,4 +1,5 @@
 ﻿using System;
+using DarkTonic.MasterAudio;
 using DoozyUI;
 using UnityEngine;
 
@@ -24,10 +25,6 @@ public class ScreenGame : MonoBehaviour
     private bool _isWaitReward;
 
     private ScreenColorAnimation _screenAnimation;
-    private AudioClip _sndClose;
-    private AudioClip _sndGrab;
-    private AudioClip _sndLose;
-    [SerializeField] private AudioClip _gameStart;
 
     private int _state = -1;
     //int hintCounter;
@@ -53,7 +50,6 @@ public class ScreenGame : MonoBehaviour
     // Use this for initialization
     private void Start()
     {
-        Defs.AudioSourceMusic = GetComponent<AudioSource>();
         _screenAnimation = screenAnimationObject.GetComponent<ScreenColorAnimation>();
         _coins = GetComponent<Coins>();
         _bestScore = GetComponent<BestScore>();
@@ -69,10 +65,6 @@ public class ScreenGame : MonoBehaviour
 
             hint.SetActive (true);
         } */
-
-        _sndLose = Resources.Load<AudioClip>("snd/GUI/fail");
-        _sndGrab = Resources.Load<AudioClip>("snd/grab");
-        _sndClose = Resources.Load<AudioClip>("snd/button");
         
 //        _cameraStartPos = Camera.main.transform.position;
     }
@@ -151,7 +143,7 @@ public class ScreenGame : MonoBehaviour
     public void GameStart()
     {
         GlobalEvents<OnStartGame>.Call(new OnStartGame());
-        Defs.PlaySound(_gameStart);
+        MasterAudio.PlaySoundAndForget("GameStart");
 //        Record.DORec();
     }
     
@@ -162,7 +154,7 @@ public class ScreenGame : MonoBehaviour
 
 
 //        Record.DOSave();
-        Defs.PlaySound(_sndLose);
+        MasterAudio.PlaySoundAndForget("GameOver");
 
         if (DefsGame.IS_ACHIEVEMENT_MISS_CLICK == 0)
         {
@@ -384,7 +376,7 @@ public class ScreenGame : MonoBehaviour
 //				_bubbleField.Hide();
 
                 ReviveClose();
-                Defs.PlaySound(_sndGrab);
+                MasterAudio.PlaySoundAndForget("GUI_Grab");
 
                 FlurryEventsManager.SendEvent("RV_revive_complete");
             }
@@ -405,7 +397,7 @@ public class ScreenGame : MonoBehaviour
 //        else Defs.Share.ShareClick();
         GlobalEvents<OnBtnShareClick>.Call(new OnBtnShareClick());
         FlurryEventsManager.SendEvent("high_score_share");
-        Defs.PlaySound(_sndGrab);
+        MasterAudio.PlaySoundAndForget("GUI_Grab");
         EndCurrentGame();
     }
 
@@ -415,7 +407,7 @@ public class ScreenGame : MonoBehaviour
         UIManager.HideUiElement("ScreenRate");
         UIManager.HideUiElement("ScreenRateBtnRate");
         UIManager.HideUiElement("ScreenRateBtnBack");
-        Defs.PlaySound(_sndGrab);
+        MasterAudio.PlaySoundAndForget("GUI_Grab");
         Defs.Rate.RateUs();
         FlurryEventsManager.SendEvent("rate_us_impression", "revive_screen");
         EndCurrentGame();
@@ -426,7 +418,6 @@ public class ScreenGame : MonoBehaviour
         UIManager.HideUiElement("ScreenRevive");
         UIManager.HideUiElement("ScreenReviveBtnRevive");
         UIManager.HideUiElement("ScreenReviveBtnBack");
-        Defs.PlaySound(_sndClose);
         EndCurrentGame();
 
         FlurryEventsManager.SendEvent("RV_revive_home");
@@ -437,7 +428,6 @@ public class ScreenGame : MonoBehaviour
         UIManager.HideUiElement("ScreenShare");
         UIManager.HideUiElement("ScreenShareBtnShare");
         UIManager.HideUiElement("ScreenShareBtnBack");
-        Defs.PlaySound(_sndClose);
         EndCurrentGame();
 
         FlurryEventsManager.SendEvent("high_score_home");
@@ -448,7 +438,6 @@ public class ScreenGame : MonoBehaviour
         UIManager.HideUiElement("ScreenRate");
         UIManager.HideUiElement("ScreenRateBtnRate");
         UIManager.HideUiElement("ScreenRateBtnBack");
-        Defs.PlaySound(_sndClose);
         EndCurrentGame();
     }
 

@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class ScreenMenu : MonoBehaviour
 {
-    [SerializeField] private AudioClip sndBtnClick;
-
     private bool _isBtnSettingsClicked;
     private bool _isButtonHiden;
     private bool _isShowBtnViveoAds;
@@ -173,26 +171,22 @@ public class ScreenMenu : MonoBehaviour
     {
 //		FlurryEventsManager.SendEvent ("rate_us_impression", "start_screen");
 //		Defs.Rate.RateUs ();
-        Defs.PlaySound(sndBtnClick);
     }
 
     public void Share()
     {
         GlobalEvents<OnBtnShareClick>.Call(new OnBtnShareClick());
-        Defs.PlaySound(sndBtnClick);
     }
 
     public void BtnPlusClick()
     {
         HideButtons();
         DefsGame.ScreenCoins.Show("start_screen");
-        Defs.PlaySound(sndBtnClick);
     }
 
     public void BtnSkinsClick()
     {
         FlurryEventsManager.SendEvent("candy_shop");
         HideButtons();
-        Defs.PlaySound(sndBtnClick);
     }
 }

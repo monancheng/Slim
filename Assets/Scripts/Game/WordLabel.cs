@@ -4,12 +4,7 @@ using UnityEngine.UI;
 
 public class WordLabel : MonoBehaviour
 {
-	private Text _text;
-
-	private void Start()
-	{
-		_text = GetComponent<Text>();
-	}
+	[SerializeField] private Text _text;
 
 	private void OnEnable()
 	{
@@ -20,7 +15,7 @@ public class WordLabel : MonoBehaviour
 	{
 		_text.text = obj;
 		UIManager.ShowUiElement("WordLabel");
-		Invoke("Hide", 2f);
+		Invoke("Hide", 3f);
 	}
 
 	private void Hide()

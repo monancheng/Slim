@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DarkTonic.MasterAudio;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class BestScore : MonoBehaviour
@@ -7,7 +8,6 @@ public class BestScore : MonoBehaviour
 
     private bool _isShowAnimation = true;
     private int _pointsCount;
-    private AudioClip _sndNewHighScore;
     private float _startScale;
     [SerializeField] private Image img;
 
@@ -23,7 +23,6 @@ public class BestScore : MonoBehaviour
         _startScale = img.transform.localScale.x;
         _pointsCount = DefsGame.GameBestScore;
         textField.text = _pointsCount.ToString();
-        _sndNewHighScore = Resources.Load<AudioClip>("snd/fanfares");
     }
 
     public void ShowAnimation()
@@ -83,7 +82,7 @@ public class BestScore : MonoBehaviour
         _pointsCount = DefsGame.GameBestScore;
         textField.text = _pointsCount.ToString();
         img.transform.localScale = new Vector3(_startScale * 1.4f, _startScale * 1.4f, 1f);
-        Defs.PlaySound(_sndNewHighScore);
+        MasterAudio.PlaySoundAndForget("NewHighScore");
     }
 
     public void UpdateVisual()

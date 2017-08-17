@@ -1,10 +1,10 @@
 using System;
+using DarkTonic.MasterAudio;
 using UnityEngine;
 
 public class BonusChar : ItemBonus
 {
     public static event Action OnBonusGot;
-    [SerializeField] private AudioClip SoundCollide;
 	[SerializeField] private MeshRenderer _meshRenderer;
 	[SerializeField] private MeshRenderer _meshRendererText;
 	[SerializeField] private TextMesh _textMesh;
@@ -51,7 +51,7 @@ public class BonusChar : ItemBonus
     {
         if (other.CompareTag("Player"))
         {
-			Defs.PlaySound(SoundCollide);
+	        MasterAudio.PlaySoundAndForget("WordCollect");
             GameEvents.Send(OnBonusGot);
             Activate();
         }

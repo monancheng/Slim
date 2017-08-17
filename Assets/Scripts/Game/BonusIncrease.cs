@@ -1,11 +1,10 @@
 ﻿using System;
+using DarkTonic.MasterAudio;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class BonusIncrease : ItemBonus
 {
     public static event Action OnBonusGrow;
-    [SerializeField] private AudioClip[] SoundsGrow;
 
     private void Awake()
     {
@@ -29,14 +28,9 @@ public class BonusIncrease : ItemBonus
     {
         if (other.CompareTag("Player"))
         {
-            Defs.PlaySound(GetRandomGrowSound());
+            MasterAudio.PlaySoundAndForget("BonusIncrease");
             GameEvents.Send(OnBonusGrow);
             Activate();
         }
-    }
-
-    private AudioClip GetRandomGrowSound()
-    {
-        return SoundsGrow[(int) Mathf.Round(Random.value * (SoundsGrow.Length - 1))];
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using DarkTonic.MasterAudio;
 using DG.Tweening;
 using PrimitivesPro.GameObjects;
 using PrimitivesPro.Primitives;
@@ -6,8 +7,6 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private AudioClip[] SoundsGood;
-    [SerializeField] private AudioClip SoundSlice;
     public static event Action<float> OnTubeCreate;
     public static event Action OnTubeMove;
     public static event Action OnTubeGetBonusTube;
@@ -159,7 +158,8 @@ public class Player : MonoBehaviour
 //                _comboCounter = 0;
                 _comboIncreaseCounter = 0;
                 _soundGoodId = 0;
-                Defs.PlaySound(SoundSlice, 0.3f);
+//                Defs.PlaySound(SoundSlice, 0.3f);
+                MasterAudio.PlaySoundAndForget("Slice");
                 _isIncreaseSize = false;
             }
             else
@@ -173,7 +173,8 @@ public class Player : MonoBehaviour
                 GameEvents.Send(OnCombo, 1/*_comboCounter*/, _currentRadius, 
                     new Vector3(transform.position.x, other.gameObject.transform.position.y, other.gameObject.transform.position.z),
                     other.gameObject.GetComponent<Tube>().height);
-                Defs.PlaySound(GetNextGoodSound());
+//                Defs.PlaySound(GetNextGoodSound());
+                MasterAudio.PlaySoundAndForget("GoodFit");
             }
             GlobalEvents<OnPointsAdd>.Call(new OnPointsAdd {PointsCount = /*_comboCounter+*/1});
         }
@@ -293,10 +294,10 @@ public class Player : MonoBehaviour
         }
     }
     
-    private AudioClip GetNextGoodSound()
-    {
-        ++_soundGoodId;
-        if (_soundGoodId > SoundsGood.Length - 1) _soundGoodId = 0;
-        return SoundsGood[_soundGoodId];
-    }
+//    private AudioClip GetNextGoodSound()
+//    {
+//        ++_soundGoodId;
+//        if (_soundGoodId > SoundsGood.Length - 1) _soundGoodId = 0;
+//        return SoundsGood[_soundGoodId];
+//    }
 }

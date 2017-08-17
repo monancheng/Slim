@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+﻿using DarkTonic.MasterAudio;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class Coins : MonoBehaviour
 {
     private bool _isShowAnimation = true;
     private int _pointsCount;
-    private AudioClip _sndCoin;
     private float _startScale;
     public Image img;
 
@@ -15,7 +15,6 @@ public class Coins : MonoBehaviour
     private void Start()
     {
         DefsGame.Coins = this;
-        _sndCoin = Resources.Load<AudioClip>("snd/GUI/bonus");
         textField.text = DefsGame.CoinsCount.ToString();
         _pointsCount = DefsGame.CoinsCount;
         var color = textField.color;
@@ -48,7 +47,7 @@ public class Coins : MonoBehaviour
     private void Coin_OnAddCoinsVisual(int value)
     {
         AddPointVisual(value);
-        Defs.PlaySound(_sndCoin);
+        MasterAudio.PlaySoundAndForget("GUI_CoinTake");
     }
 
     public void ResetCounter()

@@ -1,4 +1,5 @@
 ﻿using System;
+using DoozyUI;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -98,7 +99,7 @@ public class Words : MonoBehaviour {
 			PlayerPrefs.SetString("Words_CurrentWord", _currentWord);
 			SetNextChar();
 		}
-		
+
 		GameEvents.Send(OnUpdateText, _currentWord);
 	}
 
