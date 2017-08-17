@@ -1,132 +1,536 @@
-// Copyright (c) 2015 - 2016 Doozy Entertainment / Marlink Trading SRL. All Rights Reserved.
+// Copyright (c) 2015 - 2017 Doozy Entertainment / Marlink Trading SRL. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
-#if UNITY_EDITOR
-using UnityEditor;
-
-#endif
 
 namespace DoozyUI
 {
-    [AddComponentMenu("DoozyUI/UI Element", 1)]
+    [AddComponentMenu(DUI.COMPONENT_MENU_UIELEMENT, DUI.MENU_PRIORITY_UIELEMENT)]
     [RequireComponent(typeof(RectTransform))]
-    [RequireComponent(typeof(GraphicRaycaster))]
     [RequireComponent(typeof(Canvas))]
-    [RequireComponent(typeof(UIAnimationManager))]
+    [RequireComponent(typeof(CanvasGroup))]
+    [RequireComponent(typeof(GraphicRaycaster))]
     [DisallowMultipleComponent]
     public class UIElement : MonoBehaviour
     {
-        #region Context Menu Methods
-
+        #region Context Menu
 #if UNITY_EDITOR
-        [MenuItem("DoozyUI/Components/UI Element", false, 1)]
-        [MenuItem("GameObject/DoozyUI/UI Element", false, 1)]
-        private static void CreateCustomGameObject(MenuCommand menuCommand)
+        [UnityEditor.MenuItem(DUI.GAMEOBJECT_MENU_UIELEMENT, false, DUI.MENU_PRIORITY_UIELEMENT)]
+        static void CreateElement(UnityEditor.MenuCommand menuCommand)
         {
-            if (GameObject.Find("UIManager") == null)
+            UICanvas targetCanvas = null;
+            GameObject selectedGO = menuCommand.context as GameObject;
+            if (selectedGO != null) //check that a gameObject is selected
             {
-                Debug.LogError(
-                    "[DoozyUI] The DoozyUI system was not found in the scene. Please add it before trying to create a UI Element.");
-                return;
+                targetCanvas = selectedGO.GetComponent<UICanvas>(); //check if the selected gameObject is an UICanvas, otherwise get the root and check
+                if (targetCanvas == null)
+                {
+                    targetCanvas = selectedGO.transform.root.GetComponent<UICanvas>(); //check if there is an UICanvas on the root of the selected gameOhject
+                }
             }
-            var go = new GameObject("New UIElement");
-            GameObjectUtility.SetParentAndAlign(go, menuCommand.context as GameObject);
-            Undo.RegisterCreatedObjectUndo(go, "Create " + go.name);
-            if (go.GetComponent<Transform>() != null)
-                go.AddComponent<RectTransform>();
-            if (go.transform.parent == null)
-                go.transform.SetParent(UIManager.GetUiContainer);
-            go.GetComponent<RectTransform>().localScale = Vector3.one;
-            var uiElement = go.AddComponent<UIElement>();
-            uiElement.elementNameReference = new ElementName {elementName = UIManager.DEFAULT_ELEMENT_NAME};
-            uiElement.elementName = UIManager.DEFAULT_ELEMENT_NAME;
-            Selection.activeObject = go;
+            if (targetCanvas == null) //because we did not find any UICanvas on the selected gameObject (or on it's root transform), we get the MasterCanvas; if the MasterCanvas does not exist, it will be created automatically by the system
+            {
+                targetCanvas = UIManager.GetMasterCanvas();
+            }
+            GameObject go = new GameObject("UIElement", typeof(RectTransform), typeof(UIElement));
+            UnityEditor.GameObjectUtility.SetParentAndAlign(go, targetCanvas.gameObject);
+            UnityEditor.Undo.RegisterCreatedObjectUndo(go, "Create " + go.name);
+            go.GetComponent<UIElement>().Reset();
+
+            GameObject background = new GameObject("Background", typeof(RectTransform), typeof(Image));
+            UnityEditor.GameObjectUtility.SetParentAndAlign(background, go);
+            background.GetComponent<RectTransform>().localScale = Vector3.one;
+            background.GetComponent<RectTransform>().anchorMin = Vector2.zero;
+            background.GetComponent<RectTransform>().anchorMax = Vector2.one;
+            background.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
+            background.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+            background.GetComponent<Image>().sprite = DUI.Background;
+            background.GetComponent<Image>().type = Image.Type.Sliced;
+            background.GetComponent<Image>().fillCenter = true;
+            background.GetComponent<Image>().color = new Color(31f / 255f, 136f / 255f, 201f / 255f, 100f / 255f);
+
+            UnityEditor.Selection.activeObject = go;
         }
 #endif
-
         #endregion
 
-        private void Awake()
+        #region Obsolete
+        [Serializable] [Obsolete] public class ElementName { public string elementName = DUI.DEFAULT_ELEMENT_NAME; }
+        [Obsolete]
+        public UIAnimator.InitialData InitialData
         {
-            Canvas = GetComponent<Canvas>();
-            if (Canvas == null) Canvas = gameObject.AddComponent<Canvas>();
-            GraphicRaycaster = GetComponent<GraphicRaycaster>();
-            if (GraphicRaycaster == null) GraphicRaycaster = gameObject.AddComponent<GraphicRaycaster>();
-            if (useCustomStartAnchoredPosition) GetRectTransform.anchoredPosition3D = customStartAnchoredPosition;
-            startAnchoredPosition3D = GetRectTransform.anchoredPosition3D;
-            startRotation = GetRectTransform.localRotation.eulerAngles;
-            startScale = GetRectTransform.localScale;
+            get
+            {
+                UIAnimator.InitialData initialData = new UIAnimator.InitialData();
+                initialData.startPosition = useCustomStartAnchoredPosition ? customStartAnchoredPosition : startPosition;
+                initialData.startRotation = startRotation;
+                initialData.startScale = startScale;
+                initialData.startAlpha = 1f;
+                initialData.soundOn = UIManager.Instance.isSoundOn;
+
+                return initialData;
+            }
+        }
+
+        [Obsolete] public UIAnimator.MoveIn moveIn;
+        [Obsolete] public UIAnimator.RotationIn rotationIn;
+        [Obsolete] public UIAnimator.ScaleIn scaleIn;
+        [Obsolete] public UIAnimator.FadeIn fadeIn;
+        [Obsolete] public UIAnimator.MoveLoop moveLoop;
+        [Obsolete] public UIAnimator.RotationLoop rotationLoop;
+        [Obsolete] public UIAnimator.ScaleLoop scaleLoop;
+        [Obsolete] public UIAnimator.FadeLoop fadeLoop;
+        [Obsolete] public UIAnimator.MoveOut moveOut;
+        [Obsolete] public UIAnimator.RotationOut rotationOut;
+        [Obsolete] public UIAnimator.ScaleOut scaleOut;
+        [Obsolete] public UIAnimator.FadeOut fadeOut;
+        #endregion
+
+        /// <summary>
+        /// This is an extra id tag given to the tweener in order to locate the proper tween that manages the loop animations.
+        /// </summary>
+        /// 
+        public const string LOOP_ANIMATIONS_ID = "UIElementLoopAnimations";
+
+        /// <summary>
+        /// The category this element name belongs to. The category is important when showing or hiding an UIElement as it is taken into account.
+        /// </summary>
+        public string elementCategory = DUI.DEFAULT_CATEGORY_NAME;
+        /// <summary>
+        /// The name of this element. The name is important when showing or hiding an UIElement as it is taken into account.
+        /// </summary>
+        public string elementName = DUI.DEFAULT_ELEMENT_NAME;
+
+        /// <summary>
+        /// Use this UIElement for LANDSCAPE orientation. Default is true.
+        /// <para>If Orientation Manager is disabled, this setting does nothing.</para>
+        /// </summary>
+        public bool LANDSCAPE = true;
+        /// <summary>
+        /// Use this UIElement for PORTRAIT orientation. Default is true.
+        /// <para>If Orientation Manager is disabled, this setting does nothing.</para>
+        /// </summary>
+        public bool PORTRAIT = true;
+
+        /// <summary>
+        /// Hide the UIElement at runtime at start. Initiates an instant Hide. Default is set to false.
+        /// </summary>
+        public bool startHidden = false;
+        /// <summary>
+        /// Animate the UIElement at runtime at start. Initiates a Show, thus playing an In animation. Default is set to false.
+        /// </summary>
+        public bool animateAtStart = false;
+        /// <summary>
+        /// Disables this UIElement when it is not visible (it is hidden) by setting it's active state to false.
+        /// <para>Use this only if you have scripts that you need to disable. Otherwise you don't need it as the system handles the drawcalls in an effecient manner.</para>
+        /// </summary>
+        public bool disableWhenHidden = false;
+
+        /// <summary>
+        /// Automatically issue a 'Hide' command for this UIElement after being shown and after the autoHideDelay duration has passed.
+        /// </summary>
+        public bool autoHide = false;
+        /// <summary>
+        /// If this UIElement is set to automatically autoHide after being shown. A 'Hide' command will get issued by this UIElement, after the set delay duration.
+        /// </summary>
+        public float autoHideDelay = 3f;
+
+        /// <summary>
+        /// Should this UIElement come from or go to a set custom position every time an In or Out animation is played? Default is set to false.
+        /// </summary>
+        public bool useCustomStartAnchoredPosition = false;
+        /// <summary>
+        /// The custom anchored position that this UIElement comes from or goes to when an In or Out animation is played. You can use this in code to cusomize on the fly this positon.
+        /// </summary>
+        public Vector3 customStartAnchoredPosition = Vector3.zero;
+
+        /// <summary>
+        /// This fixes a very strange issue inside Unity. When setting a VerticalLayoutGroup or a HorizontalLayoutGroup, the Image bounds get moved (the image appeares in a different place).
+        /// <para>If you have this issue, just set this to true. Default is set to false.</para>
+        /// <para>If you are curious about what this does, look at the ExecuteLayoutFix method.</para>
+        /// </summary>
+        public bool executeLayoutFix = false;
+
+        /// <summary>
+        /// The button that gets selected when this UIElement gets shown; if null then no button will get auto selected. Default is set to null.
+        /// </summary>
+        public GameObject selectedButton = null;
+
+        /// <summary>
+        /// If this UIElement is linked to an UINotification then it will have an auto-generated element name. Do not change this value yourself.
+        /// </summary>
+        public bool linkedToNotification = false;
+        /// <summary>
+        /// Used by the UINotification. If this element is linked to a notification, then the notification should handle it's registration process in order to use an auto generated name. Do not change this value yourself.
+        /// </summary>
+        public bool autoRegister = true;
+        /// <summary>
+        /// Keeps track if this UIElement is visible or not. Do not change this value yourself.
+        /// </summary>
+        public bool isVisible = true;
+        /// <summary>
+        /// Internal variable that is set to true if this UIElement has other child UIElements. This is uesd by the system in order to handle special Show and Hide use case scenarios.
+        /// </summary>
+        private bool containsChildUIElements = false;
+
+        #region IN ANIMATIONS
+        /// <summary>
+        /// In Animation Settings
+        /// </summary>
+        public Anim inAnimations = new Anim(Anim.AnimationType.In);
+
+        /// <summary>
+        /// UnityEvent invoked when In animations start.
+        /// </summary>
+        public UnityEvent OnInAnimationsStart = new UnityEvent();
+        /// <summary>
+        /// UnityEvent invoked when In animations finished.
+        /// </summary>
+        public UnityEvent OnInAnimationsFinish = new UnityEvent();
+
+        /// <summary>
+        /// Out Animations Preset Category Name
+        /// </summary>
+        public string inAnimationsPresetCategoryName = UIAnimatorUtil.DEFAULT_PRESET_CATEGORY;
+        /// <summary>
+        /// Out Animations Preset Name
+        /// </summary>
+        public string inAnimationsPresetName = UIAnimatorUtil.DEFAULT_PRESET_NAME;
+        /// <summary>
+        /// Should the system load, at runtime, the Animation Preset with the set Preset Category and Preset Name. This overrides any values set in the inspector.
+        /// </summary>
+        public bool loadInAnimationsPresetAtRuntime = false;
+
+        /// <summary>
+        /// The sound name of the sound that gets played when the in animations start.
+        /// </summary>
+        public string inAnimationsSoundAtStart = DUI.DEFAULT_SOUND_NAME;
+        /// <summary>
+        /// Used by the custom inspector to allow you to type a sound name instead of selecting it from the UISounds Database.
+        /// </summary>
+        public bool customInAnimationsSoundAtStart = false;
+        /// <summary>
+        /// The sound name of the sound that gets played when the in animations finished.
+        /// </summary>
+        public string inAnimationsSoundAtFinish = DUI.DEFAULT_SOUND_NAME;
+        /// <summary>
+        /// Used by the custom inspector to allow you to type a sound name instead of selecting it from the UISounds Database.
+        /// </summary>
+        public bool customInAnimationsSoundAtFinish = false;
+        #endregion
+        #region OUT ANIMATIONS
+        /// <summary>
+        /// Out Animation Settings
+        /// </summary>
+        public Anim outAnimations = new Anim(Anim.AnimationType.Out);
+
+        /// <summary>
+        /// UnityEvent invoked when Out animations start.
+        /// </summary>
+        public UnityEvent OnOutAnimationsStart = new UnityEvent();
+        /// <summary>
+        /// UnityEvent invoked when Out animations finished.
+        /// </summary>
+        public UnityEvent OnOutAnimationsFinish = new UnityEvent();
+
+        /// <summary>
+        /// Out Animations Preset Category Name
+        /// </summary>
+        public string outAnimationsPresetCategoryName = UIAnimatorUtil.DEFAULT_PRESET_CATEGORY;
+        /// <summary>
+        /// Out Animations Preset Name
+        /// </summary>
+        public string outAnimationsPresetName = UIAnimatorUtil.DEFAULT_PRESET_NAME;
+        /// <summary>
+        /// Should the system load, at runtime, the Animation Preset with the set Preset Category and Preset Name. This overrides any values set in the inspector.
+        /// </summary>
+        public bool loadOutAnimationsPresetAtRuntime = false;
+
+        /// <summary>
+        /// The sound name of the sound that gets played when the out animations start.
+        /// </summary>
+        public string outAnimationsSoundAtStart = DUI.DEFAULT_SOUND_NAME;
+        /// <summary>
+        /// Used by the custom inspector to allow you to type a sound name instead of selecting it from the UISounds Database.
+        /// </summary>
+        public bool customOutAnimationsSoundAtStart = false;
+        /// <summary>
+        /// The sound name of the sound that gets played when the out animations finished.
+        /// </summary>
+        public string outAnimationsSoundAtFinish = DUI.DEFAULT_SOUND_NAME;
+        /// <summary>
+        /// Used by the custom inspector to allow you to type a sound name instead of selecting it from the UISounds Database.
+        /// </summary>
+        public bool customOutAnimationsSoundAtFinish = false;
+        #endregion
+        #region LOOP ANIMATIONS
+        /// <summary>
+        /// Loop Animation Settings
+        /// </summary>
+        public Loop loopAnimations = new Loop();
+        private bool loopAnimationsArePlaying = false;
+
+        /// <summary>
+        /// Loop Animations Preset Category Name
+        /// </summary>
+        public string loopAnimationsPresetCategoryName = UIAnimatorUtil.DEFAULT_PRESET_CATEGORY;
+        /// <summary>
+        /// Loop Animations Preset Name
+        /// </summary>
+        public string loopAnimationsPresetName = UIAnimatorUtil.DEFAULT_PRESET_NAME;
+        /// <summary>
+        /// Should the system load, at runtime, the Loop Preset with the set Preset Category and Preset Name. This overrides any values set in the inspector.
+        /// </summary>
+        public bool loadLoopAnimationsPresetAtRuntime = false;
+        #endregion
+
+        /// <summary>
+        /// Internal variable that holds a reference to the RectTransform component.
+        /// </summary>
+        private RectTransform m_rectTransform;
+        /// <summary>
+        /// Returns the RectTransform component.
+        /// </summary>
+        public RectTransform RectTransform { get { if (m_rectTransform == null) { m_rectTransform = GetComponent<RectTransform>() == null ? gameObject.AddComponent<RectTransform>() : GetComponent<RectTransform>(); } return m_rectTransform; } }
+        /// <summary>
+        /// Internal variable that holds a reference to the Canvas component.
+        /// </summary>
+        private Canvas m_canvas;
+        /// <summary>
+        /// Returns the Canvas component.
+        /// </summary>
+        public Canvas Canvas { get { if (m_canvas == null) { m_canvas = GetComponent<Canvas>() == null ? gameObject.AddComponent<Canvas>() : GetComponent<Canvas>(); } return m_canvas; } }
+        /// <summary>
+        /// Internal variable that holds a reference to the GraphicRaycaster component.
+        /// </summary>
+        private GraphicRaycaster m_graphicRaycaster;
+        /// <summary>
+        /// Returns the GraphicRaycaster component.
+        /// </summary>
+        public GraphicRaycaster GraphicRaycaster { get { if (m_graphicRaycaster == null) { m_graphicRaycaster = GetComponent<GraphicRaycaster>() == null ? gameObject.AddComponent<GraphicRaycaster>() : GetComponent<GraphicRaycaster>(); } return m_graphicRaycaster; } }
+        /// <summary>
+        /// Internal variable that holds a reference to the CanvasGroup component.
+        /// </summary>
+        private CanvasGroup m_canvasGroup;
+        /// <summary>
+        /// Returns the CanvasGroup component.
+        /// </summary>
+        public CanvasGroup CanvasGroup { get { if (m_canvasGroup == null) { m_canvasGroup = GetComponent<CanvasGroup>() == null ? gameObject.AddComponent<CanvasGroup>() : GetComponent<CanvasGroup>(); } return m_canvasGroup; } }
+
+        /// <summary>
+        /// Internal variable that holds the start RectTransform.anchoredPosition3D.
+        /// </summary>
+        private Vector3 startPosition;
+        /// <summary>
+        /// Internal variable that holds the start RectTransform.localEulerAngles
+        /// </summary>
+        private Vector3 startRotation;
+        /// <summary>
+        /// Internal variable that holds the start RectTransform.localScale
+        /// </summary>
+        private Vector3 startScale;
+        /// <summary>
+        /// Internal variable that holds the start alpha. It does that by checking if a CanvasGroup component is attached (holding the alpha value) or it just rememebers 1 (as in 100% visibility)
+        /// </summary>
+        private float startAlpha;
+
+        /// <summary>
+        /// Internal variable used when disableWhenHidden is set to true. After the element has been hidden (the out animations finished), the system waits for an additional disableTimeBuffer before it sets this gameObject's active state to false. This is a failsafe mesure and fixes a small bug on iOS.
+        /// </summary>
+        private float disableTimeBuffer = 0.05f;
+
+        /// <summary>
+        /// Internal variable that holds a reference to the coroutine that shows the element.
+        /// </summary>
+        private Coroutine cShow;
+        /// <summary>
+        /// Internal variable that holds a reference to the coroutine that hides the element.
+        /// </summary>
+        private Coroutine cHide;
+        /// <summary>
+        /// Internal variable that holds a reference to the coroutine that automatically hides the element after being shown and after the autoHideDelay duration has passed.
+        /// </summary>
+        private Coroutine cAutoHide;
+        /// <summary>
+        /// Internal variable that holds a reference to the coroutine that disables button clicks when in transit (an In or Out animation is running).
+        /// </summary>
+        private Coroutine cDisableButtonClicks;
+
+        /// <summary>
+        /// Internal variable that is set to true whenever either an In or an Out animation is running.
+        /// </summary>
+        private bool inTransition = false;
+
+        /// <summary>
+        /// Internal array that holds the references to all the child Canvases.
+        /// </summary>
+        private Canvas[] childCanvas;
+        /// <summary>
+        /// Internal array the holds the references to all the child UIButtons.
+        /// </summary>
+        private UIButton[] childButtons;
+
+        /// <summary>
+        /// Retruns true if at least one In animation is enabled. This means that if either move or rotate or scale or fade are enabled it will return true and false otherwise.
+        /// </summary>
+        public bool InAnimationsEnabled { get { return inAnimations.Enabled; } }
+        /// <summary>
+        /// Retruns true if at least one Loop animation is enabled. This means that if either move or rotate or scale or fade are enabled it will return true and false otherwise.
+        /// </summary>
+        public bool LoopAnimationsEnabled { get { return loopAnimations.Enabled; } }
+        /// <summary>
+        /// Retruns true if at least one Out animation is enabled. This means that if either move or rotate or scale or fade are enabled it will return true and false otherwise.
+        /// </summary>
+        public bool OutAnimationsEnabled { get { return outAnimations.Enabled; } }
+
+        public void Reset()
+        {
+            RectTransform.localScale = Vector3.one;
+            RectTransform.anchorMin = Vector2.zero;
+            RectTransform.anchorMax = Vector2.one;
+            RectTransform.sizeDelta = Vector2.zero;
+            RectTransform.pivot = new Vector2(0.5f, 0.5f);
+            Canvas.overrideSorting = true;
+
+            if (DUI.DUISettings == null) { return; }
+            LANDSCAPE = DUI.DUISettings.UIElement_LANDSCAPE;
+            PORTRAIT = DUI.DUISettings.UIElement_PORTRAIT;
+
+            startHidden = DUI.DUISettings.UIElement_startHidden;
+            animateAtStart = DUI.DUISettings.UIElement_animateAtStart;
+            disableWhenHidden = DUI.DUISettings.UIElement_disableWhenHidden;
+
+            useCustomStartAnchoredPosition = DUI.DUISettings.UIElement_useCustomStartAnchoredPosition;
+            customStartAnchoredPosition = DUI.DUISettings.UIElement_customStartAnchoredPosition;
+
+            executeLayoutFix = DUI.DUISettings.UIElement_executeLayoutFix;
+
+            inAnimationsPresetCategoryName = DUI.DUISettings.UIElement_inAnimationsPresetCategoryName;
+            inAnimationsPresetName = DUI.DUISettings.UIElement_inAnimationsPresetName;
+            loadInAnimationsPresetAtRuntime = DUI.DUISettings.UIElement_loadInAnimationsPresetAtRuntime;
+
+            outAnimationsPresetCategoryName = DUI.DUISettings.UIElement_outAnimationsPresetCategoryName;
+            outAnimationsPresetName = DUI.DUISettings.UIElement_outAnimationsPresetName;
+            loadOutAnimationsPresetAtRuntime = DUI.DUISettings.UIElement_loadOutAnimationsPresetAtRuntime;
+
+            loopAnimationsPresetCategoryName = DUI.DUISettings.UIElement_loopAnimationsPresetCategoryName;
+            loopAnimationsPresetName = DUI.DUISettings.UIElement_loopAnimationsPresetName;
+            loadLoopAnimationsPresetAtRuntime = DUI.DUISettings.UIElement_loadLoopAnimationsPresetAtRuntime;
+        }
+
+        void Awake()
+        {
+            m_rectTransform = RectTransform;
+            m_canvas = Canvas;
+            m_canvasGroup = CanvasGroup;
+            m_graphicRaycaster = GraphicRaycaster;
+
+            startPosition = useCustomStartAnchoredPosition ? customStartAnchoredPosition : RectTransform.anchoredPosition3D;
+            startRotation = RectTransform.localEulerAngles;
+            startScale = RectTransform.localScale;
+            startAlpha = CanvasGroup == null ? 1 : CanvasGroup.alpha;
+
             childCanvas = GetComponentsInChildren<Canvas>();
             childButtons = GetComponentsInChildren<UIButton>();
 
-            moveIn.soundAtStart = moveInSoundAtStart;
-            moveIn.soundAtFinish = moveInSoundAtFinish;
-            rotationIn.soundAtStart = rotationInSoundAtStart;
-            rotationIn.soundAtFinish = rotationInSoundAtFinish;
-            scaleIn.soundAtStart = scaleInSoundAtStart;
-            scaleIn.soundAtFinish = scaleInSoundAtFinish;
-            fadeIn.soundAtStart = fadeInSoundAtStart;
-            fadeIn.soundAtFinish = fadeInSoundAtFinish;
+            LoadRuntimeInAnimationsPreset();
+            LoadRuntimeOutAnimationsPreset();
+        }
 
-            moveLoop.soundAtStart = moveLoopSoundAtStart;
-            moveLoop.soundAtFinish = moveLoopSoundAtFinish;
-            rotationLoop.soundAtStart = rotationLoopSoundAtStart;
-            rotationLoop.soundAtFinish = rotationLoopSoundAtFinish;
-            scaleLoop.soundAtStart = scaleLoopSoundAtStart;
-            scaleLoop.soundAtFinish = scaleLoopSoundAtFinish;
-            fadeLoop.soundAtStart = fadeLoopSoundAtStart;
-            fadeLoop.soundAtFinish = fadeLoopSoundAtFinish;
-
-            moveOut.soundAtStart = moveOutSoundAtStart;
-            moveOut.soundAtFinish = moveOutSoundAtFinish;
-            rotationOut.soundAtStart = rotationOutSoundAtStart;
-            rotationOut.soundAtFinish = rotationOutSoundAtFinish;
-            scaleOut.soundAtStart = scaleOutSoundAtStart;
-            scaleOut.soundAtFinish = scaleOutSoundAtFinish;
-            fadeOut.soundAtStart = fadeOutSoundAtStart;
-            fadeOut.soundAtFinish = fadeOutSoundAtFinish;
+        void OnEnable()
+        {
+            ExecuteLayoutFix();
+            MoveToCustomStartPosition();
         }
 
         private void Start()
         {
-            if (autoRegister)
-                UIManager.RegisterUiElement(this);
+            if (autoRegister) { RegisterToUIManager(); }
+
+            OnInAnimationsStart.AddListener(InAnimationsStart);
+            OnInAnimationsFinish.AddListener(InAnimationsFinish);
+            OnOutAnimationsStart.AddListener(OutAnimationsStart);
+            OnOutAnimationsFinish.AddListener(OutAnimationsFinish);
+
             SetupElement();
             InitLoopAnimations();
         }
 
-        private void OnEnable()
+        void OnDisable()
         {
-            ExecuteFixForLayouts();
+            if (inTransition && UIManager.Instance != null && UIManager.Instance.autoDisableButtonClicks) { EnableButtonClicks(); }
         }
 
-        private void OnDisable()
+        void OnDestroy()
         {
-            if (UIManager.autoDisableButtonClicks) if (inTransition) EnableButtonClicks();
-        }
+            UnregisterFromUIManager();
 
-        private void OnDestroy()
-        {
-            UIManager.UnregisterUiElement(this);
+            OnInAnimationsStart.RemoveListener(InAnimationsStart);
+            OnInAnimationsFinish.RemoveListener(InAnimationsFinish);
+            OnOutAnimationsStart.RemoveListener(OutAnimationsStart);
+            OnOutAnimationsFinish.RemoveListener(OutAnimationsFinish);
         }
-
-        #region Setup Element Methods
 
         /// <summary>
-        ///     Setups the element.
+        /// Moves the UIElement to the set custom start position.
         /// </summary>
-        private void SetupElement()
+        void MoveToCustomStartPosition()
+        {
+            if (useCustomStartAnchoredPosition) { RectTransform.anchoredPosition3D = customStartAnchoredPosition; }
+        }
+
+        #region RegisterToUIManager / UnregisterFromUIManager
+        /// <summary>
+        /// Registers this UIElement to the UIManager.
+        /// </summary>
+        public void RegisterToUIManager()
+        {
+            if (elementCategory.Equals(DUI.CUSTOM_NAME)) { elementCategory = DUI.DEFAULT_CATEGORY_NAME; } //at runtime the category is reset to the DEFAULT_CATEGORY_NAME so that the system will be able to show/hide this UIElements
+
+            if (UIManager.ElementDatabase.ContainsKey(elementName))
+            {
+                if (UIManager.ElementDatabase[elementName] == null) { UIManager.ElementDatabase[elementName] = new List<UIElement>(); }
+                if (UIManager.ElementDatabase[elementName].Contains(this)) { return; }
+                UIManager.ElementDatabase[elementName].Add(this);
+            }
+            else
+            {
+                UIManager.ElementDatabase.Add(elementName, new List<UIElement>() { this });
+            }
+        }
+        /// <summary>
+        /// Unregisters this UIElement from the UIManager.
+        /// </summary>
+        public void UnregisterFromUIManager()
+        {
+            if (UIManager.ElementDatabase == null) { return; }
+            if (UIManager.ElementDatabase.ContainsKey(elementName))
+            {
+                UIManager.ElementDatabase[elementName].Remove(this);
+                if (UIManager.ElementDatabase[elementName].Count == 0) { UIManager.ElementDatabase.Remove(elementName); }
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Executes the inital setup for this UIElement.
+        /// </summary>
+        void SetupElement()
         {
             if (GetComponentsInChildren<UIElement>().Length > 1)
+            {
                 containsChildUIElements = true;
+            }
 
             if (animateAtStart)
+            {
                 if (linkedToNotification)
                 {
                     Hide(true, false);
@@ -136,25 +540,23 @@ namespace DoozyUI
                 {
                     if (UIManager.useOrientationManager)
                     {
-                        if (UIManager.currentOrientation == UIManager.Orientation.Unknown)
+                        if (UIManager.Instance.currentOrientation == UIManager.Orientation.Unknown)
                         {
                             StartCoroutine(GetOrientation());
                         }
                         else
                         {
-                            if (LANDSCAPE && UIManager.currentOrientation == UIManager.Orientation.Landscape)
+                            if (LANDSCAPE && UIManager.Instance.currentOrientation == UIManager.Orientation.Landscape)
                             {
-                                UIManager.HideUiElement(elementName, true, disableWhenHidden);
-                                UIManager.ShowUiElement(elementName, false);
-                                if (disableWhenHidden && containsChildUIElements)
-                                    StartCoroutine(TriggerShowInTheNextFrame(false));
+                                UIManager.HideUiElement(elementName, elementCategory, true);
+                                UIManager.ShowUiElement(elementName, elementCategory, false);
+                                if (disableWhenHidden && containsChildUIElements) StartCoroutine(TriggerShowInTheNextFrame(false));
                             }
-                            else if (PORTRAIT && UIManager.currentOrientation == UIManager.Orientation.Portrait)
+                            else if (PORTRAIT && UIManager.Instance.currentOrientation == UIManager.Orientation.Portrait)
                             {
-                                UIManager.HideUiElement(elementName, true, disableWhenHidden);
-                                UIManager.ShowUiElement(elementName, false);
-                                if (disableWhenHidden && containsChildUIElements)
-                                    StartCoroutine(TriggerShowInTheNextFrame(false));
+                                UIManager.HideUiElement(elementName, elementCategory, true);
+                                UIManager.ShowUiElement(elementName, elementCategory, false);
+                                if (disableWhenHidden && containsChildUIElements) StartCoroutine(TriggerShowInTheNextFrame(false));
                             }
                             else
                             {
@@ -164,22 +566,387 @@ namespace DoozyUI
                     }
                     else
                     {
-                        UIManager.HideUiElement(elementName, true, disableWhenHidden);
-                        UIManager.ShowUiElement(elementName, false);
-                        if (disableWhenHidden && containsChildUIElements)
-                            StartCoroutine(TriggerShowInTheNextFrame(false));
+                        UIManager.HideUiElement(elementName, elementCategory, true);
+                        UIManager.ShowUiElement(elementName, elementCategory, false);
+                        if (disableWhenHidden && containsChildUIElements) StartCoroutine(TriggerShowInTheNextFrame(false));
                     }
                 }
+            }
             else if (startHidden)
-                UIManager.HideUiElement(elementName, true, disableWhenHidden);
+            {
+                UIManager.HideUiElement(elementName, elementCategory, true);
+            }
+            else
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// Resets the UIElement's RectTransfrom to the start values.
+        /// </summary>
+        void ResetRectTransform()
+        {
+            UIAnimator.ResetTarget(RectTransform, useCustomStartAnchoredPosition ? customStartAnchoredPosition : startPosition, startRotation, startScale, startAlpha);
+        }
+
+        #region Show Methods (IN Animations)
+        /// <summary>
+        /// Loads the In Animations Preset that is set to load at runtime.
+        /// </summary>
+        void LoadRuntimeInAnimationsPreset()
+        {
+            if (loadInAnimationsPresetAtRuntime)
+            {
+                Anim presetAnimation = UIAnimatorUtil.GetInAnim(inAnimationsPresetCategoryName, inAnimationsPresetName);
+                if (presetAnimation != null) { inAnimations = presetAnimation.Copy(); }
+            }
+        }
+
+        /// <summary>
+        /// Special reset for the UIElement's RectTransfrom that is executed before every Show.
+        /// </summary>
+        void ResetBeforeShow(bool resetPosition, bool resetAlpha)
+        {
+            if (resetPosition)
+            {
+                RectTransform.anchoredPosition3D = useCustomStartAnchoredPosition ? customStartAnchoredPosition : startPosition;
+            }
+            RectTransform.eulerAngles = startRotation;
+            RectTransform.localScale = startScale;
+            if (resetAlpha)
+            {
+                if (CanvasGroup == null) { return; }
+                CanvasGroup.alpha = 1f;
+            }
+        }
+
+        /// <summary>
+        /// Shows the element.
+        /// </summary>
+        /// <param name="instantAction">If set to <c>true</c> it will execute the animations in 0 seconds and with 0 delay</param>
+        public void Show(bool instantAction)
+        {
+            if (cHide != null)
+            {
+                isVisible = false;
+                StopCoroutine(cHide);
+                cHide = null;
+            }
+
+            if (!InAnimationsEnabled)
+            {
+                Debug.LogWarning("[DoozyUI] [" + name + "] You are trying to SHOW the " + elementName + " UIElement, but you didn't enable any IN animations. To fix this warning you should enable at least one IN animation.");
+                return;
+            }
+
+            if (isVisible == false)
+            {
+                TriggerInAnimationsEvents();
+                UIAnimator.StopAnimations(RectTransform, Anim.AnimationType.Out);
+                cShow = StartCoroutine(iShow(instantAction));
+                isVisible = true;
+                if (instantAction == false) { DisableButtonClicks(inAnimations.TotalDuration); }
+                if (disableWhenHidden && containsChildUIElements) StartCoroutine(TriggerShowInTheNextFrame(instantAction));
+                ExecuteLayoutFix();
+            }
+        }
+        /// <summary>
+        /// Executes the UIElement Show command in realtime.
+        /// </summary>
+        IEnumerator iShow(bool instantAction)
+        {
+            yield return null;
+            if (loopAnimationsArePlaying) { UIAnimator.StopLoops(RectTransform, LOOP_ANIMATIONS_ID); }
+            ToggleCanvasAndGraphicRaycaster(true);
+            ResetBeforeShow(!inAnimations.move.enabled, !inAnimations.fade.enabled);
+            UIAnimator.Move(RectTransform, useCustomStartAnchoredPosition ? customStartAnchoredPosition : startPosition, inAnimations, StartMoveIn, FinishMoveIn, instantAction, false);
+            UIAnimator.Rotate(RectTransform, startRotation, inAnimations, StartRotateIn, FinishRotateIn, instantAction, false);
+            UIAnimator.Scale(RectTransform, startScale, inAnimations, StartScaleIn, FinishScaleIn, instantAction, false);
+            UIAnimator.Fade(RectTransform, startAlpha, inAnimations, StartFadeIn, FinishFadeIn, instantAction, false);
+            StartCoroutine(iSetSelectedGameObject());
+            if (inAnimations.TotalDuration >= 0 && !instantAction)
+            {
+                yield return new WaitForSecondsRealtime(inAnimations.TotalDuration);
+            }
+            if (childButtons != null && childButtons.Length > 0)
+            {
+                for (int i = 0; i < childButtons.Length; i++)
+                {
+                    childButtons[i].ResetAnimations();
+                }
+            }
+            ResetRectTransform();
+            PlayLoopAnimations();
+            cShow = null;
+            AutoHide(autoHide, autoHideDelay);
+        }
+
+        void StartMoveIn() { }
+        void FinishMoveIn() { }
+        void StartRotateIn() { }
+        void FinishRotateIn() { }
+        void StartScaleIn() { }
+        void FinishScaleIn() { }
+        void StartFadeIn() { }
+        void FinishFadeIn() { }
+
+        /// <summary>
+        /// Executes the selection of the selectedButton after Show finished.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator iSetSelectedGameObject()
+        {
+            yield return null;
+            if (EventSystem.current != null)
+            {
+                EventSystem.current.SetSelectedGameObject(selectedButton);
+            }
+        }
+        #endregion
+
+        #region Hide Methods (OUT Animations)
+        /// <summary>
+        /// Loads the Out Animations Preset that is set to load at runtime.
+        /// </summary>
+        void LoadRuntimeOutAnimationsPreset()
+        {
+            if (loadOutAnimationsPresetAtRuntime)
+            {
+                Anim presetAnimation = UIAnimatorUtil.GetOutAnim(outAnimationsPresetCategoryName, outAnimationsPresetName);
+                if (presetAnimation != null) { outAnimations = presetAnimation.Copy(); }
+            }
+        }
+
+        /// <summary>
+        /// Hides the element.
+        /// </summary>
+        /// <param name="instantAction">If set to <c>true</c> it will execute the animations in 0 seconds and with 0 delay</param>
+        public void Hide(bool instantAction)
+        {
+            Hide(instantAction, disableWhenHidden);
+        }
+        /// <summary>
+        /// Hides the element.
+        /// </summary>
+        /// <param name="instantAction">If set to <c>true</c> it will execute the animations in 0 seconds and with 0 delay</param>
+        public void Hide(bool instantAction, bool shouldDisable)
+        {
+            if (cShow != null)
+            {
+                isVisible = true;
+                StopCoroutine(cShow);
+                cShow = null;
+            }
+
+            if (!OutAnimationsEnabled)
+            {
+                Debug.LogWarning("[DoozyUI] [" + name + "] You are trying to HIDE the " + elementName + " UIElement, but you didn't enable any OUT animations. To fix this warning you should enable at least one OUT animation.");
+                return;
+            }
+
+            if (isVisible)
+            {
+                if (!instantAction) { TriggerOutAnimationsEvents(); } //we do this check so that the events are not triggered onEnable when we have startHidden set as true
+                UIAnimator.StopAnimations(RectTransform, Anim.AnimationType.In);
+                cHide = StartCoroutine(iHide(instantAction, shouldDisable));
+                isVisible = false;
+                if (!instantAction) { DisableButtonClicks(outAnimations.TotalDuration); }
+            }
+        }
+        /// <summary>
+        /// Executes the UIElement Hide command in realtime.
+        /// </summary>
+        IEnumerator iHide(bool instantAction, bool shouldDisable = true)
+        {
+            float start = Time.realtimeSinceStartup;
+            UIAnimator.StopLoops(RectTransform, LOOP_ANIMATIONS_ID);
+            UIAnimator.Move(RectTransform, useCustomStartAnchoredPosition ? customStartAnchoredPosition : startPosition, outAnimations, StartMoveOut, FinishMoveOut, instantAction, false);
+            UIAnimator.Rotate(RectTransform, startRotation, outAnimations, StartRotateOut, FinishRotateOut, instantAction, false);
+            UIAnimator.Scale(RectTransform, startScale, outAnimations, StartScaleOut, FinishScaleOut, instantAction, false);
+            UIAnimator.Fade(RectTransform, startAlpha, outAnimations, StartFadeOut, FinishFadeOut, instantAction, false);
+
+
+            if (shouldDisable)
+            {
+                while (Time.realtimeSinceStartup < start + disableTimeBuffer)
+                {
+                    yield return null;
+                }
+                if (!instantAction)
+                {
+                    while (Time.realtimeSinceStartup < start + outAnimations.TotalDuration + disableTimeBuffer)
+                    {
+                        yield return null;
+                    }
+                }
+                ToggleCanvasAndGraphicRaycaster(false);
+                gameObject.SetActive(false);
+            }
+            else
+            {
+                if (!instantAction)
+                {
+                    while (Time.realtimeSinceStartup < start + outAnimations.TotalDuration + disableTimeBuffer)
+                    {
+                        yield return null;
+                    }
+                }
+                ToggleCanvasAndGraphicRaycaster(false);
+            }
+            cHide = null;
+        }
+
+        void StartMoveOut() { }
+        void FinishMoveOut() { }
+        void StartRotateOut() { }
+        void FinishRotateOut() { }
+        void StartScaleOut() { }
+        void FinishScaleOut() { }
+        void StartFadeOut() { }
+        void FinishFadeOut() { }
+        #endregion
+
+        #region AutoHide
+        /// <summary>
+        /// Initiates an automated auto hide after the UIElement has been shown.
+        /// </summary>
+        /// <param name="enabled">If false, the auto hide will not get started.</param>
+        /// <param name="delay">The duration after the UIElement hass been shown, when the 'Hide' command is issued.</param>
+        public void AutoHide(bool enabled, float delay)
+        {
+            if (!enabled) { return; }
+            if (delay < 0) { delay = 0; }
+            cAutoHide = StartCoroutine(iAutoHide(delay));
+        }
+
+        /// <summary>
+        /// If an AutoHide has been initiated. This method will cancel it.
+        /// </summary>
+        public void CancelAutoHide()
+        {
+            if (cAutoHide != null)
+            {
+                StopCoroutine(cAutoHide);
+                cAutoHide = null;
+            }
+        }
+
+        /// <summary>
+        /// Executes the auto hide after the set delay (calculated in real time).
+        /// </summary>
+        /// <param name="delay"></param>
+        /// <returns></returns>
+        IEnumerator iAutoHide(float delay)
+        {
+            yield return new WaitForSecondsRealtime(delay);
+            UIManager.HideUiElement(elementName, elementCategory);
+            cAutoHide = null;
+        }
+        #endregion
+
+        #region Loop Methods (LOOP Animations)
+        /// <summary>
+        /// Loads the Loop Animations Preset that is set to load at runtime and performs the inital setup of the loop animations.
+        /// </summary>
+        /// <param name="forced"></param>
+        void InitLoopAnimations(bool forced = false)
+        {
+            if (loopAnimationsArePlaying) { return; }
+            if (loadLoopAnimationsPresetAtRuntime)
+            {
+                Loop presetLoop = UIAnimatorUtil.GetLoop(loopAnimationsPresetCategoryName, loopAnimationsPresetName);
+                if (presetLoop != null) { loopAnimations = presetLoop.Copy(); }
+            }
+            if (loopAnimations == null || !loopAnimations.Enabled) { return; }
+            ResetRectTransform();
+            UIAnimator.SetupLoops(RectTransform, startPosition, startRotation, startScale, startAlpha, loopAnimations,
+                     null, null,
+                     null, null,
+                     null, null,
+                     null, null,
+                     LOOP_ANIMATIONS_ID, true, forced);
+            if (loopAnimations.autoStart) { loopAnimationsArePlaying = true; }
+        }
+        /// <summary>
+        /// Plays the loop animations.
+        /// </summary>
+        void PlayLoopAnimations()
+        {
+            UIAnimator.SetupLoops(RectTransform, startPosition, startRotation, startScale, startAlpha, loopAnimations,
+                    null, null,
+                    null, null,
+                    null, null,
+                    null, null,
+                    LOOP_ANIMATIONS_ID, true, false);
+            UIAnimator.PlayLoops(RectTransform, LOOP_ANIMATIONS_ID);
+            loopAnimationsArePlaying = true;
+        }
+        /// <summary>
+        /// Stops playing the loop animations and then resets the RectTransform to the start values.
+        /// </summary>
+        void StopLoopAnimations()
+        {
+            if (!loopAnimationsArePlaying) { return; }
+            UIAnimator.StopLoops(RectTransform, LOOP_ANIMATIONS_ID);
+            loopAnimationsArePlaying = false;
+            ResetRectTransform();
+        }
+        #endregion
+
+        #region Events
+        /// <summary>
+        /// Helper method that invokes an UnityEvent after a set delay. This happens in realtime.
+        /// </summary>
+        private Coroutine InvokeEvent(UnityEvent @event, float delay)
+        {
+            return StartCoroutine(InvokeEventAfterDelay(@event, delay));
+        }
+        /// <summary>
+        /// Executes invoke for the UnityEvent after the set delay. This happens in realtime.
+        /// </summary>
+        /// <param name="event"></param>
+        /// <param name="delay"></param>
+        /// <returns></returns>
+        IEnumerator InvokeEventAfterDelay(UnityEvent @event, float delay)
+        {
+            if (delay >= 0)
+            {
+                yield return new WaitForSecondsRealtime(delay);
+                if (@event != null) { @event.Invoke(); }
+            }
+        }
+
+        /// <summary>
+        /// Internal method that invokes the In Animations UnityEvents whenever an In Animations starts.
+        /// </summary>
+        private void TriggerInAnimationsEvents()
+        {
+            InvokeEvent(OnInAnimationsStart, inAnimations.StartDelay);
+            InvokeEvent(OnInAnimationsFinish, inAnimations.TotalDuration);
+        }
+        /// <summary>
+        /// Internal method that invokes the Out Animations UnityEvents whenever an Out Animations starts.
+        /// </summary>
+        private void TriggerOutAnimationsEvents()
+        {
+            InvokeEvent(OnOutAnimationsStart, outAnimations.StartDelay);
+            InvokeEvent(OnOutAnimationsFinish, outAnimations.TotalDuration);
         }
 
         #endregion
 
-        private void EnableButtonClicks()
+        void InAnimationsStart() { UIManager.PlaySound(inAnimationsSoundAtStart); }
+        void InAnimationsFinish() { UIManager.PlaySound(inAnimationsSoundAtFinish); }
+        void OutAnimationsStart() { UIManager.PlaySound(outAnimationsSoundAtStart); }
+        void OutAnimationsFinish() { UIManager.PlaySound(outAnimationsSoundAtFinish); }
+
+        /// <summary>
+        /// Internal method that enables button clicks by calling UIManager.EnableButtonClicks() at proper times.
+        /// </summary>
+        void EnableButtonClicks()
         {
-            if (!UIManager.autoDisableButtonClicks)
-                return;
+            if (!UIManager.Instance.autoDisableButtonClicks) { return; }
 
             if (inTransition)
             {
@@ -187,758 +954,97 @@ namespace DoozyUI
                 UIManager.EnableButtonClicks();
             }
 
-            if (disableButtonClicksForTime != null)
+            if (cDisableButtonClicks != null)
             {
-                StopCoroutine(disableButtonClicksForTime);
-                disableButtonClicksForTime = null;
+                StopCoroutine(cDisableButtonClicks);
+                cDisableButtonClicks = null;
             }
         }
 
-        private void DisableButtonClicks(float time)
+        /// <summary>
+        /// Internal method that disables the button clicks while an In or an Out animations is running (is in transition).
+        /// </summary>
+        void DisableButtonClicks(float time)
         {
-            if (!UIManager.autoDisableButtonClicks)
-                return;
+            if (!UIManager.Instance.autoDisableButtonClicks) { return; }
 
             EnableButtonClicks();
-            disableButtonClicksForTime = StartCoroutine(DisableButtonClicksForTime(time));
+            cDisableButtonClicks = StartCoroutine(DisableButtonClicksForTime(time));
         }
-
         /// <summary>
-        ///     While an IN or an OUT animations is in transition, we disable the button clicks
+        /// Executes the disabling of the button clicks in realtime.
         /// </summary>
-        private IEnumerator DisableButtonClicksForTime(float delay)
+        IEnumerator DisableButtonClicksForTime(float delay)
         {
             UIManager.DisableButtonClicks();
             inTransition = true;
-            var start = Time.realtimeSinceStartup;
-            while (Time.realtimeSinceStartup < start + delay) yield return null;
+            yield return new WaitForSecondsRealtime(delay);
             inTransition = false;
             UIManager.EnableButtonClicks();
-            disableButtonClicksForTime = null;
+            cDisableButtonClicks = null;
         }
 
-        private void ToggleCanvasAndGraphicRaycaster(bool isEnabled)
+        /// <summary>
+        /// Internal method that is used to disable the Canvas and the GraphicRaycaster when the UIElement is hidden and to enable them when the UIElement is visible. This manages the draw calls without setting the gameObject's active state to false.
+        /// </summary>
+        /// <param name="isEnabled"></param>
+        void ToggleCanvasAndGraphicRaycaster(bool isEnabled)
         {
             Canvas.enabled = isEnabled;
             GraphicRaycaster.enabled = isEnabled;
         }
 
-        private IEnumerator GetOrientation()
+        /// <summary>
+        /// Gets and Executes the orientation update for this UIElement.
+        /// </summary>
+        IEnumerator GetOrientation()
         {
-            while (UIManager.currentOrientation == UIManager.Orientation.Unknown)
+            while (UIManager.Instance.currentOrientation == UIManager.Orientation.Unknown)
             {
-                UIManager.CheckDeviceOrientation();
-                if (UIManager.currentOrientation != UIManager.Orientation.Unknown)
+                UIManager.Instance.OrientationManager.CheckDeviceOrientation();
+                if (UIManager.Instance.currentOrientation != UIManager.Orientation.Unknown)
                     break;
 
                 yield return null;
             }
 
-            if (LANDSCAPE && UIManager.currentOrientation == UIManager.Orientation.Landscape)
+            if (LANDSCAPE && UIManager.Instance.currentOrientation == UIManager.Orientation.Landscape)
             {
-                UIManager.HideUiElement(elementName, true, disableWhenHidden);
-                UIManager.ShowUiElement(elementName, false);
+                UIManager.HideUiElement(elementName, elementCategory, true);
+                UIManager.ShowUiElement(elementName, elementCategory, false);
             }
-            else if (PORTRAIT && UIManager.currentOrientation == UIManager.Orientation.Portrait)
+            else if (PORTRAIT && UIManager.Instance.currentOrientation == UIManager.Orientation.Portrait)
             {
-                UIManager.HideUiElement(elementName, true, disableWhenHidden);
-                UIManager.ShowUiElement(elementName, false);
+                UIManager.HideUiElement(elementName, elementCategory, true);
+                UIManager.ShowUiElement(elementName, elementCategory, false);
             }
         }
 
         /// <summary>
-        ///     This fixes a very strange issue inside Unity. When setting a VerticalLayoutGroup or a HorizontalLayoutGroup, the
-        ///     Image bounds get moved (the image appeares in a different place).
-        ///     We could not find a better solution, but this should work for now.
+        /// This fixes a very strange issue inside Unity. When setting a VerticalLayoutGroup or a HorizontalLayoutGroup, the Image bounds get moved (the image appeares in a different place).
+        /// We could not find a better solution, but this should work for now.
         /// </summary>
-        private void ExecuteFixForLayouts()
+        void ExecuteLayoutFix()
         {
+            if (!executeLayoutFix) { return; }
             childCanvas = GetComponentsInChildren<Canvas>();
             if (childCanvas != null && childCanvas.Length > 0)
-                for (var i = 0; i < childCanvas.Length; i++)
+            {
+                for (int i = 0; i < childCanvas.Length; i++)
                 {
-                    childCanvas[i].enabled = false;
-                    childCanvas[i].enabled = true;
+                    childCanvas[i].enabled = !childCanvas[i].enabled;
+                    childCanvas[i].enabled = !childCanvas[i].enabled;
                 }
+            }
         }
 
-        private IEnumerator TriggerShowInTheNextFrame(bool instantAction)
+        /// <summary>
+        /// If this UIElement has other child UIElements and was disabled when it was hidden, this comes into play. It calls again, in the next frame, the Show command so that the child UIElements will show up (provided they have the same element category and name).
+        /// </summary>
+        IEnumerator TriggerShowInTheNextFrame(bool instantAction)
         {
             yield return null;
-            UIManager.ShowUiElement(elementName, instantAction);
+            UIManager.ShowUiElement(elementName, elementCategory, instantAction);
         }
-
-        #region Internal Classes --> ElementName, TriggerEvent
-
-        [Serializable]
-        public class ElementName
-        {
-            public string elementName = UIManager.DEFAULT_ELEMENT_NAME;
-        }
-
-        [Serializable]
-        public class TriggerEvent : UnityEvent
-        {
-        }
-
-        #endregion
-
-        #region BACKUP VARIABLES
-
-        public string elementName = UIManager.DEFAULT_ELEMENT_NAME;
-
-        public string moveInSoundAtStart = UIManager.DEFAULT_SOUND_NAME;
-        public string moveInSoundAtFinish = UIManager.DEFAULT_SOUND_NAME;
-        public string rotationInSoundAtStart = UIManager.DEFAULT_SOUND_NAME;
-        public string rotationInSoundAtFinish = UIManager.DEFAULT_SOUND_NAME;
-        public string scaleInSoundAtStart = UIManager.DEFAULT_SOUND_NAME;
-        public string scaleInSoundAtFinish = UIManager.DEFAULT_SOUND_NAME;
-        public string fadeInSoundAtStart = UIManager.DEFAULT_SOUND_NAME;
-        public string fadeInSoundAtFinish = UIManager.DEFAULT_SOUND_NAME;
-
-        public string moveLoopSoundAtStart = UIManager.DEFAULT_SOUND_NAME;
-        public string moveLoopSoundAtFinish = UIManager.DEFAULT_SOUND_NAME;
-        public string rotationLoopSoundAtStart = UIManager.DEFAULT_SOUND_NAME;
-        public string rotationLoopSoundAtFinish = UIManager.DEFAULT_SOUND_NAME;
-        public string scaleLoopSoundAtStart = UIManager.DEFAULT_SOUND_NAME;
-        public string scaleLoopSoundAtFinish = UIManager.DEFAULT_SOUND_NAME;
-        public string fadeLoopSoundAtStart = UIManager.DEFAULT_SOUND_NAME;
-        public string fadeLoopSoundAtFinish = UIManager.DEFAULT_SOUND_NAME;
-
-        public string moveOutSoundAtStart = UIManager.DEFAULT_SOUND_NAME;
-        public string moveOutSoundAtFinish = UIManager.DEFAULT_SOUND_NAME;
-        public string rotationOutSoundAtStart = UIManager.DEFAULT_SOUND_NAME;
-        public string rotationOutSoundAtFinish = UIManager.DEFAULT_SOUND_NAME;
-        public string scaleOutSoundAtStart = UIManager.DEFAULT_SOUND_NAME;
-        public string scaleOutSoundAtFinish = UIManager.DEFAULT_SOUND_NAME;
-        public string fadeOutSoundAtStart = UIManager.DEFAULT_SOUND_NAME;
-        public string fadeOutSoundAtFinish = UIManager.DEFAULT_SOUND_NAME;
-
-        #endregion
-
-        #region Public Variables
-
-        public bool showHelp;
-
-        public bool LANDSCAPE = true;
-        public bool PORTRAIT = true;
-
-        public bool linkedToNotification
-            ; //if we link a notification to this UIElement, then we will let the UINotification auto-generate the elementName; thus we need to disable user's ability to tamper with it
-
-        public bool useCustomStartAnchoredPosition;
-        public Vector3 customStartAnchoredPosition = Vector3.zero;
-
-        public ElementName elementNameReference = new ElementName();
-        public bool startHidden;
-        public bool animateAtStart;
-        public bool disableWhenHidden;
-
-        public GameObject selectedButton
-            ; //this is the button that gets selected when this UIElement gets shown; if null then no button will get auto selected
-
-        public bool autoRegister = true
-            ; //if this element is handled by a notification, the we let the notification handle the registration process with an auto generated name
-
-        public bool isVisible = true;
-
-        public bool containsChildUIElements;
-
-        //
-        public bool useInAnimations;
-
-        public bool useLoopAnimations;
-        public bool useOutAnimations;
-
-        //
-        public bool useInAnimationsStartEvents;
-
-        public bool useInAnimationsFinishEvents;
-        public bool useOutAnimationsStartEvents;
-        public bool useOutAnimationsFinishEvents;
-
-        //In Animations
-        public int activeInAnimationsPresetIndex;
-
-        public string[] inAnimationsPresetNames;
-        public string inAnimationsPresetName = UIAnimationManager.DEFAULT_PRESET_NAME;
-        public UIAnimator.MoveIn moveIn = new UIAnimator.MoveIn();
-        public UIAnimator.RotationIn rotationIn = new UIAnimator.RotationIn();
-        public UIAnimator.ScaleIn scaleIn = new UIAnimator.ScaleIn();
-        public UIAnimator.FadeIn fadeIn = new UIAnimator.FadeIn();
-
-        //Loop Animations
-        public int activeLoopAnimationsPresetIndex;
-
-        public string[] loopAnimationsPresetNames;
-        public string loopAnimationsPresetName = UIAnimationManager.DEFAULT_PRESET_NAME;
-        public UIAnimator.MoveLoop moveLoop = new UIAnimator.MoveLoop();
-        public UIAnimator.RotationLoop rotationLoop = new UIAnimator.RotationLoop();
-        public UIAnimator.ScaleLoop scaleLoop = new UIAnimator.ScaleLoop();
-        public UIAnimator.FadeLoop fadeLoop = new UIAnimator.FadeLoop();
-
-        //Out Animations
-        public int activeOutAnimationsPresetIndex;
-
-        public string[] outAnimationsPresetNames;
-        public string outAnimationsPresetName = UIAnimationManager.DEFAULT_PRESET_NAME;
-        public UIAnimator.MoveOut moveOut = new UIAnimator.MoveOut();
-        public UIAnimator.RotationOut rotationOut = new UIAnimator.RotationOut();
-        public UIAnimator.ScaleOut scaleOut = new UIAnimator.ScaleOut();
-        public UIAnimator.FadeOut fadeOut = new UIAnimator.FadeOut();
-
-        public TriggerEvent onInAnimationsStart = new TriggerEvent();
-        public TriggerEvent onInAnimationsFinish = new TriggerEvent();
-        public TriggerEvent onOutAnimationsStart = new TriggerEvent();
-        public TriggerEvent onOutAnimationsFinish = new TriggerEvent();
-
-        #endregion
-
-        #region Private Variables
-
-        [SerializeField] private UIAnimationManager animationManager;
-
-        private Canvas Canvas;
-        private GraphicRaycaster GraphicRaycaster;
-
-        private RectTransform rectTransform;
-
-        private Vector3 startAnchoredPosition3D;
-        private Vector3 startRotation;
-        private Vector3 startScale;
-
-
-        private readonly float disableTimeBuffer = 0.5f;
-
-        private WaitForSeconds outAnimationsDDisableDelay
-            ; //this will be the max time+delay for animations delay before the disable
-
-        private Coroutine inAnimationsCoroutine;
-        private Coroutine outAnimationsCoroutine;
-
-        private bool inTransition
-            ; //if this UIElement is running DisableButtonClicksForTime and we disable it before it needs to finish, we trigger EnableButtonClicks OnDisable
-
-        private Coroutine disableButtonClicksForTime;
-
-        private float inAnimationsFinishTime;
-        private float outAnimationsFinishTime;
-        private Canvas[] childCanvas;
-        private UIButton[] childButtons;
-
-        #endregion
-
-        #region Properties
-
-        public UIAnimationManager GetAnimationManager
-        {
-            get
-            {
-                if (animationManager == null)
-                {
-                    animationManager = GetComponent<UIAnimationManager>();
-                    if (animationManager == null)
-                        animationManager = gameObject.AddComponent<UIAnimationManager>();
-                }
-                return animationManager;
-            }
-        }
-
-        public string[] GetInAnimationsPresetNames
-        {
-            get
-            {
-                GetAnimationManager.LoadPresetList(UIAnimationManager.AnimationType.IN);
-                return inAnimationsPresetNames;
-            }
-        }
-
-        public string[] GetLoopAnimationsPresetNames
-        {
-            get
-            {
-                GetAnimationManager.LoadPresetList(UIAnimationManager.AnimationType.LOOP);
-                return loopAnimationsPresetNames;
-            }
-        }
-
-        public string[] GetOutAnimationsPresetNames
-        {
-            get
-            {
-                GetAnimationManager.LoadPresetList(UIAnimationManager.AnimationType.OUT);
-                return outAnimationsPresetNames;
-            }
-        }
-
-        public UIAnimationManager.InAnimations GetInAnimations
-        {
-            get
-            {
-                var inAnimations = new UIAnimationManager.InAnimations();
-                inAnimations.inAnimationsPresetName = inAnimationsPresetName;
-                inAnimations.moveIn = moveIn;
-                inAnimations.rotationIn = rotationIn;
-                inAnimations.scaleIn = scaleIn;
-                inAnimations.fadeIn = fadeIn;
-                return inAnimations;
-            }
-        }
-
-        public UIAnimationManager.InAnimations SetInAnimations
-        {
-            set
-            {
-                inAnimationsPresetName = value.inAnimationsPresetName;
-                moveIn = value.moveIn;
-                rotationIn = value.rotationIn;
-                scaleIn = value.scaleIn;
-                fadeIn = value.fadeIn;
-            }
-        }
-
-        public UIAnimationManager.LoopAnimations GetLoopAnimations
-        {
-            get
-            {
-                var loopAnimations = new UIAnimationManager.LoopAnimations();
-                loopAnimations.loopAnimationsPresetName = loopAnimationsPresetName;
-                loopAnimations.moveLoop = moveLoop;
-                loopAnimations.rotationLoop = rotationLoop;
-                loopAnimations.scaleLoop = scaleLoop;
-                loopAnimations.fadeLoop = fadeLoop;
-                return loopAnimations;
-            }
-        }
-
-        public UIAnimationManager.LoopAnimations SetLoopAnimations
-        {
-            set
-            {
-                loopAnimationsPresetName = value.loopAnimationsPresetName;
-                moveLoop = value.moveLoop;
-                rotationLoop = value.rotationLoop;
-                scaleLoop = value.scaleLoop;
-                fadeLoop = value.fadeLoop;
-            }
-        }
-
-        public UIAnimationManager.OutAnimations GetOutAnimations
-        {
-            get
-            {
-                var outAnimations = new UIAnimationManager.OutAnimations();
-                outAnimations.outAnimationsPresetName = outAnimationsPresetName;
-                outAnimations.moveOut = moveOut;
-                outAnimations.rotationOut = rotationOut;
-                outAnimations.scaleOut = scaleOut;
-                outAnimations.fadeOut = fadeOut;
-                return outAnimations;
-            }
-        }
-
-        public UIAnimationManager.OutAnimations SetOutAnimations
-        {
-            set
-            {
-                outAnimationsPresetName = value.outAnimationsPresetName;
-                moveOut = value.moveOut;
-                rotationOut = value.rotationOut;
-                scaleOut = value.scaleOut;
-                fadeOut = value.fadeOut;
-            }
-        }
-
-        public UIAnimator.InitialData GetInitialData
-        {
-            get
-            {
-                var initialData = new UIAnimator.InitialData();
-                initialData.startAnchoredPosition3D = useCustomStartAnchoredPosition
-                    ? customStartAnchoredPosition
-                    : startAnchoredPosition3D;
-                initialData.startRotation = startRotation;
-                initialData.startScale = startScale;
-                initialData.startFadeAlpha = 1f;
-                initialData.soundOn = UIManager.isSoundOn;
-
-                return initialData;
-            }
-        }
-
-        public RectTransform GetRectTransform
-        {
-            get
-            {
-                if (rectTransform == null)
-                    rectTransform = GetComponent<RectTransform>();
-                return rectTransform;
-            }
-        }
-
-        /// <summary>
-        ///     Retruns TRUE if at least one IN Animation is enabled. Otherwise it returns FALSE
-        /// </summary>
-        public bool AreInAnimationsEnabled
-        {
-            get
-            {
-                if (moveIn.enabled) return true;
-                if (rotationIn.enabled) return true;
-                if (scaleIn.enabled) return true;
-                if (fadeIn.enabled) return true;
-                return false;
-            }
-        }
-
-        /// <summary>
-        ///     Retruns TRUE if at least one LOOP Animation is enabled. Otherwise it returns FALSE
-        /// </summary>
-        public bool AreLoopAnimationsEnabled
-        {
-            get
-            {
-                if (moveLoop.enabled) return true;
-                if (rotationLoop.enabled) return true;
-                if (scaleLoop.enabled) return true;
-                if (fadeLoop.enabled) return true;
-                return false;
-            }
-        }
-
-        /// <summary>
-        ///     Retruns TRUE if at least one OUT Animation is enabled. Otherwise it returns FALSE
-        /// </summary>
-        public bool AreOutAnimationsEnabled
-        {
-            get
-            {
-                if (moveOut.enabled) return true;
-                if (rotationOut.enabled) return true;
-                if (scaleOut.enabled) return true;
-                if (fadeOut.enabled) return true;
-                return false;
-            }
-        }
-
-        #endregion
-
-        #region Show Methods (IN Animations)
-
-        /// <summary>
-        ///     Shows the element.
-        /// </summary>
-        /// <param name="instantAction">If set to <c>true</c> it will execute the animations in 0 seconds and with 0 delay</param>
-        public void Show(bool instantAction)
-        {
-            if (outAnimationsCoroutine != null)
-            {
-                isVisible = false;
-                StopCoroutine(outAnimationsCoroutine);
-                outAnimationsCoroutine = null;
-            }
-
-            if (AreInAnimationsEnabled)
-            {
-                if (isVisible == false)
-                {
-                    inAnimationsFinishTime = GetInAnimationsFinishTime();
-                    TriggerInAnimationsEvents();
-                    UIAnimator.StopOutAnimations(GetRectTransform, GetInitialData);
-                    inAnimationsCoroutine = StartCoroutine(InAnimationsEnumerator(instantAction));
-                    isVisible = true;
-                    if (instantAction == false) DisableButtonClicks(inAnimationsFinishTime);
-                    if (disableWhenHidden && containsChildUIElements)
-                        StartCoroutine(TriggerShowInTheNextFrame(instantAction));
-                    ExecuteFixForLayouts();
-                }
-            }
-            else if (AreInAnimationsEnabled == false)
-            {
-                Debug.LogWarning("[DoozyUI] [" + name + "] You are trying to SHOW the " + elementName +
-                                 " UIElement, but you didn't enable any IN animations. To fix this warning you should enable at least one IN animation.");
-            }
-        }
-
-        private IEnumerator SetSelectedGameObject()
-        {
-            var infiniteLoopCount = 0;
-            while (UIManager.GetEventSystem == null)
-            {
-                yield return null;
-                infiniteLoopCount++;
-                if (infiniteLoopCount > 1000) break;
-            }
-            UIManager.GetEventSystem.SetSelectedGameObject(selectedButton);
-        }
-
-        private IEnumerator InAnimationsEnumerator(bool instantAction)
-        {
-            yield return null;
-            UIAnimator.StopLoopAnimations(GetRectTransform, GetInitialData);
-            ToggleCanvasAndGraphicRaycaster(true);
-            UIAnimator.DoMoveIn(moveIn, GetRectTransform, GetInitialData, instantAction);
-            UIAnimator.DoRotationIn(rotationIn, GetRectTransform, GetInitialData, instantAction);
-            UIAnimator.DoScaleIn(scaleIn, GetRectTransform, GetInitialData, instantAction);
-            UIAnimator.DoFadeIn(fadeIn, GetRectTransform, GetInitialData, instantAction);
-            StartCoroutine("SetSelectedGameObject");
-            inAnimationsCoroutine = null;
-            //yield return null;
-            yield return new WaitForSecondsRealtime(GetInAnimationsFinishTime());
-            if (childButtons != null && childButtons.Length > 0)
-                for (var i = 0; i < childButtons.Length; i++)
-                    childButtons[i].ResetAnimations();
-        }
-
-        #endregion
-
-        #region Loop Methods (LOOP Animations)
-
-        /// <summary>
-        ///     Initiates (if enabled) and plays (if set to autoStart) the idle animations.
-        /// </summary>
-        public void InitLoopAnimations()
-        {
-            if (AreLoopAnimationsEnabled)
-                StartCoroutine(LoopAnimationsEnumerator());
-        }
-
-        private IEnumerator LoopAnimationsEnumerator()
-        {
-            yield return null;
-            UIAnimator.DoMoveLoop(moveLoop, GetRectTransform, GetInitialData);
-            UIAnimator.DoRotationLoop(rotationLoop, GetRectTransform, GetInitialData);
-            UIAnimator.DoScaleLoop(scaleLoop, GetRectTransform, GetInitialData);
-            UIAnimator.DoFadeLoop(fadeLoop, GetRectTransform, GetInitialData);
-        }
-
-        #endregion
-
-        #region Hide Methods (OUT Animations)
-
-        public void Hide(bool instantAction)
-        {
-            Hide(instantAction, true);
-        }
-
-        /// <summary>
-        ///     Hides the element.
-        /// </summary>
-        /// <param name="instantAction">If set to <c>true</c> it will execute the animations in 0 seconds and with 0 delay</param>
-        public void Hide(bool instantAction, bool shouldDisable)
-        {
-            if (inAnimationsCoroutine != null)
-            {
-                isVisible = true;
-                StopCoroutine(inAnimationsCoroutine);
-                inAnimationsCoroutine = null;
-            }
-            if (AreOutAnimationsEnabled)
-            {
-                if (isVisible)
-                {
-                    outAnimationsFinishTime = GetOutAnimationsFinishTime();
-                    if (instantAction == false) TriggerOutAnimationsEvents();
-                    UIAnimator.StopInAnimations(GetRectTransform, GetInitialData);
-                    outAnimationsCoroutine = StartCoroutine(OutAnimationsEnumerator(instantAction, shouldDisable));
-                    isVisible = false;
-                    if (instantAction == false) DisableButtonClicks(outAnimationsFinishTime);
-                }
-            }
-            else if (AreOutAnimationsEnabled == false)
-            {
-                Debug.LogWarning("[DoozyUI] [" + name + "] You are trying to HIDE the " + elementName +
-                                 " UIElement, but you didn't enable any OUT animations. To fix this warning you should enable at least one OUT animation.");
-            }
-        }
-
-        private IEnumerator OutAnimationsEnumerator(bool instantAction, bool shouldDisable = true)
-        {
-            var start = Time.realtimeSinceStartup;
-            UIAnimator.StopLoopAnimations(GetRectTransform, GetInitialData);
-            UIAnimator.DoMoveOut(moveOut, GetRectTransform, GetInitialData, instantAction);
-            UIAnimator.DoRotationOut(rotationOut, GetRectTransform, GetInitialData, instantAction);
-            UIAnimator.DoScaleOut(scaleOut, GetRectTransform, GetInitialData, instantAction);
-            UIAnimator.DoFadeOut(fadeOut, GetRectTransform, GetInitialData, instantAction);
-            if (disableWhenHidden)
-            {
-                if (shouldDisable)
-                {
-                    while (Time.realtimeSinceStartup < start + disableTimeBuffer) yield return null;
-                    if (instantAction == false)
-                        while (Time.realtimeSinceStartup < start + outAnimationsFinishTime + disableTimeBuffer)
-                            yield return null;
-                    ToggleCanvasAndGraphicRaycaster(false);
-                    gameObject.SetActive(false);
-                }
-            }
-            else
-            {
-                if (instantAction == false)
-                    while (Time.realtimeSinceStartup < start + outAnimationsFinishTime + disableTimeBuffer)
-                        yield return null;
-                ToggleCanvasAndGraphicRaycaster(false);
-            }
-            outAnimationsCoroutine = null;
-            yield return null;
-        }
-
-        #endregion
-
-        #region Animation Start and Finish Times
-
-        /// <summary>
-        ///     This returns the start time of the IN Animations, taking into account all the delays. It retruns the minimum
-        ///     animationStartDelay.
-        ///     How long does the animation take to start?
-        ///     It will return -1 if no IN Animations are enabled
-        /// </summary>
-        /// <returns></returns>
-        private float GetInAnimationsStartTime()
-        {
-            if (moveIn.enabled || rotationIn.enabled || scaleIn.enabled || fadeIn.enabled)
-                return Mathf.Min(moveIn.enabled ? moveIn.delay : 10000,
-                    rotationIn.enabled ? rotationIn.delay : 10000,
-                    scaleIn.enabled ? scaleIn.delay : 10000,
-                    fadeIn.enabled ? fadeIn.delay : 10000);
-            return -1f;
-        }
-
-        /// <summary>
-        ///     This returns the finish time of the IN Animations, taking into account all the delays. It retruns the maximum
-        ///     animationStatDelay + the maximum animationTime.
-        ///     How long does the animation take to finish?
-        ///     It will return -1 if no IN Animations are enabled
-        /// </summary>
-        /// <returns></returns>
-        private float GetInAnimationsFinishTime()
-        {
-            if (moveIn.enabled || rotationIn.enabled || scaleIn.enabled || fadeIn.enabled)
-                return Mathf.Max(moveIn.enabled ? moveIn.time + moveIn.delay : 0,
-                    rotationIn.enabled ? rotationIn.time + rotationIn.delay : 0,
-                    scaleIn.enabled ? scaleIn.time + scaleIn.delay : 0,
-                    fadeIn.enabled ? fadeIn.time + fadeIn.delay : 0);
-            return -1f;
-        }
-
-        /// <summary>
-        ///     This returns the start time of the OUT Animations, taking into account all the delays. It retruns the minimum
-        ///     animationStartDelay.
-        ///     How long does the animation take to start?
-        ///     It will return -1 if no OUT Animations are enabled
-        /// </summary>
-        /// <returns></returns>
-        private float GetOutAnimationsStartTime()
-        {
-            if (moveOut.enabled || rotationOut.enabled || scaleOut.enabled || fadeOut.enabled)
-                return Mathf.Min(moveOut.enabled ? moveOut.delay : 10000,
-                    rotationOut.enabled ? rotationOut.delay : 10000,
-                    scaleOut.enabled ? scaleOut.delay : 10000,
-                    fadeOut.enabled ? fadeOut.delay : 10000);
-            return -1f;
-        }
-
-        /// <summary>
-        ///     This returns the finish time of the OUT Animations, taking into account all the delays. It retruns the maximum
-        ///     animationStatDelay + the maximum animationTime.
-        ///     How long does the animation take to finish?
-        ///     It will return -1 if no OUT Animations are enabled
-        /// </summary>
-        /// <returns></returns>
-        private float GetOutAnimationsFinishTime()
-        {
-            if (moveOut.enabled || rotationOut.enabled || scaleOut.enabled || fadeOut.enabled)
-                return Mathf.Max(moveOut.enabled ? moveOut.time + moveOut.delay : 0,
-                    rotationOut.enabled ? rotationOut.time + rotationOut.delay : 0,
-                    scaleOut.enabled ? scaleOut.time + scaleOut.delay : 0,
-                    fadeOut.enabled ? fadeOut.time + fadeOut.delay : 0);
-            return -1f;
-        }
-
-        #endregion
-
-        #region Events
-
-        #region IN Animations
-
-        /// <summary>
-        ///     Triggers the IN Animations Events, if enabled.
-        /// </summary>
-        private void TriggerInAnimationsEvents()
-        {
-            if (useInAnimationsStartEvents)
-                if (GetInAnimationsStartTime() == -1)
-                    Debug.Log("[DoozyUI] You have activated IN Animations Start Events for the " + elementName +
-                              " UIElement on " + gameObject.name +
-                              " gameObject, but you did not enable any IN animations. Nothing happened!");
-                else
-                    StartCoroutine(TriggerInAnimaionsStartEvents(GetInAnimationsStartTime()));
-
-            if (useInAnimationsFinishEvents)
-                if (GetInAnimationsFinishTime() == -1)
-                    Debug.Log("[DoozyUI] You have activated IN Animations Finish Events for the " + elementName +
-                              " UIElement on " + gameObject.name +
-                              " gameObject, but you did not enable any IN animations. Nothing happened!");
-                else
-                    StartCoroutine(TriggerInAnimaionsFinishEvents(inAnimationsFinishTime));
-        }
-
-        private IEnumerator TriggerInAnimaionsStartEvents(float delay)
-        {
-            var start = Time.realtimeSinceStartup;
-            while (Time.realtimeSinceStartup < start + delay) yield return null;
-            onInAnimationsStart.Invoke();
-        }
-
-        private IEnumerator TriggerInAnimaionsFinishEvents(float delay)
-        {
-            var start = Time.realtimeSinceStartup;
-            while (Time.realtimeSinceStartup < start + delay) yield return null;
-            onInAnimationsFinish.Invoke();
-        }
-
-        #endregion
-
-        #region OUT Animations
-
-        /// <summary>
-        ///     Triggers the OUT Animations Events, if enabled.
-        /// </summary>
-        private void TriggerOutAnimationsEvents()
-        {
-            if (useOutAnimationsStartEvents)
-                if (GetOutAnimationsStartTime() == -1)
-                    Debug.Log("[DoozyUI] You have activated OUT Animations Start Events for the " + elementName +
-                              " UIElement on " + gameObject.name +
-                              " gameObject, but you did not enable any OUT animations. Nothing happened!");
-                else
-                    StartCoroutine(TriggerOutAnimaionsStartEvents(GetOutAnimationsStartTime()));
-
-            if (useOutAnimationsFinishEvents)
-                if (GetOutAnimationsFinishTime() == -1)
-                    Debug.Log("[DoozyUI] You have activated OUT Animations Finish Events for the " + elementName +
-                              " UIElement on " + gameObject.name +
-                              " gameObject, but you did not enable any OUT animations. Nothing happened!");
-                else
-                    StartCoroutine(TriggerOutAnimaionsFinishEvents(GetOutAnimationsFinishTime()));
-        }
-
-        private IEnumerator TriggerOutAnimaionsStartEvents(float delay)
-        {
-            var start = Time.realtimeSinceStartup;
-            while (Time.realtimeSinceStartup < start + delay) yield return null;
-            onOutAnimationsStart.Invoke();
-        }
-
-        private IEnumerator TriggerOutAnimaionsFinishEvents(float delay)
-        {
-            var start = Time.realtimeSinceStartup;
-            while (Time.realtimeSinceStartup < start + delay) yield return null;
-            onOutAnimationsFinish.Invoke();
-        }
-
-        #endregion
-
-        #endregion
     }
 }

@@ -1,192 +1,354 @@
-// Copyright (c) 2015 - 2016 Doozy Entertainment / Marlink Trading SRL. All Rights Reserved.
+// Copyright (c) 2015 - 2017 Doozy Entertainment / Marlink Trading SRL. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-
-#endif
 
 namespace DoozyUI
 {
-    [AddComponentMenu("DoozyUI/UI Effect", 4)]
-    [RequireComponent(typeof(ParticleSystem))]
+    [AddComponentMenu(DUI.COMPONENT_MENU_UIEFFECT, DUI.MENU_PRIORITY_UIEFFECT)]
+    [DisallowMultipleComponent]
     public class UIEffect : MonoBehaviour
     {
-        #region Enums
-
-        public enum EffectPosition
-        {
-            InFrontOfTarget,
-            BehindTarget
-        }
-
-        #endregion
-
         #region Context Menu Methods
-
 #if UNITY_EDITOR
-
-        [MenuItem("DoozyUI/Components/UI Effect", false, 4)]
-        [MenuItem("GameObject/DoozyUI/UI Effect", false, 4)]
-        private static void CreateCustomGameObject(MenuCommand menuCommand)
+        [UnityEditor.MenuItem(DUI.GAMEOBJECT_MENU_UIEFFECT, false, DUI.MENU_PRIORITY_UIEFFECT)]
+        static void CreateEffect(UnityEditor.MenuCommand menuCommand)
         {
-            if (GameObject.Find("UIManager") == null)
+            GameObject selectedGO = menuCommand.context as GameObject;
+            GameObject go = new GameObject("UIEffect", typeof(UIEffect));
+            UnityEditor.GameObjectUtility.SetParentAndAlign(go, menuCommand.context as GameObject);
+            UnityEditor.Undo.RegisterCreatedObjectUndo(go, "Create " + go.name);
+            if (selectedGO != null && selectedGO.GetComponent<RectTransform>() != null)
             {
-                Debug.LogError(
-                    "[DoozyUI] The DoozyUI system was not found in the scene. Please add it before trying to create a UI Effect.");
-                return;
-            }
-            var go = new GameObject("New UIEffect");
-            GameObjectUtility.SetParentAndAlign(go, menuCommand.context as GameObject);
-            Undo.RegisterCreatedObjectUndo(go, "Create " + go.name);
-            if (go.GetComponent<Transform>() != null)
                 go.AddComponent<RectTransform>();
-            if (go.transform.parent == null)
-                go.transform.SetParent(UIManager.GetUiContainer);
-            go.GetComponent<RectTransform>().localScale = Vector3.one;
-            go.AddComponent<UIEffect>();
-            Selection.activeObject = go;
+                go.GetComponent<RectTransform>().localScale = Vector3.one;
+                go.GetComponent<UIEffect>().targetUIElement = selectedGO.GetComponent<UIElement>();
+                if (go.GetComponent<UIEffect>().targetUIElement != null)
+                {
+                    go.name = DUI.DUISettings.UIEffect_Inspector_RenameGameObjectPrefix + go.GetComponent<UIEffect>().targetUIElement.elementName + DUI.DUISettings.UIEffect_Inspector_RenameGameObjectSuffix;
+                }
+            }
+            UnityEditor.Selection.activeObject = go;
         }
 #endif
-
         #endregion
+
+        /// <summary>
+        /// Default sorting layer name.
+        /// </summary>
+        public const string DEFAULT_CUSTOM_SORTING_LAYER_NAME = "Default";
+        /// <summary>
+        /// Default order in layer value.
+        /// </summary>
+        public const int DEFAULT_CUSTOM_ORDER_IN_LAYER = 0;
+        /// <summary>
+        /// Default sorting order step value.
+        /// </summary>
+        public const int DEFAULT_DEFAULT_SORTING_ORDER_STEP = 1;
+
+        /// <summary>
+        /// Determines the sorting order.
+        /// </summary>
+        public enum EffectPosition { InFrontOfTarget, BehindTarget };
+
+        /// <summary>
+        /// The particle system that thie UIEffect is controlling.
+        /// </summary>
+        public ParticleSystem targetParticleSystem;
+        /// <summary>
+        /// A reference to the main module of the target particle system.
+        /// </summary>
+        private ParticleSystem.MainModule targetParticleSystemMainModule;
+
+        /// <summary>
+        /// The target UIElement that controlls this UIEffect.
+        /// </summary>
+        public UIElement targetUIElement = null;
+
+        /// <summary>
+        /// Time interval to wait to play this effect, after the show command has been sent for the target UIElement.
+        /// </summary>
+        public float startDelay = 0f;
+
+        /// <summary>
+        /// Should this effect start playing on awake or not. Default is set to false.
+        /// </summary>
+        public bool playOnAwake = false;
+
+        /// <summary>
+        /// Should the effect stop instantly and clear, after the hide command has been sent, or should it stop and let the particles dissapear after their set lifetime. Default is set to false.
+        /// </summary>
+        public bool stopInstantly = false;
+
+        /// <summary>
+        /// Used by the custom inspector to allow you to type a layer name instead of selecting it from the layers dropdown list. Use this only if you know what you are doing.
+        /// </summary>
+        public bool useCustomSortingLayerName = false;
+        /// <summary>
+        /// Used by the custom inspector to set your custom layer name. Use this only if you know what you are doing.
+        /// </summary>
+        public string customSortingLayerName = DEFAULT_CUSTOM_SORTING_LAYER_NAME;
+
+        /// <summary>
+        /// Used by the custom inspector to allow you to type a order in layer instead of getting it automatically set by this UIEffect. Use this only if you know what you are doing.
+        /// </summary>
+        public bool useCustomOrderInLayer = false;
+        /// <summary>
+        /// Used by the custom inspector to set your custom order in layer. Use this only if you know what you are doing.
+        /// </summary>
+        public int customOrderInLayer = DEFAULT_CUSTOM_ORDER_IN_LAYER;
+
+        /// <summary>
+        /// Determines the order in layer by adding (if InFrontOfTarget) or subtracting (if BehindTarget) the set numer of sorting order steps to the order in layer value.
+        /// </summary>
+        public EffectPosition effectPosition = EffectPosition.InFrontOfTarget;
+        /// <summary>
+        /// Taking into account the target's [Canvas][Order in Layer][value] - we adjust the [ParticleSystem][Renderer][Order in Layer][value] with this sorting step (by adding, if set to InFrontOfTarget or subtrcting, id set BehindTarget)
+        /// </summary>
+        public int sortingOrderStep = DEFAULT_DEFAULT_SORTING_ORDER_STEP;
+
+        /// <summary>
+        /// Used by the UINotification. If this effect is used by a notification, then the notification should handle it's registration process in order to use an auto generated name. Do not change this value yourself.
+        /// </summary>
+        public bool autoRegister = true;
+        /// <summary>
+        /// Keeps track if this UIEffect is visible or not. Do not change this value yourself.
+        /// </summary>
+        public bool isVisible = true;
+
+        /// <summary>
+        /// Internal variable used to hide this UIEffect after the last particle has dissapeared from the screen. This is used when stopInstantly is set to false.
+        /// </summary>
+        private float lifetime;
+        /// <summary>
+        /// Internal variable that holds a reference to the coroutine that resets this effect.
+        /// </summary>
+        private Coroutine cReset;
+        /// <summary>
+        /// Internal variable that holds a reference to the coroutine that plays this effect.
+        /// </summary>
+        private Coroutine cPlay;
+
+        /// <summary>
+        /// Internal array the holds all the ParticleSystems affected by this effect.
+        /// </summary>
+        private ParticleSystem[] allThePS;
+        /// <summary>
+        /// Internal variable that holds a reference to the target Canvas (found on the target UIElement).
+        /// </summary>
+        private Canvas m_targetCanvas;
+        /// <summary>
+        /// Returns the target Canvas (found on the target UIElement).
+        /// </summary>
+        private Canvas TargetCanvas
+        {
+            get
+            {
+                if (m_targetCanvas == null)
+                {
+                    if (targetUIElement != null)
+                    {
+                        m_targetCanvas = targetUIElement.GetComponent<Canvas>();
+                        if (m_targetCanvas == null)
+                        {
+                            m_targetCanvas = targetUIElement.gameObject.AddComponent<Canvas>();
+                        }
+                    }
+                }
+                return m_targetCanvas;
+            }
+        }
+        /// <summary>
+        /// Internal variable that holds the the target physics layer id value. Used to be sure this effect is seen by the indended camera.
+        /// </summary>
+        private int targetPhysicsLayerID;
+        /// <summary>
+        /// Internal variable that holds the sorting layer name value that this effect is set to.
+        /// </summary>
+        private string targetSortingLayerName;
+        /// <summary>
+        /// Internal variable that holds order in layer value that this effect is set to.
+        /// </summary>
+        private int targetOrderInLayer;
+
+        private void Reset()
+        {
+            if (DUI.DUISettings == null) { return; }
+            playOnAwake = DUI.DUISettings.UIEffect_playOnAwake;
+            stopInstantly = DUI.DUISettings.UIEffect_stopInstantly;
+
+            useCustomSortingLayerName = DUI.DUISettings.UIEffect_useCustomSortingLayerName;
+            customSortingLayerName = DUI.DUISettings.UIEffect_customSortingLayerName;
+
+            useCustomOrderInLayer = DUI.DUISettings.UIEffect_useCustomOrderInLayer;
+            customOrderInLayer = DUI.DUISettings.UIEffect_customOrderInLayer;
+
+            effectPosition = DUI.DUISettings.UIEffect_effectPosition;
+            sortingOrderStep = DUI.DUISettings.UIEffect_sortingOrderStep;
+        }
 
         private void Awake()
         {
-            masterPS = GetComponent<ParticleSystem>();
-#if UNITY_5_5_OR_NEWER
-            masterPS_MainModule = masterPS.main;
-            masterPS_MainModule.playOnAwake = playOnAwake;
-            lifetime = masterPS_MainModule.startLifetimeMultiplier;
-#else
-            masterPS.playOnAwake = playOnAwake;
-            lifetime = masterPS.startLifetime;
-#endif
-            resetCoroutine = null;
-            startCoroutine = null;
+            if (targetParticleSystem == null) { targetParticleSystem = GetComponent<ParticleSystem>(); }
+            targetParticleSystemMainModule = targetParticleSystem.main;
+            targetParticleSystemMainModule.playOnAwake = playOnAwake;
+            lifetime = targetParticleSystemMainModule.startLifetimeMultiplier;
+            cReset = null;
+            cPlay = null;
         }
 
         private void OnEnable()
         {
+            if (targetParticleSystem == null) { targetParticleSystem = GetComponent<ParticleSystem>(); }
+
             if (targetUIElement == null)
             {
-                Debug.Log("[DoozyUI] The UIEffect on [" + gameObject.name +
-                          "] gameObject is disabled. It will not work because it has no target UIElement selected.");
+                Debug.Log("[DoozyUI] The UIEffect on [" + gameObject.name + "] gameObject is disabled. It will not work because it has no target ParticleSystem set.");
+                return;
+            }
+
+            if (targetUIElement == null)
+            {
+                Debug.Log("[DoozyUI] The UIEffect on [" + gameObject.name + "] gameObject is disabled. It will not work because it has no target UIElement set.");
                 playOnAwake = false;
                 stopInstantly = true;
                 ResetParticleSystem();
                 return;
             }
 
-            if (autoRegister)
-                UIManager.RegisterUiEffect(this);
+            if (autoRegister) { RegisterToUIManager(); }
 
-            masterPS.Stop(true);
-            masterPS.Clear(true);
+            targetParticleSystem.Stop(true);
+            targetParticleSystem.Clear(true);
             isVisible = false;
 
             if (playOnAwake)
             {
-                masterPS.Play(true);
+                targetParticleSystem.Play(true);
                 isVisible = true;
             }
         }
 
         private void OnDisable()
         {
-            if (targetUIElement == null)
-                return;
+            UnregisterFromUIManager();
+        }
 
-            UIManager.UnregisterUiEffect(this);
+        private void OnDestroy()
+        {
+            UnregisterFromUIManager();
         }
 
         private void Start()
         {
+            if (targetUIElement == null && targetParticleSystem == null) { return; }
+            UpdateSorting();
+        }
+
+        #region RegisterToUIManager / UnregisterFromUIManager
+        /// <summary>
+        /// Registeres this UIEffect to the UIManager.
+        /// </summary>
+        public void RegisterToUIManager()
+        {
             if (targetUIElement == null)
+            {
+                Debug.Log("[DoozyUI] You cannot register the UIEffect on [" + gameObject.name + "] gameObject. That is not possible because it has no target UIElement set.");
                 return;
-
-            UpdateEffectSortingOrder();
+            }
+            if (UIManager.EffectDatabase.ContainsKey(targetUIElement.elementName))
+            {
+                if (UIManager.EffectDatabase[targetUIElement.elementName] == null) { UIManager.EffectDatabase[targetUIElement.elementName] = new List<UIEffect>(); }
+                if (UIManager.EffectDatabase[targetUIElement.elementName].Contains(this)) { return; }
+                UIManager.EffectDatabase[targetUIElement.elementName].Add(this);
+            }
+            else
+            {
+                UIManager.EffectDatabase.Add(targetUIElement.elementName, new List<UIEffect>() { this });
+            }
         }
-
-        #region Update UIEffect SortingOrder
-
-        public void UpdateEffectSortingOrder()
+        /// <summary>
+        /// Unregisteres this UIEffect from the UIManager.
+        /// </summary>
+        public void UnregisterFromUIManager()
         {
-            allThePS = GetComponentsInChildren<ParticleSystem>(true);
+            if (targetUIElement == null)
+            {
+                Debug.Log("[DoozyUI] You cannot unregister the UIEffect on [" + gameObject.name + "] gameObject. That is not possible because it has no target UIElement set.");
+                return;
+            }
+            if (UIManager.EffectDatabase == null) { return; }
+            if (UIManager.EffectDatabase.ContainsKey(targetUIElement.elementName))
+            {
+                UIManager.EffectDatabase[targetUIElement.elementName].Remove(this);
+                if (UIManager.EffectDatabase[targetUIElement.elementName].Count == 0) { UIManager.EffectDatabase.Remove(targetUIElement.elementName); }
+            }
+        }
+        #endregion
 
+        /// <summary>
+        /// Updates the sorting of this effect to the set and calculated values.
+        /// </summary>
+        public void UpdateSorting()
+        {
+            if (targetUIElement == null) { return; }
             targetPhysicsLayerID = targetUIElement.transform.gameObject.layer;
-
-            targetCanvas = targetUIElement.transform.GetComponent<Canvas>();
-
-            if (targetCanvas == null)
-                targetCanvas = targetUIElement.gameObject.AddComponent<Canvas>();
-
-            //targetSortingLayerID = targetCanvas.sortingLayerID;
-            targetSortingLayerName = targetCanvas.sortingLayerName;
-            targetSortingOrder = targetCanvas.sortingOrder;
-
-            //Update the sorting layer (for the camera)
-            gameObject.layer = targetPhysicsLayerID;
-
+            gameObject.layer = targetPhysicsLayerID; //Update the sorting layer (for the camera)
             foreach (Transform child in transform)
-                //Update the sorting layer in children (for the camera)
-                child.gameObject.layer = targetPhysicsLayerID;
-
-            for (var i = 0; i < allThePS.Length; i++)
             {
-                //allThePS[i].GetComponent<Renderer>().sortingLayerID = targetSortingLayerID;
-                allThePS[i].GetComponent<Renderer>().sortingLayerName = targetSortingLayerName;
+                child.gameObject.layer = targetPhysicsLayerID; //Update the sorting layer in children (for the camera)
+            }
 
-                if (effectPosition == EffectPosition.InFrontOfTarget)
-                    allThePS[i].GetComponent<Renderer>().sortingOrder = targetSortingOrder + sortingOrderStep;
-                else
-                    allThePS[i].GetComponent<Renderer>().sortingOrder = targetSortingOrder - sortingOrderStep;
+            targetSortingLayerName = TargetCanvas.overrideSorting
+                                     ? TargetCanvas.sortingLayerName
+                                     : TargetCanvas.rootCanvas.sortingLayerName;
+
+            targetOrderInLayer = TargetCanvas.overrideSorting
+                                 ? TargetCanvas.sortingOrder
+                                 : TargetCanvas.rootCanvas.sortingOrder;
+
+            allThePS = GetComponentsInChildren<ParticleSystem>(true);
+            for (int i = 0; i < allThePS.Length; i++)
+            {
+                allThePS[i].GetComponent<Renderer>().sortingLayerName = useCustomSortingLayerName ? customSortingLayerName : targetSortingLayerName;
+                allThePS[i].GetComponent<Renderer>().sortingOrder = useCustomOrderInLayer
+                                                                    ? customOrderInLayer
+                                                                    : effectPosition == EffectPosition.InFrontOfTarget
+                                                                      ? targetOrderInLayer + sortingOrderStep
+                                                                      : targetOrderInLayer - sortingOrderStep;
             }
         }
 
-        #endregion
-
-        #region Show
-
         /// <summary>
-        ///     Shows the effect.
+        /// Shows this UIEffect (similar to the Show method of the UIElement).
         /// </summary>
-        public void Show()
+        public void Show(bool forced = false)
         {
-            if (!isVisible)
+            if (!isVisible || forced)
             {
-                if (resetCoroutine != null)
-                    StopCoroutine(resetCoroutine);
-
-                if (startCoroutine != null)
-                    StopCoroutine(startCoroutine);
-
-                startCoroutine = StartCoroutine("StartEffectAfterDelay");
+                if (cReset != null) { StopCoroutine(cReset); }
+                if (cPlay != null) { StopCoroutine(cPlay); }
+                cPlay = StartCoroutine(iPlay(startDelay));
             }
         }
 
-        #endregion
-
-        #region Hide
-
         /// <summary>
-        ///     Hides the effect.
+        /// Hides this UIEffect (similar to the Hide method of the UIElement).
         /// </summary>
-        public void Hide()
+        /// <param name="forced"></param>
+        public void Hide(bool forced = false)
         {
-            if (isVisible)
+            if (isVisible || forced)
+            {
                 ResetParticleSystem();
+            }
         }
 
-        #endregion
-
-        #region Reset ParticleSystem
-
         /// <summary>
-        ///     Resets the particle system instantly
+        /// Resets this effect taking into accoutn all the settings.
         /// </summary>
         private void ResetParticleSystem()
         {
@@ -194,97 +356,40 @@ namespace DoozyUI
 
             if (stopInstantly)
             {
-                masterPS.Stop(true);
-                masterPS.Clear(true);
-                resetCoroutine = null;
+                targetParticleSystem.Stop(true);
+                targetParticleSystem.Clear(true);
+                cReset = null;
             }
             else
             {
-                resetCoroutine = StartCoroutine("ResetAndDisableParticleSystemAfterLifetime");
+                cReset = StartCoroutine(iReset(lifetime));
             }
         }
 
-        #endregion
-
-        #region Public Variables
-
-        [HideInInspector] public bool showHelp;
-
-        public UIElement targetUIElement;
-
-        [Tooltip("After the show element command has been issues, start this effect after the startDelay")]
-        public float startDelay;
-
-        [Tooltip("If you want this to particle effect to play on awake, set it true. (Deafult: false)")]
-        public bool playOnAwake;
-
-        [Tooltip(
-            "If you want the particle system to wait for all the particles to dissapear or clear the screen by hiding them all at once. (Default: false)")]
-        public bool stopInstantly;
-
-        public EffectPosition effectPosition = EffectPosition.InFrontOfTarget;
-
-        public int sortingOrderStep = 1
-            ; //Taking into account the target's [Canvas][Order in Layer][value] - we adjust the [ParticleSystem][Renderer][Order in Layer][value] with this sorting step (by adding, if set to InFrontOfTarget or subtrcting, id set BehindTarget)
-
-        [HideInInspector]
-        public bool autoRegister = true
-            ; //if this effect is handled by a notification, the we let the notification handle the registration process with an auto generated name
-
-        [HideInInspector] public bool isVisible = true;
-
-        #endregion
-
-        #region Private Variables
-
-        private ParticleSystem masterPS;
-#if UNITY_5_5_OR_NEWER
-        private ParticleSystem.MainModule masterPS_MainModule;
-#endif
-        private float lifetime;
-        private Coroutine resetCoroutine;
-        private Coroutine startCoroutine;
-
-        private ParticleSystem[] allThePS;
-        private Canvas targetCanvas;
-
-        private int targetPhysicsLayerID;
-
-        //private int targetSortingLayerID;
-        private string targetSortingLayerName;
-
-        private int targetSortingOrder;
-
-        #endregion
-
-        #region IEnumerators - ResetAndDisableParticleSystemAfterLifetime, StartEffectAfterDelay
-
         /// <summary>
-        ///     Resets the particle system after all the particles have dissapeared naturally (after their lifetime)
+        /// Executes the reset for this effect in realtime.
         /// </summary>
+        /// <param name="resetDelay"></param>
         /// <returns></returns>
-        private IEnumerator ResetAndDisableParticleSystemAfterLifetime()
+        IEnumerator iReset(float resetDelay)
         {
-            masterPS.Stop(true);
-            yield return new WaitForSeconds(lifetime);
-            masterPS.Clear(true);
-
-            resetCoroutine = null;
+            targetParticleSystem.Stop(true);
+            yield return new WaitForSecondsRealtime(resetDelay);
+            targetParticleSystem.Clear(true);
+            cReset = null;
         }
 
         /// <summary>
-        ///     Starts the particle system after the initial delay (default is 0 seconds)
+        /// Executes the play for this effect after the set startDelay in realtime.
         /// </summary>
+        /// <param name="startDelay"></param>
         /// <returns></returns>
-        private IEnumerator StartEffectAfterDelay()
+        IEnumerator iPlay(float startDelay = 0)
         {
-            yield return new WaitForSeconds(startDelay);
-            masterPS.Play(true);
+            yield return new WaitForSecondsRealtime(startDelay);
+            targetParticleSystem.Play(true);
             isVisible = true;
-
-            startCoroutine = null;
+            cPlay = null;
         }
-
-        #endregion
     }
 }

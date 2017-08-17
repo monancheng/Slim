@@ -1,7 +1,6 @@
-// Copyright (c) 2015 - 2016 Doozy Entertainment / Marlink Trading SRL. All Rights Reserved.
+// Copyright (c) 2015 - 2017 Doozy Entertainment / Marlink Trading SRL. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
-
 
 #if dUI_PlayMaker
 using UnityEngine;
@@ -15,11 +14,11 @@ namespace HutongGames.PlayMaker.Actions
     [Tooltip("DoozyUI - Show/Hide UIElements")]
     public class ShowHideElements : FsmStateAction
     {
-        #region Variables
+#region Variables
         public string[] showElements;
         public string[] hideElements;
         public bool debugThis = false;
-        #endregion
+#endregion
 
         public override void OnEnter()
         {

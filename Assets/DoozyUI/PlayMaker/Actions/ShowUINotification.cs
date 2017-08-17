@@ -1,7 +1,6 @@
-// Copyright (c) 2015 - 2016 Doozy Entertainment / Marlink Trading SRL. All Rights Reserved.
+// Copyright (c) 2015 - 2017 Doozy Entertainment / Marlink Trading SRL. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
-
 
 #if dUI_PlayMaker
 using UnityEngine;
@@ -15,7 +14,7 @@ namespace HutongGames.PlayMaker.Actions
     [Tooltip("DoozyUI - Show UINotification")]
     public class ShowUINotification : FsmStateAction
     {
-        #region Variables
+#region Variables
         [RequiredField]
         [UIHint(UIHint.FsmString)]
         [Tooltip("The prefab name")]
@@ -46,19 +45,18 @@ namespace HutongGames.PlayMaker.Actions
 
         [Tooltip("The text on the buttons (example: 'OK', 'Cancel', 'Yes', 'No' and so on)")]
         public string[] buttonTexts;
-        #endregion
+#endregion
 
         public override void Reset()
         {
             prefabName = new FsmString { UseVariable = false, Value = string.Empty };
-            lifetime = new FsmFloat { UseVariable = false, Value = UINotification.defaultLifetime };
-            addToNotificationQueue = new FsmBool { UseVariable = false, Value =
-UINotification.defaultAddToNotificationQueue };
-            title = new FsmString { UseVariable = false, Value = UINotification.defaultTitle };
-            message = new FsmString { UseVariable = false, Value = UINotification.defaultMessage };
-            icon = new FsmObject { UseVariable = false, Value = UINotification.defaultIcon };
-            buttonNames = UINotification.defaultButtonNames;
-            buttonTexts = UINotification.defaultButtonTexts;
+            lifetime = new FsmFloat { UseVariable = false, Value = UINotification.DEFAULT_LIFETIME };
+            addToNotificationQueue = new FsmBool { UseVariable = false, Value = UINotification.DEFAULT_ADD_TO_NOTIFICATION_QUEUE };
+            title = new FsmString { UseVariable = false, Value = UINotification.DEFAULT_TITLE };
+            message = new FsmString { UseVariable = false, Value = UINotification.DEFAULT_MESSAGE };
+            icon = new FsmObject { UseVariable = false, Value = UINotification.DEFAULT_ICON };
+            buttonNames = UINotification.DEFAULT_BUTTON_NAMES;
+            buttonTexts = UINotification.DEFAULT_BUTTON_TEXT;
         }
 
         public override void OnEnter()
