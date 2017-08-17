@@ -11,7 +11,7 @@ public class GameOverNotifications : MonoBehaviour
     [SerializeField] private Text _wordsProgressText;
     [SerializeField] private Text _wordsText;
     
-    private float _centerPointY = 20f;
+    private float _centerPointY = 60f;
     private const float ItemHeightHalf = 50f;
     private const float HeightStep = 120f;
     private bool _isGiftAvailable;
@@ -246,7 +246,7 @@ public class GameOverNotifications : MonoBehaviour
             return;
         } 
         
-        UIManager.ShowUiElement("ScreenGameOver");
+//        UIManager.ShowUiElement("ScreenGameOver");
         for (int i = 0; i < _activeNamesList.Count; i++)
         {
             var element = GetUIElement(_activeNamesList[i]);
@@ -279,7 +279,7 @@ public class GameOverNotifications : MonoBehaviour
         HideNotifications();
         _activeNamesList.Clear();
 
-        UIManager.HideUiElement("ScreenGameOver");
+//        UIManager.HideUiElement("ScreenGameOver");
     }
 
     public void HideNotifications()

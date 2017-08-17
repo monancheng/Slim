@@ -9,7 +9,7 @@ public class ScreenGift : MonoBehaviour
 	private int _giftType;
 	private bool isFirstTime;
 	
-	private float _centerPointY = 20f;
+	private float _centerPointY = 60f;
 	[SerializeField] private Object _gift;
 
 	private void OnEnable()
