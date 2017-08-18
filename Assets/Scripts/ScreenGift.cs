@@ -87,6 +87,7 @@ public class ScreenGift : MonoBehaviour
 		isFirstTime = true;
 		_giftType = 2;
 
+		D.Log("CREATE GIFT ANIMATION");
 		CreateGiftAnimation();
 	}
 

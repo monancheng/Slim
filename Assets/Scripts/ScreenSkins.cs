@@ -17,14 +17,13 @@ public class ScreenSkins : MonoBehaviour
 
     private void Start()
     {
-        CheckClosedSkin();
+        AreThereSkins();
         CheckAvailableSkin();
     }
 
     private void OnEnable()
     {
         GlobalEvents<OnBuySkin>.Happened += OnBuySkin;
-        GlobalEvents<OnGiftSkin>.Happened += OnGiftSkin;
         GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
     }
     
@@ -32,26 +31,17 @@ public class ScreenSkins : MonoBehaviour
     {
         CheckAvailableSkin();
     }
-    
-    private void OnGiftSkin(OnGiftSkin obj)
-    {
-        OpenSkin(obj.Id);
-        CheckClosedSkin();
-        GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = obj.Id});
-    }
 
     private void OnBuySkin(OnBuySkin obj)
     {
         GameEvents.Send(OnAddCoinsVisual, -200);
         OpenSkin(obj.Id);
-        CheckClosedSkin();
+        AreThereSkins();
         GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = obj.Id});
     }
 
     private void SetSkin(int id)
     {
-        FlurryEventsManager.SendEvent("candy_purchase_<" + id + ">");
-
         if (id == DefsGame.CurrentFaceId)
             return;
 
@@ -60,25 +50,19 @@ public class ScreenSkins : MonoBehaviour
             DefsGame.CurrentFaceId = id;
             GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = id});
             PlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
-//            DefsGame.CarSimulator.Car.SetNewSkin(_id);
         }
         else if (DefsGame.CoinsCount >= 200/*DefsGame.FacePrice[_id - 1]*/)
         {
             GlobalEvents<OnBuySkin>.Call(new OnBuySkin{Id = id});
 
             //DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_NEW_SKIN, 1);
-
             //DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_COLLECTION, DefsGame.QUEST_CHARACTERS_Counter);
             ChooseColorForButtons();
             GlobalEvents<OnGotNewCharacter>.Call(new OnGotNewCharacter());
-
-            FlurryEventsManager.SendEvent("candy_purchase_completed_<" + id + ">");
         }
         else
         {
             HideButtons();
-            FlurryEventsManager.SendEndEvent("candy_shop_length");
-
             DefsGame.ScreenCoins.Show("candy_shop");
         }
     }
@@ -87,10 +71,8 @@ public class ScreenSkins : MonoBehaviour
     {
         DefsGame.FaceAvailable[id] = 1;
         DefsGame.CurrentFaceId = id;
-        PlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
+        PlayerPrefs.SetInt("currentFaceID", id);
         PlayerPrefs.SetInt("faceAvailable_" + id, 1);
-//      DefsGame.CarSimulator.Car.SetNewSkin(_id);
-
         ++DefsGame.QUEST_CHARACTERS_Counter;
         PlayerPrefs.SetInt("QUEST_CHARACTERS_Counter", DefsGame.QUEST_CHARACTERS_Counter);
     }
@@ -99,6 +81,9 @@ public class ScreenSkins : MonoBehaviour
     {
         UIManager.ShowUiElement("ScreenSkins");
         UIManager.ShowUiElement("ScreenSkinsBtnBack");
+        UIManager.ShowUiElement("PreviewSkin");
+        UIManager.ShowUiElement("ScreenSkinsContainerBackground");
+        
         UIManager.ShowUiElement("BtnSkin1");
         UIManager.ShowUiElement("BtnSkin2");
         UIManager.ShowUiElement("BtnSkin3");
@@ -111,6 +96,7 @@ public class ScreenSkins : MonoBehaviour
         UIManager.ShowUiElement("BtnSkin10");
         UIManager.ShowUiElement("BtnSkin11");
         UIManager.ShowUiElement("BtnSkin12");
+       
         if (_isNewSkinAvailable)
         {
             UIManager.ShowUiElement("LabelNewSkin");
@@ -121,6 +107,9 @@ public class ScreenSkins : MonoBehaviour
     {
         UIManager.HideUiElement("ScreenSkins");
         UIManager.HideUiElement("ScreenSkinsBtnBack");
+        UIManager.HideUiElement("PreviewSkin");
+        UIManager.HideUiElement("ScreenSkinsContainerBackground");
+        
         UIManager.HideUiElement("BtnSkin1");
         UIManager.HideUiElement("BtnSkin2");
         UIManager.HideUiElement("BtnSkin3");
@@ -240,7 +229,7 @@ public class ScreenSkins : MonoBehaviour
         UIManager.HideUiElement("LabelNewSkin");
     }
     
-    public void CheckClosedSkin()
+    public void AreThereSkins()
     {
         for (var i = 1; i < DefsGame.FaceAvailable.Length; i++)
             if (DefsGame.FaceAvailable[i] == 0)

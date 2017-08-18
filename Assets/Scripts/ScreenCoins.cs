@@ -35,8 +35,11 @@ public class ScreenCoins : MonoBehaviour
         if (isShowBtnViveoAds)
         {
             UIManager.ShowUiElement("ScreenCoinsBtnVideo");
-            FlurryEventsManager.SendEvent("RV_strawberries_impression", "shop");
         }
+        
+        // TEMP
+        UIManager.ShowUiElement("ScreenCoinsBtnVideo");
+        
 //        if (MyAds.noAds < 1) UIManager.ShowUiElement("ScreenCoinsBtnNoAds");
 //#if UNITY_IPHONE
 //        UIManager.ShowUiElement("ScreenCoinsBtnRestore");
@@ -61,7 +64,6 @@ public class ScreenCoins : MonoBehaviour
             if (DefsGame.CurrentScreen == DefsGame.SCREEN_IAPS)
             {
                 UIManager.ShowUiElement("ScreenCoinsBtnVideo");
-                FlurryEventsManager.SendEvent("RV_strawberries_impression", "shop");
             }
         }
         else
@@ -72,7 +74,6 @@ public class ScreenCoins : MonoBehaviour
 
     public void BtnTier3()
     {
-        FlurryEventsManager.SendEvent("RV_strawberries", "shop");
         MyAds.ShowRewardedAds();
         _isWaitReward = true;
     }
@@ -90,8 +91,6 @@ public class ScreenCoins : MonoBehaviour
     public void Show(string prevScreenName)
     {
         PrevScreenName = prevScreenName;
-        FlurryEventsManager.SendStartEvent("iap_shop_length");
-        FlurryEventsManager.SendEvent("iap_shop", PrevScreenName);
 
         DefsGame.CurrentScreen = DefsGame.SCREEN_IAPS;
         DefsGame.IsCanPlay = false;
@@ -100,12 +99,8 @@ public class ScreenCoins : MonoBehaviour
 
     public void Hide()
     {
-        FlurryEventsManager.SendEndEvent("iap_shop_length");
-
         DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
         DefsGame.IsCanPlay = true;
         HideButtons();
-
-        FlurryEventsManager.SendEvent("iap_shop_home", PrevScreenName);
     }
 }
