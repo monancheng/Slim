@@ -28,7 +28,6 @@ public class GameOverNotifications : MonoBehaviour
     private int _giftValue;
     private bool isVisual;
     private bool _isGotWord;
-    private int _wordRewardValue;
     private bool _isWaitNewWord;
     private bool _isWordActive;
     private bool _isAllSkinsOpened;
@@ -209,13 +208,6 @@ public class GameOverNotifications : MonoBehaviour
     
     private void AddNotifyWord()
     {
-        if (DefsGame.CoinsCount > 100 && DefsGame.CoinsCount < 155)
-            _wordRewardValue = 190-DefsGame.CoinsCount;
-        else
-        {
-            if (Random.value < 0.5f) _wordRewardValue = 40;
-            else _wordRewardValue = 45;
-        }
         _activeNamesList.Add("NotifyWord");
     }
     
@@ -504,8 +496,7 @@ public class GameOverNotifications : MonoBehaviour
         _isGotWord = false;
 //        AddNotifyNextSkin(200);
         
-        GlobalEvents<OnBtnWordClick>.Call(new OnBtnWordClick{CoinsCount = _wordRewardValue, IsResetTimer = false});
-        _wordRewardValue = 0;
+        GlobalEvents<OnBtnWordClick>.Call(new OnBtnWordClick{CoinsCount = 100, IsResetTimer = false});
         GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
     }
     

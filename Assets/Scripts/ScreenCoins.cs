@@ -7,7 +7,6 @@ public class ScreenCoins : MonoBehaviour
     private bool _isWaitReward;
     private bool isShowBtnViveoAds;
 
-    [HideInInspector] public string PrevScreenName;
     public static event Action<int> OnAddCoinsVisual;
 
     private void Start()
@@ -88,10 +87,8 @@ public class ScreenCoins : MonoBehaviour
         }
     }
 
-    public void Show(string prevScreenName)
+    public void Show()
     {
-        PrevScreenName = prevScreenName;
-
         DefsGame.CurrentScreen = DefsGame.SCREEN_IAPS;
         DefsGame.IsCanPlay = false;
         ShowButtons();

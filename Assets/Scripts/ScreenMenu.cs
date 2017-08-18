@@ -169,7 +169,7 @@ public class ScreenMenu : MonoBehaviour
     public void BtnPlusClick()
     {
         HideButtons();
-        DefsGame.ScreenCoins.Show("start_screen");
+        DefsGame.ScreenCoins.Show();
     }
 
     public void BtnSkinsClick()

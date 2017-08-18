@@ -63,7 +63,7 @@ public class ScreenSkins : MonoBehaviour
         else
         {
             HideButtons();
-            DefsGame.ScreenCoins.Show("candy_shop");
+            DefsGame.ScreenCoins.Show();
         }
     }
 
