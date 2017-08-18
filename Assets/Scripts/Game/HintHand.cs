@@ -15,7 +15,30 @@ public class HintHand : MonoBehaviour
 
 	private void OnEnable()
 	{
+		GlobalEvents<OnShowMenuButtons>.Happened += OnShowMenuButtons;
+		GlobalEvents<OnHideMenuButtons>.Happened += OnHideMenuButtons;
 		GlobalEvents<OnStartGame>.Happened += OnStartGame;
+		
+	}
+
+	private void OnHideMenuButtons(OnHideMenuButtons obj)
+	{
+		if (_tweener != null)
+		{
+			UIManager.HideUiElement("ScreenHint");
+			UIManager.HideUiElement("ScreenHintBar");
+			UIManager.HideUiElement("ScreenHintHand");
+		}
+	}
+
+	private void OnShowMenuButtons(OnShowMenuButtons obj)
+	{
+		if (_tweener != null)
+		{
+			UIManager.ShowUiElement("ScreenHint");
+			UIManager.ShowUiElement("ScreenHintBar");
+			UIManager.ShowUiElement("ScreenHintHand");
+		}
 	}
 
 	private void OnStartGame(OnStartGame obj)
@@ -26,5 +49,8 @@ public class HintHand : MonoBehaviour
 		_tweener.Kill();
 		_tweener = null;
 		GlobalEvents<OnStartGame>.Happened -= OnStartGame;
+		GlobalEvents<OnShowMenuButtons>.Happened -= OnShowMenuButtons;
+		GlobalEvents<OnHideMenuButtons>.Happened -= OnHideMenuButtons;
+		Destroy(transform.parent.gameObject);
 	}
 }

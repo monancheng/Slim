@@ -31,10 +31,8 @@ public class ScreenSettings : MonoBehaviour
         UIManager.HideUiElement("BtnShare");
     }
 
-    public void Show(string prevScreenName)
+    public void Show()
     {
-        PrevScreenName = prevScreenName;
-
         DefsGame.CurrentScreen = DefsGame.SCREEN_IAPS;
         DefsGame.IsCanPlay = false;
         ShowButtons();

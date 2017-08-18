@@ -19,6 +19,14 @@ public struct OnHideMenu
 {
 }
 
+public struct OnShowMenuButtons
+{
+}
+
+public struct OnHideMenuButtons
+{
+}
+
 // Игрок заработал очки
 public struct OnPointsAdd
 {

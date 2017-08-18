@@ -56,7 +56,7 @@ public class Player : MonoBehaviour
         _sides = _script.sides;
         _startRadius = _script.radius;
 
-        Respown();
+        RespownAndWait();
 
         _modelTransform.DORotate(new Vector3(0, 0, 20f), 1, RotateMode.LocalAxisAdd).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
 

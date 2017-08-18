@@ -15,9 +15,11 @@ public class ScreenMenu : MonoBehaviour
 
     private void OnEnable()
     {
-        GlobalEvents<OnStartGame>.Happened += ScreenGame_OnHideMenu;
+        GlobalEvents<OnStartGame>.Happened += OnStartGame;
         GlobalEvents<OnShowMenu>.Happened += OnShowMenu;
         GlobalEvents<OnHideMenu>.Happened += OnHideMenu;
+        GlobalEvents<OnShowMenuButtons>.Happened += OnShowMenuButtons;
+        GlobalEvents<OnHideMenuButtons>.Happened += OnHideMenuButtons;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedVideoAvailable;
     }
 
@@ -25,7 +27,7 @@ public class ScreenMenu : MonoBehaviour
     {
         GlobalEvents<OnShowMenu>.Happened -= OnShowMenu;
         GlobalEvents<OnHideMenu>.Happened -= OnHideMenu;
-        GlobalEvents<OnStartGame>.Happened -= ScreenGame_OnHideMenu;
+        GlobalEvents<OnStartGame>.Happened -= OnStartGame;
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedVideoAvailable;
     }
 
@@ -43,67 +45,12 @@ public class ScreenMenu : MonoBehaviour
         HideButtons();
     }
     
-    private void ScreenGame_OnHideMenu(OnStartGame obj)
+    private void OnStartGame(OnStartGame obj)
     {
-        UIManager.HideUiElement("GameName");
-        UIManager.ShowUiElement("LabelPoints");
-        HideButtons();
+        Hide();
     }
-
-    private void IsRewardedVideoAvailable(OnRewardedAvailable e)
-    {
-        _isShowBtnViveoAds = e.IsAvailable;
-        if (_isShowBtnViveoAds)
-        {
-            if (DefsGame.CurrentScreen == DefsGame.SCREEN_MENU)
-            {
-                UIManager.ShowUiElement("BtnVideoAds");
-                FlurryEventsManager.SendEvent("RV_strawberries_impression", "start_screen");
-            }
-        }
-        else
-        {
-            UIManager.HideUiElement("BtnVideoAds");
-        }
-    }
-
-    public void ShowButtons()
-    {
-        _isButtonHiden = false;
-
-        FlurryEventsManager.SendStartEvent("start_screen_length");
-
-        //UIManager.ShowUiElement ("MainMenu");
-        UIManager.ShowUiElement("LabelBestScore");
-        UIManager.ShowUiElement("elementBestScore");
-        UIManager.ShowUiElement("elementCoins");
-        
-        UIManager.ShowUiElement("BtnSkins");
-//        if (DefsGame.GameplayCounter != 0) 
-//        UIManager.ShowUiElement("ScreenMainBtnRepeate");
-        UIManager.ShowUiElement("ScreenMainBtnPlay");
-        UIManager.ShowUiElement("BtnLeaderboard");
-        UIManager.ShowUiElement("BtnAchievements");
-        UIManager.ShowUiElement("ScreenMainBtnSettings");
-#if UNITY_ANDROID || UNITY_EDITOR
-        UIManager.ShowUiElement("BtnGameServices");
-#endif
-        
-        FlurryEventsManager.SendEvent("candy_shop_impression");
-        if (_isShowBtnViveoAds)
-        {
-            UIManager.ShowUiElement("BtnVideoAds");
-            FlurryEventsManager.SendEvent("RV_strawberries_impression", "start_screen");
-        }
-        FlurryEventsManager.SendEvent("rate_us_impression", "start_screen");
-        FlurryEventsManager.SendEvent("iap_shop_impression");
-
-        
-
-        _isBtnSettingsClicked = false;
-    }
-
-    public void HideButtons()
+    
+    private void OnHideMenuButtons(OnHideMenuButtons obj)
     {
         if (_isButtonHiden)
             return;
@@ -122,6 +69,60 @@ public class ScreenMenu : MonoBehaviour
         UIManager.HideUiElement("BtnGameServices");
         UIManager.HideUiElement("ScreenMainBtnSettings");
         UIManager.HideUiElement("BtnHaveNewSkin");
+    }
+
+    private void OnShowMenuButtons(OnShowMenuButtons obj)
+    {
+        _isButtonHiden = false;
+
+        //UIManager.ShowUiElement ("MainMenu");
+        UIManager.ShowUiElement("LabelBestScore");
+        UIManager.ShowUiElement("elementBestScore");
+        UIManager.ShowUiElement("elementCoins");
+        
+        UIManager.ShowUiElement("BtnSkins");
+//        if (DefsGame.GameplayCounter != 0) 
+//        UIManager.ShowUiElement("ScreenMainBtnRepeate");
+        UIManager.ShowUiElement("ScreenMainBtnPlay");
+        UIManager.ShowUiElement("BtnLeaderboard");
+        UIManager.ShowUiElement("BtnAchievements");
+        UIManager.ShowUiElement("ScreenMainBtnSettings");
+#if UNITY_ANDROID || UNITY_EDITOR
+        UIManager.ShowUiElement("BtnGameServices");
+#endif
+        
+        if (_isShowBtnViveoAds)
+        {
+            UIManager.ShowUiElement("BtnVideoAds");
+        }
+        
+        _isBtnSettingsClicked = false;
+    }
+
+    private void IsRewardedVideoAvailable(OnRewardedAvailable e)
+    {
+        _isShowBtnViveoAds = e.IsAvailable;
+        if (_isShowBtnViveoAds)
+        {
+            if (DefsGame.CurrentScreen == DefsGame.SCREEN_MENU)
+            {
+                UIManager.ShowUiElement("BtnVideoAds");
+            }
+        }
+        else
+        {
+            UIManager.HideUiElement("BtnVideoAds");
+        }
+    }
+
+    public void ShowButtons()
+    {
+        GlobalEvents<OnShowMenuButtons>.Call(new OnShowMenuButtons());
+    }
+
+    public void HideButtons()
+    {
+        GlobalEvents<OnHideMenuButtons>.Call(new OnHideMenuButtons());
     }
 
     public void BtnSettingsClick()
@@ -145,12 +146,10 @@ public class ScreenMenu : MonoBehaviour
     public void OnMoreAppsClicked()
     {
         //PublishingService.Instance.ShowAppShelf();
-        FlurryEventsManager.SendEvent("more_games");
     }
 
     public void OnVideoAdsClicked()
     {
-        FlurryEventsManager.SendEvent("RV_strawberries", "start_screen");
         MyAds.ShowRewardedAds();
         _isWaitReward = true;
     }
@@ -174,7 +173,16 @@ public class ScreenMenu : MonoBehaviour
 
     public void BtnSkinsClick()
     {
-        FlurryEventsManager.SendEvent("candy_shop");
         HideButtons();
+    }
+
+    public void Show()
+    {
+        GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
+    }
+    
+    public void Hide()
+    {
+        GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
     }
 }
