@@ -29,6 +29,7 @@ public class GiftRandomSkin : MonoBehaviour
 			Invoke("ShowBtnClose", 1.5f);
 
 			GlobalEvents<OnBuySkin>.Call(new OnBuySkin {Id = id});
+			GlobalEvents<OnGiftSkin>.Call(new OnGiftSkin {Id = id});
 		}
 	}
 

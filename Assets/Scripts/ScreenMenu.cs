@@ -19,14 +19,6 @@ public class ScreenMenu : MonoBehaviour
         GlobalEvents<OnShowMenu>.Happened += OnShowMenu;
         GlobalEvents<OnHideMenu>.Happened += OnHideMenu;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedVideoAvailable;
-        GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
-    }
-
-    private void OnCoinsAdded(OnCoinsAdded obj)
-    {
-            if (DefsGame.ScreenSkins.CheckAvailableSkinBool()) UIManager.ShowUiElement("BtnHaveNewSkin");
-            else
-                UIManager.HideUiElement("BtnHaveNewSkin");
     }
 
     private void OnDisable()
@@ -87,19 +79,15 @@ public class ScreenMenu : MonoBehaviour
         UIManager.ShowUiElement("elementCoins");
         
         UIManager.ShowUiElement("BtnSkins");
-        if (DefsGame.GameplayCounter != 0) 
-        UIManager.ShowUiElement("ScreenMainBtnRepeate");
+//        if (DefsGame.GameplayCounter != 0) 
+//        UIManager.ShowUiElement("ScreenMainBtnRepeate");
+        UIManager.ShowUiElement("ScreenMainBtnPlay");
         UIManager.ShowUiElement("BtnLeaderboard");
         UIManager.ShowUiElement("BtnAchievements");
         UIManager.ShowUiElement("ScreenMainBtnSettings");
 #if UNITY_ANDROID || UNITY_EDITOR
         UIManager.ShowUiElement("BtnGameServices");
 #endif
-        
-        if (DefsGame.ScreenSkins)
-            if (DefsGame.ScreenSkins.CheckAvailableSkinBool()) UIManager.ShowUiElement("BtnHaveNewSkin");
-            else
-                UIManager.HideUiElement("BtnHaveNewSkin");
         
         FlurryEventsManager.SendEvent("candy_shop_impression");
         if (_isShowBtnViveoAds)

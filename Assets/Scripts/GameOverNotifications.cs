@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DoozyUI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,6 +31,7 @@ public class GameOverNotifications : MonoBehaviour
     private int _wordRewardValue;
     private bool _isWaitNewWord;
     private bool _isWordActive;
+    private bool _isAllSkinsOpened;
 
     private void Start()
     {
@@ -48,6 +50,7 @@ public class GameOverNotifications : MonoBehaviour
         GlobalEvents<OnWordUpdateProgress>.Happened += OnWordGotChar;
         GlobalEvents<OnWordNeedToWait>.Happened += OnWordNeedToWait;
         GlobalEvents<OnWordsAvailable>.Happened += OnWordsAvailable;
+        GlobalEvents<OnSkinAllOpened>.Happened += OnSkinAllOpened;
         
         // Внутренние
         GlobalEvents<OnGotNewCharacter>.Happened += OnGotNewCharacter;
@@ -68,6 +71,7 @@ public class GameOverNotifications : MonoBehaviour
         GlobalEvents<OnWordUpdateProgress>.Happened -= OnWordGotChar;
         GlobalEvents<OnWordNeedToWait>.Happened -= OnWordNeedToWait;
         GlobalEvents<OnWordsAvailable>.Happened -= OnWordsAvailable;
+        GlobalEvents<OnSkinAllOpened>.Happened -= OnSkinAllOpened;
         GlobalEvents<OnGotNewCharacter>.Happened -= OnGotNewCharacter;
         GlobalEvents<OnBtnRateClick>.Happened -= OnBtnRateClick;
         GlobalEvents<OnGiftCollected>.Happened -= OnGiftCollected;
@@ -85,7 +89,7 @@ public class GameOverNotifications : MonoBehaviour
         
         // Важность - Высокая
 
-        if (DefsGame.CoinsCount >= 200 && DefsGame.QUEST_CHARACTERS_Counter < DefsGame.FaceAvailable.Length - 1)
+        if (!_isAllSkinsOpened && DefsGame.CoinsCount >= 200 && DefsGame.QUEST_CHARACTERS_Counter < DefsGame.FaceAvailable.Length - 1)
         {
             AddNotifyNewGift();
         }
@@ -141,7 +145,7 @@ public class GameOverNotifications : MonoBehaviour
             _activeNamesList.Add("NotifyGiftWaiting");
         }
 
-        if (_activeNamesList.Count < 4 && (_activeNamesList.Count == 0 && ran > 0.7f
+        if (!_isAllSkinsOpened && _activeNamesList.Count < 4 && (_activeNamesList.Count == 0 && ran > 0.7f
                                               || _activeNamesList.Count == 1 && ran > 0.75f
                                               || _activeNamesList.Count == 2 && ran > 0.80f)
         && ran > 0.5f)
@@ -226,13 +230,27 @@ public class GameOverNotifications : MonoBehaviour
     private void SetItemsPositions()
     {
         float startPos = CalcStartPosition(_activeNamesList.Count);
-        
+        bool isLeft = true;
         for (int i = 0; i < _activeNamesList.Count; i++)
         {
             var element = GetUIElement(_activeNamesList[i]);
             if (element)
             {
-                element.customStartAnchoredPosition = new Vector3(0f, startPos + i*HeightStep, 0f);
+                if (isLeft)
+                {
+                    element.customStartAnchoredPosition = new Vector3(0, startPos + i * HeightStep, 0f);
+                    element.inAnimations.move.moveDirection = Move.MoveDirection.Left;
+                    element.outAnimations.move.moveDirection = Move.MoveDirection.Left;
+                }
+                else
+                {
+                    element.customStartAnchoredPosition = new Vector3(0, startPos + i * HeightStep, 0f);
+                    element.inAnimations.move.moveDirection = Move.MoveDirection.Right;
+                    element.outAnimations.move.moveDirection = Move.MoveDirection.Right;
+                }
+                isLeft = !isLeft;
+                element.inAnimations.move.startDelay = i * 0.1f;
+                element.outAnimations.move.startDelay = i * 0.1f;
                 element.useCustomStartAnchoredPosition = true;
             }
         }
@@ -325,6 +343,10 @@ public class GameOverNotifications : MonoBehaviour
         {
             element2.customStartAnchoredPosition = element.customStartAnchoredPosition;
             element2.useCustomStartAnchoredPosition = true;
+            element2.inAnimations.move.moveDirection = element.inAnimations.move.moveDirection;
+            element2.outAnimations.move.moveDirection = element.outAnimations.move.moveDirection;
+            element2.inAnimations.move.startDelay = element.inAnimations.move.startDelay;
+            element2.outAnimations.move.startDelay = element.outAnimations.move.startDelay;
         }
         _activeNamesList.RemoveAt(idNotifyOld);
         
@@ -346,6 +368,10 @@ public class GameOverNotifications : MonoBehaviour
             if (element)
             {
                 element2.customStartAnchoredPosition = element.customStartAnchoredPosition;
+                element2.inAnimations.move.moveDirection = element.inAnimations.move.moveDirection;
+                element2.outAnimations.move.moveDirection = element.outAnimations.move.moveDirection;
+                element2.inAnimations.move.startDelay = element.inAnimations.move.startDelay;
+                element2.outAnimations.move.startDelay = element.outAnimations.move.startDelay;
                 element2.useCustomStartAnchoredPosition = true;
             }
             _activeNamesList.RemoveAt(idNotifyOld);
@@ -398,10 +424,18 @@ public class GameOverNotifications : MonoBehaviour
         {
             element2.customStartAnchoredPosition = element.customStartAnchoredPosition;
             element2.useCustomStartAnchoredPosition = true;
+            element2.inAnimations.move.moveDirection = element.inAnimations.move.moveDirection;
+            element2.outAnimations.move.moveDirection = element.outAnimations.move.moveDirection;
+            element2.outAnimations.move.startDelay = element.outAnimations.move.startDelay;
         }
         _activeNamesList.RemoveAt(idNotifyOld);
         
         UIManager.ShowUiElement("NotifyWordProgress");
+    }
+    
+    private void OnSkinAllOpened(OnSkinAllOpened obj)
+    {
+        _isAllSkinsOpened = true;
     }
 
 //	private void OnShareGIFEvent ()

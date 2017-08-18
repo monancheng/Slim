@@ -133,10 +133,21 @@ public struct OnBuySkin
     public int Id;
 }
 
+// Показать на экран Скин, который игрок получает после нажатия на ленточку "Получить скин"
+public struct OnGiftSkin
+{
+    public int Id;
+}
+
 // Изменяем Скин
 public struct OnChangeSkin
 {
     public int Id;
+}
+
+// Все скины открыты
+public struct OnSkinAllOpened
+{
 }
 
 // На финишном эране нет кнопок для показа
