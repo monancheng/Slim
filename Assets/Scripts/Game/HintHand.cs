@@ -5,8 +5,14 @@ using UnityEngine;
 public class HintHand : MonoBehaviour
 {
 	private Tweener _tweener;
+
 	// Use this for initialization
 	void Start ()
+	{
+		CreateTween();
+	}
+
+	private void CreateTween()
 	{
 		_tweener = transform.DOMoveX(Screen.width - transform.position.x, 1f);
 		_tweener.SetLoops(-1, LoopType.Yoyo);
@@ -25,6 +31,7 @@ public class HintHand : MonoBehaviour
 	{
 		if (_tweener != null)
 		{
+//			_tweener.Pause();
 			UIManager.HideUiElement("ScreenHint");
 			UIManager.HideUiElement("ScreenHintBar");
 			UIManager.HideUiElement("ScreenHintHand");
@@ -35,6 +42,7 @@ public class HintHand : MonoBehaviour
 	{
 		if (_tweener != null)
 		{
+//			_tweener.Play();
 			UIManager.ShowUiElement("ScreenHint");
 			UIManager.ShowUiElement("ScreenHintBar");
 			UIManager.ShowUiElement("ScreenHintHand");
