@@ -38,6 +38,7 @@ public class ScreenCoins : MonoBehaviour
         
         // TEMP
         UIManager.ShowUiElement("ScreenCoinsBtnVideo");
+        UIManager.ShowUiElement("ScreenCoinsBackground");
         
 //        if (MyAds.noAds < 1) UIManager.ShowUiElement("ScreenCoinsBtnNoAds");
 //#if UNITY_IPHONE
@@ -51,6 +52,7 @@ public class ScreenCoins : MonoBehaviour
         UIManager.HideUiElement("BtnTier1");
         UIManager.HideUiElement("BtnTier2");
         UIManager.HideUiElement("ScreenCoinsBtnVideo");
+        UIManager.HideUiElement("ScreenCoinsBackground");
 //        UIManager.HideUiElement("ScreenCoinsBtnNoAds");
 //        UIManager.HideUiElement("ScreenCoinsBtnRestore");
     }
