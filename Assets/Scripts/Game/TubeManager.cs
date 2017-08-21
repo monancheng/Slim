@@ -175,37 +175,37 @@ public class TubeManager : MonoBehaviour
         CreateTube(newRadius, outerRadius, color, 600f, isIncreaseSize);
         IncreaseSpeed();
         bool isBonusCreated = false;
-        if (!isBonusCreated)
-        {
-            ++_increaseCounter;
-            if (_increaseCounter >= 12)
-            {
-                GameEvents.Send(OnCreateBonusIncrease);
-                isBonusCreated = true;
-                _increaseCounter = 0;
-            }
-        }
+//        if (!isBonusCreated)
+//        {
+//            ++_increaseCounter;
+//            if (_increaseCounter >= 12)
+//            {
+//                GameEvents.Send(OnCreateBonusIncrease);
+//                isBonusCreated = true;
+//                _increaseCounter = 0;
+//            }
+//        }
 
 		++_coinCounter;
 
 		if (!isBonusCreated) {
 			
 			if (_coinCounter % 5 == 0) {
-				if (Random.value > 0.5f) {
-					GameEvents.Send (OnCreateCoin);
-					isBonusCreated = true;
-				}
-			}
-		}
-			
-		if (!isBonusCreated && !_isWordWait && _isWordActive) {
-			if (_coinCounter % 4 == 0) {
 //				if (Random.value > 0.5f) {
-					GameEvents.Send (OnCreateChar);
+					GameEvents.Send (OnCreateCoin);
 					isBonusCreated = true;
 //				}
 			}
 		}
+			
+//		if (!isBonusCreated && !_isWordWait && _isWordActive) {
+//			if (_coinCounter % 4 == 0) {
+//				if (Random.value > 0.5f) {
+//					GameEvents.Send (OnCreateChar);
+//					isBonusCreated = true;
+//				}
+//			}
+//		}
     }
 
     private void CreateTube(float radius, float outerRadius, Color color, float posY = 600f, bool isIncreaseSize = false)
