@@ -69,6 +69,7 @@ public class ScreenMenu : MonoBehaviour
         UIManager.HideUiElement("BtnGameServices");
         UIManager.HideUiElement("ScreenMainBtnSettings");
         UIManager.HideUiElement("BtnHaveNewSkin");
+        UIManager.HideUiElement("ScreenMenuBtnPlus");
     }
 
     private void OnShowMenuButtons(OnShowMenuButtons obj)
@@ -87,6 +88,7 @@ public class ScreenMenu : MonoBehaviour
         UIManager.ShowUiElement("BtnLeaderboard");
         UIManager.ShowUiElement("BtnAchievements");
         UIManager.ShowUiElement("ScreenMainBtnSettings");
+        UIManager.ShowUiElement("ScreenMenuBtnPlus");
 #if UNITY_ANDROID || UNITY_EDITOR
         UIManager.ShowUiElement("BtnGameServices");
 #endif

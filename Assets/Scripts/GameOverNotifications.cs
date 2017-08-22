@@ -147,9 +147,24 @@ public class GameOverNotifications : MonoBehaviour
         if (!_isAllSkinsOpened && _activeNamesList.Count < 4 && (_activeNamesList.Count == 0 && ran > 0.7f
                                               || _activeNamesList.Count == 1 && ran > 0.75f
                                               || _activeNamesList.Count == 2 && ran > 0.80f)
-        && ran > 0.5f)
+        && ran > 0.4f)
         {
             AddNotifyNextSkin();
+        } 
+        
+        if (DefsGame.NoAds == 0 && _activeNamesList.Count < 4 && Random.value > 0.5f)
+        {
+            _activeNamesList.Add("NotifyNoAds");
+        }
+        
+        if (_activeNamesList.Count < 4 && Random.value > 0.5f)
+        {
+            _activeNamesList.Add("NotifyTier1");
+        }
+        
+        if (_activeNamesList.Count < 4 && Random.value > 0.5f)
+        {
+            _activeNamesList.Add("NotifyTier2");
         }
 
         // Перемешиваем элементы списка, чтобы они располагались рандомно по оси У
@@ -517,5 +532,20 @@ public class GameOverNotifications : MonoBehaviour
     {
         GlobalEvents<OnShowRewarded>.Call(new OnShowRewarded());
         UIManager.HideUiElement("NotifyRewarded");
+    }
+    
+    public void BtnNoAds()
+    {
+        UIManager.HideUiElement("NotifyNoAds");
+    }
+    
+    public void BtnTier1()
+    {
+        UIManager.HideUiElement("NotifyTier1");
+    }
+    
+    public void BtnTier2()
+    {
+        UIManager.HideUiElement("NotifyTier2");
     }
 }
