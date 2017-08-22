@@ -34,8 +34,8 @@ public class Coin : MonoBehaviour
     {
         if (_isShowAnimation)
         {
-            transform.localScale = new Vector3(transform.localScale.x - 0.2f, transform.localScale.y - 0.2f, 1f);
-            if (transform.localScale.x <= 1f)
+            transform.localScale = new Vector3(transform.localScale.x + 0.07f, transform.localScale.y + 0.07f, 1f);
+            if (transform.localScale.x >= 1f)
             {
                 _isShowAnimation = false;
                 transform.localScale = new Vector3(1f, 1f, 1f);
@@ -48,7 +48,7 @@ public class Coin : MonoBehaviour
         }
         else if (_isMoveToTarget)
         {
-            if (transform.localScale.x >= 1)
+            if (transform.localScale.x > 1)
                 transform.localScale = new Vector3(transform.localScale.x - 0.1f,
                     transform.localScale.y - 0.1f, 1f);
 
@@ -85,7 +85,7 @@ public class Coin : MonoBehaviour
 
     public void MoveToEnd()
     {
-        transform.position = new Vector3(Screen.width*0.5f + Random.Range(-25, 25), Screen.height*0.5f + Random.Range(-25, 25), 0f);
+        transform.position = new Vector3(Screen.width*0.5f + Random.Range(-33, 33), Screen.height*0.5f + Random.Range(-33, 33), 0f);
 	    _targetPos = new Vector3(ParentObj.transform.position.x, ParentObj.transform.position.y, transform.position.z);
         _velocity = 5.0f + Random.value * 5.0f;
         if (Random.value < 0.5f) _moveAngle = Random.value * 180f * Mathf.Deg2Rad;
@@ -97,6 +97,6 @@ public class Coin : MonoBehaviour
 
         _isMoveToTarget = true;
 
-        transform.localScale = new Vector3(2.5f, 2.5f, 1f);
+        transform.localScale = new Vector3(0.1f, 0.1f, 1f);
     }
 }

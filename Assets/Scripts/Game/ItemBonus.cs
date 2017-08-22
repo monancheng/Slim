@@ -14,6 +14,7 @@ public class ItemBonus : MonoBehaviour {
 	protected bool _isTimeToCreate;
 	protected MeshRenderer _renderer;
 	protected AnimationScript _script;
+	protected float _masterAlpha;
 
 	protected void Init() {
 		_script = GetComponentInChildren<AnimationScript>();
@@ -71,8 +72,8 @@ public class ItemBonus : MonoBehaviour {
 		IsVisible = true;
 		_script.isAnimated = true;
 
-		_renderer.material.SetColor("_Color", new Color(
-			_renderer.material.color.r, _renderer.material.color.g, _renderer.material.color.b, 1f));
+		_masterAlpha = 1f;
+		SetColorAlpha();
 		float posX = Random.Range(14f, 17f);
 		if (Random.value > 0.5f) posX *= -1;
 		transform.position = new Vector3(posX, 600f, 0f);
@@ -85,11 +86,11 @@ public class ItemBonus : MonoBehaviour {
 		{
 			transform.localScale = new Vector3(transform.localScale.x + 0.55f, transform.localScale.y + 0.55f,
 				transform.localScale.z + 0.55f);
-			if (_renderer.material.color.a > 0f)
+			
+			if (_masterAlpha > 0f)
 			{
-				_renderer.material.SetColor("_Color", new Color(
-					_renderer.material.color.r, _renderer.material.color.g, _renderer.material.color.b,
-					_renderer.material.color.a - 0.15f));
+				_masterAlpha -= 0.15f;
+				SetColorAlpha();
 			}
 			else
 			{
@@ -112,6 +113,12 @@ public class ItemBonus : MonoBehaviour {
 		if (_isShowAnimation) {
 			ShowAnimation ();
 		}
+	}
+
+	virtual protected void SetColorAlpha()
+	{
+		Color oldColor = _renderer.material.GetColor("_Color");
+		_renderer.material.SetColor("_Color", oldColor + new Color(0f, 0f, _masterAlpha));
 	}
 
 	virtual protected void HideAnimation() {

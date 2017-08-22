@@ -28,6 +28,7 @@ public class GiftTake : MonoBehaviour
             var coinScript = coin.GetComponentInChildren<Coin>();
             coinScript.ParentObj = _coinIndicator;
             coinScript.MoveToEnd();
+            coinScript.Show();
         }
         
         Invoke("BackToGiftScreen", 1);

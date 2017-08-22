@@ -10,7 +10,8 @@ public class ScreenGift : MonoBehaviour
 	private bool isFirstTime;
 	
 	private float _centerPointY = 60f;
-	[SerializeField] private Object _gift;
+	[SerializeField] private GameObject _gift;
+	[SerializeField] private GameObject _firework;
 
 	private void OnEnable()
 	{
@@ -124,6 +125,7 @@ public class ScreenGift : MonoBehaviour
 	private void CreateGiftAnimation()
 	{
 		Instantiate(_gift);
+		Invoke("FireworksLaunch", 1.4f);
 	}
 	
 	private void OnGiftAnimationDone(OnGiftAnimationDone obj)
@@ -164,5 +166,10 @@ public class ScreenGift : MonoBehaviour
 		UIManager.HideUiElement("NotifySkinExtra");
 		UIManager.HideUiElement("NotifyWordExtra");
 		GlobalEvents<OnHideGiftScreen>.Call(new OnHideGiftScreen());
+	}
+
+	private void FireworksLaunch()
+	{
+		_firework.SetActive(true);
 	}
 }
