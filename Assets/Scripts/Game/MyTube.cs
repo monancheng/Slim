@@ -25,15 +25,15 @@ public class MyTube : MonoBehaviour
     private void OnEnable()
     {
         GlobalEvents<OnGameOver>.Happened += GameOver;
-        Player.OnTubeMove += OnTubeMove;
-        Player.OnIncreaseTubeRadius += OnIncreaseTubeRadius;
+        MyPlayer.OnTubeMove += OnTubeMove;
+        MyPlayer.OnIncreaseTubeRadius += OnIncreaseTubeRadius;
     }
 
     private void OnDisable()
     {
         GlobalEvents<OnGameOver>.Happened -= GameOver;
-        Player.OnTubeMove -= OnTubeMove;
-        Player.OnIncreaseTubeRadius -= OnIncreaseTubeRadius;
+        MyPlayer.OnTubeMove -= OnTubeMove;
+        MyPlayer.OnIncreaseTubeRadius -= OnIncreaseTubeRadius;
     }
     
     private void OnIncreaseTubeRadius(float radius)

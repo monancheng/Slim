@@ -50,7 +50,7 @@ public class TubeManager : MonoBehaviour
     private void OnEnable()
     {
         MyTube.OnDestroy += RemoveItem;
-        Player.OnTubeCreate += OnTubeCreate;
+        MyPlayer.OnTubeCreate += OnTubeCreate;
 //        Player.OnTubeGetBonusTube += OnTubeGetBonusTube;
         GlobalEvents<OnStartGame>.Happened += StartGame;
         GlobalEvents<OnGameOver>.Happened += OnGameOver;

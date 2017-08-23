@@ -5,7 +5,7 @@ using PrimitivesPro.GameObjects;
 using PrimitivesPro.Primitives;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class MyPlayer : MonoBehaviour
 {
     public static event Action<float> OnTubeCreate;
     public static event Action OnTubeMove;

@@ -19,7 +19,7 @@ public class ComboTubeManager : MonoBehaviour
 
     private void OnEnable()
     {
-        Player.OnCombo += OnCombo;
+        MyPlayer.OnCombo += OnCombo;
     }
 
     private void OnCombo(int comboCounter, float radius, Vector3 pos, float height)

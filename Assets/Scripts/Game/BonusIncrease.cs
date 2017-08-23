@@ -33,4 +33,12 @@ public class BonusIncrease : ItemBonus
             Activate();
         }
     }
+    override protected void SetColorAlpha()
+    {
+//        Color oldColor = _renderer.material.GetColor("_TopColor");
+//        _renderer.material.SetColor("_TopColor", oldColor + new Color(0f, 0f, _masterAlpha));
+//        
+//        oldColor = _renderer.material.GetColor("_BottomColor");
+//        _renderer.material.SetColor("_BottomColor", oldColor + new Color(0f, 0f, _masterAlpha));
+    }
 }
