@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class ScreenSkins : MonoBehaviour
 {
-    [SerializeField] private GameObject haveNewSkin;
     [SerializeField] private GameObject[] _skinBtns;
     private bool _isNewSkinAvailable;
     public static event Action<int> OnAddCoinsVisual;
@@ -80,6 +79,8 @@ public class ScreenSkins : MonoBehaviour
     private void ShowButtons()
     {
         UIManager.ShowUiElement("ScreenSkins");
+        UIManager.ShowUiElement("ScreenSkinsTopBar");
+//        UIManager.ShowUiElement("ScreenSkinsBackground");
         UIManager.ShowUiElement("ScreenSkinsBtnBack");
         UIManager.ShowUiElement("PreviewSkin");
         UIManager.ShowUiElement("ScreenSkinsContainerBackground");
@@ -101,11 +102,17 @@ public class ScreenSkins : MonoBehaviour
         {
             UIManager.ShowUiElement("LabelNewSkin");
         }
+        
+        // Other screens
+        UIManager.ShowUiElement("LabelCoins");
+        UIManager.ShowUiElement("ScreenMenuBtnPlus");
     }
 
     private void HideButtons()
     {
         UIManager.HideUiElement("ScreenSkins");
+        UIManager.HideUiElement("ScreenSkinsTopBar");
+//        UIManager.ShowUiElement("ScreenSkinsBackground");
         UIManager.HideUiElement("ScreenSkinsBtnBack");
         UIManager.HideUiElement("PreviewSkin");
         UIManager.HideUiElement("ScreenSkinsContainerBackground");
@@ -123,6 +130,9 @@ public class ScreenSkins : MonoBehaviour
         UIManager.HideUiElement("BtnSkin11");
         UIManager.HideUiElement("BtnSkin12");
         UIManager.HideUiElement("LabelNewSkin");
+        // Other screens
+        UIManager.HideUiElement("LabelCoins");
+        UIManager.HideUiElement("ScreenMenuBtnPlus");
     }
 
     public void SetSkin1()
@@ -206,13 +216,11 @@ public class ScreenSkins : MonoBehaviour
         for (var i = 1; i < DefsGame.FaceAvailable.Length; i++)
             if (DefsGame.FaceAvailable[i] == 1)
             {
-                _skinBtns[i-1].GetComponentInChildren<UIButton>().GetComponent<Image>().color = Color.white;
-                _skinBtns[i-1].GetComponentInChildren<Text>().text = "";
+                _skinBtns[i-1].GetComponent<ScreenSkinBtn>().SetLock(true);
             }
             else
             {
-                _skinBtns[i-1].GetComponentInChildren<UIButton>().GetComponent<Image>().color = Color.black;
-                _skinBtns[i-1].GetComponentInChildren<Text>().text = "200";
+                _skinBtns[i-1].GetComponent<ScreenSkinBtn>().SetLock(false);
             }
     }
 

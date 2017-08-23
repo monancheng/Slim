@@ -16,8 +16,8 @@ public struct DefsGame
     public static int CurrentFaceId;
     public static int ThrowsCounter = 0;
     public static bool IsCanPlay = true;
-    public static int[] FaceAvailable = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    public static readonly int[] FacePrice = {200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200};
+    public static int[] FaceAvailable = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    public static readonly int[] FacePrice = {200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200};
     public static int BTN_GIFT_HIDE_DELAY = 0;
     public static int BTN_GIFT_HIDE_DELAY_COUNTER;
 

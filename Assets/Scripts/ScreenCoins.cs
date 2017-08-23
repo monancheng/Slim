@@ -46,6 +46,8 @@ public class ScreenCoins : MonoBehaviour
 //#if UNITY_IPHONE
 //        UIManager.ShowUiElement("ScreenCoinsBtnRestore");
 //#endif
+        
+        UIManager.HideUiElement("ScreenMenuBtnPlus");
     }
 
     public void HideButtons()
@@ -58,6 +60,8 @@ public class ScreenCoins : MonoBehaviour
         UIManager.HideUiElement("ScreenCoinsBackground");
 //        UIManager.HideUiElement("ScreenCoinsBtnNoAds");
 //        UIManager.HideUiElement("ScreenCoinsBtnRestore");
+        
+        UIManager.ShowUiElement("ScreenMenuBtnPlus");
     }
 
     private void IsRewardedVideoAvailable(OnRewardedAvailable e)

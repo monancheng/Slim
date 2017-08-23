@@ -79,7 +79,7 @@ public class ScreenMenu : MonoBehaviour
         //UIManager.ShowUiElement ("MainMenu");
         UIManager.ShowUiElement("LabelBestScore");
         UIManager.ShowUiElement("elementBestScore");
-        UIManager.ShowUiElement("elementCoins");
+        UIManager.ShowUiElement("LabelCoins");
         
         UIManager.ShowUiElement("BtnSkins");
 //        if (DefsGame.GameplayCounter != 0) 
