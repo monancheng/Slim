@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-public class GameOverNotifications : MonoBehaviour
+public class ScreenGameOver : MonoBehaviour
 {
     [SerializeField] private Text _nextCharacterText;
     [SerializeField] private Text _shareText;
@@ -41,7 +41,7 @@ public class GameOverNotifications : MonoBehaviour
     {
         // Глобальные
         GlobalEvents<OnStartGame>.Happened += OnHideNotifications;
-        GlobalEvents<OnShowNotifications>.Happened += OnShowNotifications;
+        GlobalEvents<OnShowGameOverScreen>.Happened += OnShow;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened += IsGiftAvailable;
         GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
@@ -62,7 +62,7 @@ public class GameOverNotifications : MonoBehaviour
     private void OnDisable()
     {
         GlobalEvents<OnStartGame>.Happened -= OnHideNotifications;
-        GlobalEvents<OnShowNotifications>.Happened -= OnShowNotifications;
+        GlobalEvents<OnShowGameOverScreen>.Happened -= OnShow;
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened -= IsGiftAvailable;
         GlobalEvents<OnCoinsAdded>.Happened -= OnCoinsAdded;
@@ -76,7 +76,7 @@ public class GameOverNotifications : MonoBehaviour
         GlobalEvents<OnGiftCollected>.Happened -= OnGiftCollected;
     }
 
-    private void OnShowNotifications(OnShowNotifications e)
+    private void OnShow(OnShowGameOverScreen e)
     {
 
         DefsGame.CurrentScreen = DefsGame.SCREEN_NOTIFICATIONS;
@@ -170,7 +170,7 @@ public class GameOverNotifications : MonoBehaviour
         // Перемешиваем элементы списка, чтобы они располагались рандомно по оси У
         ShuffleItems();
         SetItemsPositions();
-        ShowNotifications();
+        ShowActiveItems();
     }
 
     private void AddWordTimerOrProgress()
@@ -263,7 +263,7 @@ public class GameOverNotifications : MonoBehaviour
         }
     }
 
-    public void ShowNotifications()
+    public void ShowActiveItems()
     {
         if (_activeNamesList.Count == 0)
         {
@@ -299,15 +299,15 @@ public class GameOverNotifications : MonoBehaviour
         return null;
     }
 
-    private void HideAndRemoveNotifications()
+    public void Hide()
     {
-        HideNotifications();
+        HideActiveItems();
         _activeNamesList.Clear();
 
 //        UIManager.HideUiElement("ScreenGameOver");
     }
 
-    public void HideNotifications()
+    public void HideActiveItems()
     {
         foreach (string t in _activeNamesList)
         {
@@ -325,7 +325,7 @@ public class GameOverNotifications : MonoBehaviour
 
     private void OnHideNotifications(OnStartGame e)
     {
-        HideAndRemoveNotifications();
+        Hide();
     }
 
     private void IsRewardedAvailable(OnRewardedAvailable e)
@@ -405,7 +405,7 @@ public class GameOverNotifications : MonoBehaviour
         }
 
         SetItemsPositions();
-        ShowNotifications();
+        ShowActiveItems();
         DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
     }
     
@@ -457,7 +457,7 @@ public class GameOverNotifications : MonoBehaviour
 			GlobalEvents<OnBtnShareGifClick>.Call (new OnBtnShareGifClick{CoinsCount = _shareRewardValue});
 			_shareRewardValue = 0;
 
-			HideNotifications ();
+			HideActiveItems ();
 
 			UIManager.HideUiElement ("NotifyShare");
 			GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
@@ -493,7 +493,7 @@ public class GameOverNotifications : MonoBehaviour
     
     public void BtnNewSkinClick()
     {
-        HideNotifications();
+        HideActiveItems();
         int id = _activeNamesList.IndexOf("NotifyNewCharacter"); 
         if (id != -1) _activeNamesList.RemoveAt(id);
 
@@ -506,7 +506,7 @@ public class GameOverNotifications : MonoBehaviour
     
     public void BtnWordClick()
     {
-        HideNotifications();
+        HideActiveItems();
 
         _isGotWord = false;
 //        AddNotifyNextSkin(200);
@@ -517,7 +517,7 @@ public class GameOverNotifications : MonoBehaviour
     
     public void BtnGiftClick()
     {
-        HideNotifications();
+        HideActiveItems();
         int id = _activeNamesList.IndexOf("NotifyGift"); 
         if (id != -1) _activeNamesList.RemoveAt(id);
         
