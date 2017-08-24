@@ -167,12 +167,6 @@ public class ScreenMenu : MonoBehaviour
         GlobalEvents<OnBtnShareClick>.Call(new OnBtnShareClick());
     }
 
-    public void BtnPlusClick()
-    {
-        HideButtons();
-        DefsGame.ScreenCoins.Show();
-    }
-
     public void BtnSkinsClick()
     {
         HideButtons();

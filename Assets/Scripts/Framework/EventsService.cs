@@ -15,6 +15,10 @@ public struct OnShowMenu
 {
 }
 
+public struct OnShowScreenCoins
+{
+}
+
 public struct OnHideMenu
 {
 }
@@ -87,7 +91,7 @@ public struct OnCoinsAdded
 //--------------------------------------------------------
 
 // Показываем нотификейшины на экране
-public struct OnShowNotifications
+public struct OnShowGameOverScreen
 {
 }
 

@@ -44,7 +44,7 @@ public class ScreenGame : MonoBehaviour
 
     private void Awake()
     {
-        DefsGame.ScreenGame = this;
+        DefsGame.LoadVariables();
     }
 
     // Use this for initialization
@@ -106,7 +106,7 @@ public class ScreenGame : MonoBehaviour
         GameEvents.Send(OnNewGame);
 
         if (DefsGame.GameplayCounter > 1)
-            GlobalEvents<OnShowNotifications>.Call(new OnShowNotifications());
+            GlobalEvents<OnShowGameOverScreen>.Call(new OnShowGameOverScreen());
     }
 
     private void OnEnable()
@@ -139,13 +139,6 @@ public class ScreenGame : MonoBehaviour
 
         _isNextLevel = true;
     }
-
-    public void GameStart()
-    {
-        GlobalEvents<OnStartGame>.Call(new OnStartGame());
-        MasterAudio.PlaySoundAndForget("GameStart");
-//        Record.DORec();
-    }
     
     private void OnGameOver(OnGameOver e)
     {
@@ -167,10 +160,18 @@ public class ScreenGame : MonoBehaviour
         _state = 3;
     }
 
+    public void StartGame()
+    {
+        GlobalEvents<OnStartGame>.Call(new OnStartGame());
+    }
+
     private void OnStartGame(OnStartGame e)
     {
         if (IsGameOver)
             return;
+        
+        MasterAudio.PlaySoundAndForget("GameStart");
+//        Record.DORec();
 
         ++DefsGame.QUEST_THROW_Counter;
 
@@ -493,11 +494,11 @@ public class ScreenGame : MonoBehaviour
 
         //if (Input.GetKeyDown (KeyCode.A))
         if (InputController.IsEscapeClicked())
-            if (DefsGame.CurrentScreen == DefsGame.SCREEN_EXIT)
-            {
-                HideExitPanel();
-            }
-            else if (DefsGame.CurrentScreen == DefsGame.SCREEN_MENU)
+//            if (DefsGame.CurrentScreen == DefsGame.SCREEN_EXIT)
+//            {
+//                HideExitPanel();
+//            }            else 
+        if (DefsGame.CurrentScreen == DefsGame.SCREEN_MENU)
             {
                 ShowExitPanel();
             }
@@ -512,17 +513,18 @@ public class ScreenGame : MonoBehaviour
                 else
                     GameOver();
             }
-            else if (DefsGame.CurrentScreen == DefsGame.SCREEN_SKINS)
-            {
-                DefsGame.ScreenSkins.Hide();
-                GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
-            }
-            else if (DefsGame.CurrentScreen == DefsGame.SCREEN_IAPS)
-            {
-                DefsGame.ScreenCoins.Hide();
-                GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
-            }
-    }
+//            else if (DefsGame.CurrentScreen == DefsGame.SCREEN_SKINS)
+//            {
+//                DefsGame.ScreenSkins.Hide();
+//                GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
+//            }
+//            else if (DefsGame.CurrentScreen == DefsGame.SCREEN_IAPS)
+//            {
+//                DefsGame.ScreenCoins.Hide();
+//                GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
+//       }         
+}
+
 
     private void GameOver()
     {

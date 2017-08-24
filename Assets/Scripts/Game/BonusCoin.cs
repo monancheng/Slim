@@ -5,7 +5,7 @@ using UnityEngine;
 public class BonusCoin : ItemBonus
 {
 	public static event Action<int> OnAddCoinsVisual;
-
+    
 	private void Awake()
 	{
 		Init ();

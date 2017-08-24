@@ -6,13 +6,9 @@ using UnityEngine.UI;
 public class ScreenSkins : MonoBehaviour
 {
     [SerializeField] private GameObject[] _skinBtns;
+    [SerializeField] private GameObject _choosedSkin;
     private bool _isNewSkinAvailable;
     public static event Action<int> OnAddCoinsVisual;
-
-    private void Awake()
-    {
-        DefsGame.ScreenSkins = this;
-    }
 
     private void Start()
     {
@@ -49,6 +45,7 @@ public class ScreenSkins : MonoBehaviour
             DefsGame.CurrentFaceId = id;
             GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = id});
             PlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
+            ChooseColorForButtons();
         }
         else if (DefsGame.CoinsCount >= 200/*DefsGame.FacePrice[_id - 1]*/)
         {
@@ -56,13 +53,11 @@ public class ScreenSkins : MonoBehaviour
 
             //DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_NEW_SKIN, 1);
             //DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_COLLECTION, DefsGame.QUEST_CHARACTERS_Counter);
-            ChooseColorForButtons();
             GlobalEvents<OnGotNewCharacter>.Call(new OnGotNewCharacter());
         }
         else
         {
-            HideButtons();
-            DefsGame.ScreenCoins.Show();
+            GlobalEvents<OnShowScreenCoins>.Call(new OnShowScreenCoins());
         }
     }
 
@@ -74,6 +69,7 @@ public class ScreenSkins : MonoBehaviour
         PlayerPrefs.SetInt("faceAvailable_" + id, 1);
         ++DefsGame.QUEST_CHARACTERS_Counter;
         PlayerPrefs.SetInt("QUEST_CHARACTERS_Counter", DefsGame.QUEST_CHARACTERS_Counter);
+        ChooseColorForButtons();
     }
 
     private void ShowButtons()
@@ -85,6 +81,8 @@ public class ScreenSkins : MonoBehaviour
         UIManager.ShowUiElement("PreviewSkin");
         UIManager.ShowUiElement("ScreenSkinsContainerBackground");
         
+        
+        UIManager.ShowUiElement("BtnSkinRandom");
         UIManager.ShowUiElement("BtnSkin1");
         UIManager.ShowUiElement("BtnSkin2");
         UIManager.ShowUiElement("BtnSkin3");
@@ -96,7 +94,8 @@ public class ScreenSkins : MonoBehaviour
         UIManager.ShowUiElement("BtnSkin9");
         UIManager.ShowUiElement("BtnSkin10");
         UIManager.ShowUiElement("BtnSkin11");
-        UIManager.ShowUiElement("BtnSkin12");
+        
+        UIManager.ShowUiElement("ChoosedSkin");
        
         if (_isNewSkinAvailable)
         {
@@ -117,6 +116,8 @@ public class ScreenSkins : MonoBehaviour
         UIManager.HideUiElement("PreviewSkin");
         UIManager.HideUiElement("ScreenSkinsContainerBackground");
         
+        UIManager.HideUiElement("ChoosedSkin");
+        UIManager.HideUiElement("BtnSkinRandom");
         UIManager.HideUiElement("BtnSkin1");
         UIManager.HideUiElement("BtnSkin2");
         UIManager.HideUiElement("BtnSkin3");
@@ -128,7 +129,6 @@ public class ScreenSkins : MonoBehaviour
         UIManager.HideUiElement("BtnSkin9");
         UIManager.HideUiElement("BtnSkin10");
         UIManager.HideUiElement("BtnSkin11");
-        UIManager.HideUiElement("BtnSkin12");
         UIManager.HideUiElement("LabelNewSkin");
         // Other screens
         UIManager.HideUiElement("LabelCoins");
@@ -199,29 +199,31 @@ public class ScreenSkins : MonoBehaviour
     {
         DefsGame.CurrentScreen = DefsGame.SCREEN_SKINS;
         DefsGame.IsCanPlay = false;
-        ChooseColorForButtons();
+        
         ShowButtons();
+        Invoke("ChooseColorForButtons", 1f);
     }
 
     public void Hide()
     {
         DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
         DefsGame.IsCanPlay = true;
-        ChooseColorForButtons();
         HideButtons();
     }
 
     private void ChooseColorForButtons()
     {
-        for (var i = 1; i < DefsGame.FaceAvailable.Length; i++)
+        for (var i = 0; i < DefsGame.FaceAvailable.Length; i++)
             if (DefsGame.FaceAvailable[i] == 1)
             {
-                _skinBtns[i-1].GetComponent<ScreenSkinBtn>().SetLock(true);
+                _skinBtns[i].GetComponent<ScreenSkinBtn>().SetLock(true);
             }
             else
             {
-                _skinBtns[i-1].GetComponent<ScreenSkinBtn>().SetLock(false);
+                _skinBtns[i].GetComponent<ScreenSkinBtn>().SetLock(false);
             }
+        
+        _choosedSkin.transform.position = _skinBtns[DefsGame.CurrentFaceId].transform.position;
     }
 
     private void CheckAvailableSkin()

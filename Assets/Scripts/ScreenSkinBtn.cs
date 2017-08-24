@@ -14,14 +14,14 @@ public class ScreenSkinBtn : MonoBehaviour {
 		if (isUnlocked)
 		{
 			_button.GetComponent<Image>().sprite = sprite;
-			_coinImage.SetActive(false);
-			_price.SetActive(false);
+			if (_coinImage!= null) _coinImage.SetActive(false);
+			if (_price!= null) _price.SetActive(false);
 		}
 		else
 		{
 			_button.GetComponent<Image>().sprite = spriteLock;
-			_coinImage.SetActive(true);
-			_price.SetActive(true);
+			if (_coinImage!= null) _coinImage.SetActive(true);
+			if (_price!= null) _price.SetActive(true);
 		}
 	}
 }

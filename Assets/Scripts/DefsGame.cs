@@ -6,9 +6,6 @@ public struct DefsGame
     public static BillingManager IAPs;
     public static GameServicesManager GameServices;
     public static CameraMovement CameraMovement;
-    public static ScreenGame ScreenGame;
-    public static ScreenCoins ScreenCoins;
-    public static ScreenSkins ScreenSkins;
     public static int GameplayCounter = 0; // Считает количество игр сыгранных в этой игровой сессии
     public static int CurrentPointsCount = 0;
     public static int GameBestScore; // Лучший счет
@@ -17,7 +14,7 @@ public struct DefsGame
     public static int ThrowsCounter = 0;
     public static bool IsCanPlay = true;
     public static int[] FaceAvailable = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    public static readonly int[] FacePrice = {200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200};
+//    public static readonly int[] FacePrice = {200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200};
     public static int BTN_GIFT_HIDE_DELAY = 0;
     public static int BTN_GIFT_HIDE_DELAY_COUNTER;
 
@@ -54,7 +51,6 @@ public struct DefsGame
     public static int RateCounter;
     public static Coins Coins { get; set; }
     public static bool IsNeedToShowCoin = false;
-
 
     public static void LoadVariables()
     {

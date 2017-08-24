@@ -253,7 +253,7 @@ public class TubeManager : MonoBehaviour
             && InputController.IsTouchOnScreen(TouchPhase.Began)
             && InputController.GetPosition().y > 200)
         {
-            DefsGame.ScreenGame.GameStart();
+            GlobalEvents<OnStartGame>.Call(new OnStartGame());
             _isFingerStart = false;
         }
     }

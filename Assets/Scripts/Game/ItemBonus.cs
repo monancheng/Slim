@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ItemBonus : MonoBehaviour {
+	[SerializeField] protected ParticleSystem _ps;
 	protected bool IsVisible;
 
 	protected Collider _collider;
@@ -46,6 +45,13 @@ public class ItemBonus : MonoBehaviour {
 		_script.isAnimated = false;
 
 		_collider.enabled = false;
+
+		if (_ps != null)
+		{
+			_ps.gameObject.SetActive(true);
+			_ps.transform.position = transform.position;
+			_ps.Play();
+		}
 	}
 
 	protected void Hide(bool isHideAnimation = true)

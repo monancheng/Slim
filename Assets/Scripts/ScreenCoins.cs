@@ -9,21 +9,23 @@ public class ScreenCoins : MonoBehaviour
 
     public static event Action<int> OnAddCoinsVisual;
 
-    private void Start()
-    {
-        DefsGame.ScreenCoins = this;
-    }
-
     private void OnEnable()
     {
         GlobalEvents<OnGiveReward>.Happened += GetReward;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedVideoAvailable;
+        GlobalEvents<OnShowScreenCoins>.Happened += OnShowScreenCoins;
     }
 
     private void OnDisable()
     {
         GlobalEvents<OnGiveReward>.Happened -= GetReward;
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedVideoAvailable;
+        GlobalEvents<OnShowScreenCoins>.Happened -= OnShowScreenCoins;
+    }
+
+    private void OnShowScreenCoins(OnShowScreenCoins obj)
+    {
+        Show();
     }
 
     public void ShowButtons()
