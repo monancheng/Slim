@@ -162,11 +162,6 @@ public class ScreenMenu : MonoBehaviour
 //		Defs.Rate.RateUs ();
     }
 
-    public void Share()
-    {
-        GlobalEvents<OnBtnShareClick>.Call(new OnBtnShareClick());
-    }
-
     public void BtnSkinsClick()
     {
         HideButtons();

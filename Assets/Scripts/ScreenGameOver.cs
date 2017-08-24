@@ -479,6 +479,12 @@ public class ScreenGameOver : MonoBehaviour
     // Touches
     //----------------------------------------------------
 
+    public void BtnShareClick()
+    {
+        GlobalEvents<OnBtnShareClick>.Call(new OnBtnShareClick());
+        UIManager.HideUiElement("NotifyShare");
+    }
+    
     public void BtnRateClick()
     {
         GlobalEvents<OnBtnRateClick>.Call(new OnBtnRateClick());
