@@ -146,8 +146,8 @@ public class BillingManager : MonoBehaviour
                     } else if (_transaction.ProductIdentifier == NPSettings.Billing.Products [2].ProductIdentifier) {
                         PublishingService.Instance.DisableAdsPermanently();
 
-                        DefsGame.noAds = 1;
-                        PlayerPrefs.SetInt ("noAds", DefsGame.noAds);
+                        MyAds.noAds = 1;
+                        PlayerPrefs.SetInt ("noAds", MyAds.noAds);
                         D.Log ("OnDidFinishTransaction() - NoAds (bought)");
                     } 
 
@@ -198,8 +198,8 @@ public class BillingManager : MonoBehaviour
 
                 if (_currentTransaction.TransactionState == eBillingTransactionState.RESTORED) {
                     //if (_currentTransaction.ProductIdentifier == NPSettings.Billing.Products [0].ProductIdentifier) {
-                        DefsGame.noAds = 1;
-                        PlayerPrefs.SetInt ("noAds", DefsGame.noAds);
+                        MyAds.noAds = 1;
+                        PlayerPrefs.SetInt ("noAds", MyAds.noAds);
                         PublishingService.Instance.DisableAdsPermanently ();
                     //} 
                 }

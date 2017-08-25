@@ -152,7 +152,7 @@ public class ScreenMenu : MonoBehaviour
 
     public void OnVideoAdsClicked()
     {
-        MyAds.ShowRewardedAds();
+        GlobalEvents<OnRewardedTryShow>.Call(new OnRewardedTryShow());
         _isWaitReward = true;
     }
 

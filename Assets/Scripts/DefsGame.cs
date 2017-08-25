@@ -2,7 +2,6 @@
 
 public struct DefsGame
 {
-    public static int NoAds;
     public static BillingManager IAPs;
     public static GameServicesManager GameServices;
     public static CameraMovement CameraMovement;
@@ -54,7 +53,6 @@ public struct DefsGame
 
     public static void LoadVariables()
     {
-        NoAds = PlayerPrefs.GetInt("noAds", 0);
         CurrentFaceId = PlayerPrefs.GetInt("currentFaceID", 0);
         //currentFaceID = 0;
         GameBestScore = PlayerPrefs.GetInt("BestScore", 0);

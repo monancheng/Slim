@@ -56,23 +56,20 @@ public struct OnGiveReward
     public bool IsAvailable;
 }
 
-// Rewarded реклама готова к показу
-public struct OnRewardedAvailable
-{
-    public bool IsAvailable;
-}
+// Показыаем Rewarded рекламу, если доступна
+public struct OnRewardedTryShow {}
+// Показываем Video рекламу, если доступна
+public struct OnAdsVideoTryShow {}
 
 // Запрос на показ рекламы 
-public struct OnShowVideoAds
-{
-    public bool IsAvailable;
-}
-
+public struct OnShowVideoAds {}
 // Запрос на показ видео рекламы
-public struct OnShowRewarded
-{
-    public bool IsAvailable;
-}
+public struct OnShowRewarded {}
+
+// Rewarded реклама готова к показу (Время ожидания завершилось)
+public struct OnRewardedAvailable { public bool IsAvailable; }
+// Начался показ Video рекламы
+public struct OnAdsVideoShowing {}
 
 // Можно дарить подарок
 public struct OnGiftAvailable

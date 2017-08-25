@@ -14,7 +14,7 @@ public class ScreenSettings : MonoBehaviour
         UIManager.ShowUiElement("BtnRate");
         UIManager.ShowUiElement("BtnShare");
   
-        if (MyAds.noAds < 1) UIManager.ShowUiElement("ScreenSettingsBtnNoAds");
+        if (MyAds.NoAds < 1) UIManager.ShowUiElement("ScreenSettingsBtnNoAds");
 #if UNITY_IPHONE
         UIManager.ShowUiElement("ScreenSettingsBtnRestore");
 #endif

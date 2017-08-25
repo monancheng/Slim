@@ -152,7 +152,7 @@ public class ScreenGameOver : MonoBehaviour
             AddNotifyNextSkin();
         } 
         
-        if (DefsGame.NoAds == 0 && _activeNamesList.Count < 4 && Random.value > 0.5f)
+        if (MyAds.NoAds == 0 && _activeNamesList.Count < 4 && Random.value > 0.5f)
         {
             _activeNamesList.Add("NotifyNoAds");
         }
