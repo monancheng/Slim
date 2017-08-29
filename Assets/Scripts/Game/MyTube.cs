@@ -11,15 +11,43 @@ public class MyTube : MonoBehaviour
     private bool _isMove;
     private bool _isReadyToDelete;
     private bool _isSentMoveEvent;
-   [HideInInspector] public BaseObject ShapeObject;
+    [HideInInspector]public BaseObject ShapeObject;
+
+    private float ScaleWeWant;
+    private const int IncreaseIterationCount = 10;
+    private float _increaseScaleSpeed;
+    
+   [HideInInspector] public float Scale;
    [HideInInspector] public bool IsIncreaseSize;
+    private bool _isShowAnimation;
+    private const float Height = 3f;
+    private const int Sides = 32;
     public static event Action OnCanMove;
     public static event Action OnCanSpawnBonus;
     public static event Action <int> OnDestroy;
 
-    private void Start()
+    private Tube tube;
+
+
+    private void Awake()
     {
+        tag = "Tube";
+        _isShowAnimation = true;
+        ScaleWeWant = transform.localScale.x;
+        _increaseScaleSpeed = ScaleWeWant/IncreaseIterationCount;
         transform.localScale = Vector3.zero;
+        tube = GetComponent <Tube>();
+        Scale = 1;
+    }
+
+    public void CreateTubeModel(GameObject prefab)
+    {
+        GameObject go = Instantiate(prefab);
+        go.transform.SetParent(transform, false);
+        go.transform.localPosition = new Vector3(0, tube.height*0.5f, 0);
+//        go.transform.localScale = new Vector3(100f, 100f, 100f);
+//        go.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+        
     }
 
     private void OnEnable()
@@ -36,15 +64,24 @@ public class MyTube : MonoBehaviour
         MyPlayer.OnIncreaseTubeRadius -= OnIncreaseTubeRadius;
     }
     
-    private void OnIncreaseTubeRadius(float radius)
+    private void OnIncreaseTubeRadius(float scale)
     {
         if (_isHaveCollision) return;
-        
+
+        ChangeRadius(scale);
+
         Tube obj = ShapeObject.gameObject.GetComponent<Tube>();
-        obj.GenerateGeometry(radius, obj.radius1 + (radius-obj.radius0), obj.height, obj.sides, 1, 0f, false,
+        obj.GenerateGeometry(scale*7f, 14f, obj.height, obj.sides, 1, 0f, false,
             NormalsType.Vertex,
             PivotPosition.Center);
         obj.FitCollider();
+        obj.transform.localPosition = new Vector3(0, tube.height, 0);
+    }
+
+    public void ChangeRadius(float scale)
+    {
+        Scale = scale;
+//        transform.localScale = new Vector3(ScaleWeWant * Scale, ScaleWeWant * Scale, ScaleWeWant * Scale);
     }
 
     private void OnTubeMove()
@@ -72,13 +109,23 @@ public class MyTube : MonoBehaviour
 
     private void Update()
     {
-        if (transform.localScale.x < 1f)
-            transform.localScale = new Vector3(transform.localScale.x + 0.05f, transform.localScale.y + 0.05f,
-                transform.localScale.z + 0.05f);
-        else
-            transform.localScale = Vector3.one;
+        if (!_isGameOver)
+        {
+            if (_isShowAnimation)
+            {
+                if (transform.localScale.x < ScaleWeWant)
+                    transform.localScale = new Vector3(transform.localScale.x + _increaseScaleSpeed,
+                        transform.localScale.y + _increaseScaleSpeed * Scale,
+                        transform.localScale.z + _increaseScaleSpeed * Scale);
+                else
+                {
+                    _isShowAnimation = false;
+                    transform.localScale = new Vector3(ScaleWeWant, ScaleWeWant, ScaleWeWant);
+                }
+            }
+        }
 
-        transform.Rotate(Vector3.up, TubeManager.RotateSpeed);
+//        transform.Rotate(Vector3.up, TubeManager.RotateSpeed);
 
         if (_isGameOver && !_isHaveCollision && transform.position.y > 1f)
         {
@@ -89,8 +136,8 @@ public class MyTube : MonoBehaviour
             }
             
             if (transform.localScale.x > 0f)
-                transform.localScale = new Vector3(transform.localScale.x - 0.1f, transform.localScale.y - 0.1f,
-                    transform.localScale.z - 0.1f);
+                transform.localScale = new Vector3(transform.localScale.x - _increaseScaleSpeed, transform.localScale.y - _increaseScaleSpeed,
+                    transform.localScale.z - _increaseScaleSpeed);
             else
             {
                 GameEvents.Send(OnDestroy, Id);

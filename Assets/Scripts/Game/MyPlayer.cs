@@ -23,12 +23,12 @@ public class MyPlayer : MonoBehaviour
     private int _comboIncreaseCounter;
     private float _currentAngle;
     private float _currentRadius;
+    private float _startScaleValue;
     private float _height;
     private bool _isDontMove;
     private bool _isHaveCollision;
     private bool _isMoveToExit;
 
-    private Cylinder _script;
     private int _sides;
     private int _soundGoodId;
     private Vector3 _startCursorPoint;
@@ -42,23 +42,25 @@ public class MyPlayer : MonoBehaviour
     [SerializeField] private Material[] _materials;
     [SerializeField] private Renderer _renderer;
     [SerializeField] private Mesh[] _meshes;
-    [SerializeField] private MeshFilter _mesh;
-    [SerializeField] private Transform _modelTransform;
+    private MeshFilter _mesh;
     
 
     private void Start()
     {
         _cameraStartPosition = Camera.main.transform.position;
         _startPosition = transform.position;
-        _script = GetComponent<Cylinder>();
-        _script.AddMeshCollider(true);
-        _height = _script.height;
-        _sides = _script.sides;
-        _startRadius = _script.radius;
+        _height = 24f;
+        _sides = 32;
+        _startRadius = 7f;
+
+        _startScaleValue = transform.localScale.x;
+
+        _mesh = GetComponent<MeshFilter>();
+        _renderer = GetComponent<MeshRenderer>();
 
         RespownAndWait();
 
-        _modelTransform.DORotate(new Vector3(0, 0, 20f), 1, RotateMode.LocalAxisAdd).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
+        transform.DORotate(new Vector3(0, 0, 20f), 1, RotateMode.LocalAxisAdd).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
 
         _startDistance = Vector3.Distance(new Vector3(0f, CirclePositionY, transform.position.z), transform.position);
     }
@@ -66,7 +68,7 @@ public class MyPlayer : MonoBehaviour
     private void OnEnable()
     {
         MyTube.OnCanMove += OnCanMove;
-        BonusIncrease.OnBonusGrow += OnGrow;
+        BonusIncrease.OnBonusGrow += OnBonusGrow;
         GlobalEvents<OnStartGame>.Happened += StartGame;
         GlobalEvents<OnGameOver>.Happened += GameOver;
         GlobalEvents<OnChangeSkin>.Happened += OnChangeSkin;
@@ -125,16 +127,17 @@ public class MyPlayer : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-		if (other.CompareTag("Coin")||other.CompareTag("BonusIncrease")||other.CompareTag("BonusChar")) return;
+		if (!other.CompareTag("Tube")) return;
 
         if (_isHaveCollision) return;
 
-//        MyTube tube = other.gameObject.GetComponent <MyTube>();
+        MyTube tube = other.gameObject.GetComponent <MyTube>();
+        Tube tubeProc = other.gameObject.GetComponent <Tube>();
 //        if (tube.IsIncreaseSize) _isIncreaseSize = true;
 
         _isHaveCollision = true;
         var diffX = Mathf.Abs(transform.position.x - other.gameObject.transform.position.x);
-        var cutSize = diffX - (other.gameObject.GetComponent<Tube>().radius0 - _currentRadius);
+        var cutSize = diffX - (tube.Scale*_startRadius - _currentRadius);
         if (cutSize < 0f) cutSize = 0f;
 
         if (cutSize > ErrorCoeff)
@@ -172,7 +175,7 @@ public class MyPlayer : MonoBehaviour
                 
                 GameEvents.Send(OnCombo, 1/*_comboCounter*/, _currentRadius, 
                     new Vector3(transform.position.x, other.gameObject.transform.position.y, other.gameObject.transform.position.z),
-                    other.gameObject.GetComponent<Tube>().height);
+                    tubeProc.height);
 //                Defs.PlaySound(GetNextGoodSound());
                 MasterAudio.PlaySoundAndForget("GoodFit");
             }
@@ -219,7 +222,7 @@ public class MyPlayer : MonoBehaviour
 //        }
 //    }
     
-    private void OnGrow()
+    private void OnBonusGrow()
     {
         if (_currentRadius < _startRadius)
         {
@@ -230,17 +233,14 @@ public class MyPlayer : MonoBehaviour
             _currentRadius = _startRadius;
         }
         ChangeSize();
-        GameEvents.Send(OnIncreaseTubeRadius, _currentRadius);
+        GameEvents.Send(OnIncreaseTubeRadius, _currentRadius/_startRadius);
     }
 
     private void ChangeSize()
     {
-//        _script.GenerateGeometry(_currentRadius, _height, _sides, 1,
-//            NormalsType.Vertex,
-//            PivotPosition.Center);
-//        _script.FitCollider();
-        Transform t = GetComponentInChildren<Transform>();
-        t.localScale = new Vector3(_currentRadius / _startRadius,t.localScale.y, _currentRadius / _startRadius);
+        transform.localScale = new Vector3((_currentRadius / _startRadius)*_startScaleValue,
+            (_currentRadius / _startRadius)*_startScaleValue,
+            transform.localScale.z);
     }
 
     private void CreateCutTube(float cutSize)
@@ -287,7 +287,9 @@ public class MyPlayer : MonoBehaviour
             float yCoeff = _startDistance * Mathf.Sin(_currentAngle * Mathf.Deg2Rad);
             
             transform.position = new Vector3(xCoeff,
-                CirclePositionY - yCoeff, transform.position.z);
+                transform.position.y,
+//                CirclePositionY - yCoeff,
+                transform.position.z);
             
             Camera.main.transform.position = new Vector3(_cameraStartPosition.x + xCoeff*0.05f, _cameraStartPosition.y, _cameraStartPosition.z);
             _startCursorPoint = cursorPosition;

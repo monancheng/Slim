@@ -180,9 +180,7 @@ public class ScreenGame : MonoBehaviour
         {
             DefsGame.CurrentScreen = DefsGame.SCREEN_GAME;
             GlobalEvents<OnPointsReset>.Call(new OnPointsReset());
-            UIManager.ShowUiElement("scrMenuWowSlider");
             _state = 2;
-            FlurryEventsManager.SendStartEvent("attempt_length");
         }
 
         //isHint = false;
