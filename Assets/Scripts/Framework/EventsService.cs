@@ -23,6 +23,14 @@ public struct OnHideMenu
 {
 }
 
+public struct OnShowSkins
+{
+}
+
+public struct OnHideSkins
+{
+}
+
 public struct OnShowMenuButtons
 {
 }

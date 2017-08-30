@@ -21,8 +21,26 @@ public class ScreenSkins : MonoBehaviour
     {
         GlobalEvents<OnBuySkin>.Happened += OnBuySkin;
         GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
+        GlobalEvents<OnShowSkins>.Happened += OnShowSkins;
+        GlobalEvents<OnHideSkins>.Happened += OnHideSkins;
     }
     
+    private void OnShowSkins(OnShowSkins obj)
+    {
+        DefsGame.CurrentScreen = DefsGame.SCREEN_SKINS;
+        DefsGame.IsCanPlay = false;
+        
+        ShowButtons();
+        Invoke("ChooseColorForButtons", 1f);
+    }
+    
+    private void OnHideSkins(OnHideSkins obj)
+    {
+        DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
+        DefsGame.IsCanPlay = true;
+        HideButtons();
+    }
+
     private void OnCoinsAdded(OnCoinsAdded obj)
     {
         CheckAvailableSkin();
@@ -60,6 +78,9 @@ public class ScreenSkins : MonoBehaviour
         {
             GlobalEvents<OnShowScreenCoins>.Call(new OnShowScreenCoins());
         }
+        
+        Hide();
+        GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
     }
 
     private void OpenSkin(int id)
@@ -198,18 +219,12 @@ public class ScreenSkins : MonoBehaviour
 
     public void Show()
     {
-        DefsGame.CurrentScreen = DefsGame.SCREEN_SKINS;
-        DefsGame.IsCanPlay = false;
-        
-        ShowButtons();
-        Invoke("ChooseColorForButtons", 1f);
+        GlobalEvents<OnShowSkins>.Call(new OnShowSkins());
     }
 
     public void Hide()
     {
-        DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
-        DefsGame.IsCanPlay = true;
-        HideButtons();
+        GlobalEvents<OnHideSkins>.Call(new OnHideSkins());
     }
 
     private void ChooseColorForButtons()
@@ -266,5 +281,8 @@ public class ScreenSkins : MonoBehaviour
         DefsGame.CurrentFaceId = availableList[id];
         _choosedSkin.transform.position = _skinBtns[DefsGame.CurrentFaceId].transform.position;
         availableList.Clear();
+        
+        Hide();
+        GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
     }
 }

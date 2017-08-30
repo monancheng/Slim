@@ -74,14 +74,6 @@ public class TubeManager : MonoBehaviour
     {
         GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
     }
-    
-    public void ShowTubes()
-    {
-//        _radiusAddCoeff = 5f;
-//        _counter = 0;
-//        
-//        CreateTubeStart();
-    }
 
     private void OnWordsAvailable(OnWordsAvailable obj)
     {

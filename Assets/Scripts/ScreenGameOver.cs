@@ -41,6 +41,7 @@ public class ScreenGameOver : MonoBehaviour
     {
         // Глобальные
         GlobalEvents<OnStartGame>.Happened += OnHideNotifications;
+        GlobalEvents<OnShowMenuButtons>.Happened += OnShowMenuButtons;
         GlobalEvents<OnShowGameOverScreen>.Happened += OnShow;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened += IsGiftAvailable;
@@ -62,6 +63,7 @@ public class ScreenGameOver : MonoBehaviour
     private void OnDisable()
     {
         GlobalEvents<OnStartGame>.Happened -= OnHideNotifications;
+        GlobalEvents<OnShowMenuButtons>.Happened -= OnShowMenuButtons;
         GlobalEvents<OnShowGameOverScreen>.Happened -= OnShow;
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened -= IsGiftAvailable;
@@ -74,6 +76,11 @@ public class ScreenGameOver : MonoBehaviour
         GlobalEvents<OnGotNewCharacter>.Happened -= OnGotNewCharacter;
         GlobalEvents<OnBtnRateClick>.Happened -= OnBtnRateClick;
         GlobalEvents<OnGiftCollected>.Happened -= OnGiftCollected;
+    }
+
+    private void OnShowMenuButtons(OnShowMenuButtons obj)
+    {
+        ShowActiveItems();
     }
 
     private void OnShow(OnShowGameOverScreen e)
@@ -263,7 +270,7 @@ public class ScreenGameOver : MonoBehaviour
         }
     }
 
-    public void ShowActiveItems()
+    private void ShowActiveItems()
     {
         if (_activeNamesList.Count == 0)
         {
