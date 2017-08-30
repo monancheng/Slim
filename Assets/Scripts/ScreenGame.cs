@@ -38,8 +38,6 @@ public class ScreenGame : MonoBehaviour
     private bool IsRewardedVideoReadyToShow;
 
     public GameObject screenAnimationObject;
-
-    public static event Action OnNewGame;
 //    private Vector3 _cameraStartPos;
 
     private void Awake()
@@ -102,8 +100,6 @@ public class ScreenGame : MonoBehaviour
         _isScreenRateDone = false;
 
         _isReviveUsed = false;
-
-        GameEvents.Send(OnNewGame);
 
         if (DefsGame.GameplayCounter > 1)
             GlobalEvents<OnShowGameOverScreen>.Call(new OnShowGameOverScreen());

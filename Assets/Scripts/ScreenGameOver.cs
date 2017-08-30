@@ -41,8 +41,7 @@ public class ScreenGameOver : MonoBehaviour
     {
         // Глобальные
         GlobalEvents<OnStartGame>.Happened += OnHideNotifications;
-        GlobalEvents<OnShowMenuButtons>.Happened += OnShowMenuButtons;
-        GlobalEvents<OnShowGameOverScreen>.Happened += OnShow;
+        GlobalEvents<OnShowGameOverScreen>.Happened += OnShowGameOverScreen;
         GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened += IsGiftAvailable;
         GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
@@ -63,8 +62,7 @@ public class ScreenGameOver : MonoBehaviour
     private void OnDisable()
     {
         GlobalEvents<OnStartGame>.Happened -= OnHideNotifications;
-        GlobalEvents<OnShowMenuButtons>.Happened -= OnShowMenuButtons;
-        GlobalEvents<OnShowGameOverScreen>.Happened -= OnShow;
+        GlobalEvents<OnShowGameOverScreen>.Happened -= OnShowGameOverScreen;
         GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened -= IsGiftAvailable;
         GlobalEvents<OnCoinsAdded>.Happened -= OnCoinsAdded;
@@ -78,12 +76,7 @@ public class ScreenGameOver : MonoBehaviour
         GlobalEvents<OnGiftCollected>.Happened -= OnGiftCollected;
     }
 
-    private void OnShowMenuButtons(OnShowMenuButtons obj)
-    {
-        ShowActiveItems();
-    }
-
-    private void OnShow(OnShowGameOverScreen e)
+    private void OnShowGameOverScreen(OnShowGameOverScreen e)
     {
 
         DefsGame.CurrentScreen = DefsGame.SCREEN_NOTIFICATIONS;
@@ -270,7 +263,7 @@ public class ScreenGameOver : MonoBehaviour
         }
     }
 
-    private void ShowActiveItems()
+    public void ShowActiveItems()
     {
         if (_activeNamesList.Count == 0)
         {
@@ -514,6 +507,7 @@ public class ScreenGameOver : MonoBehaviour
         
         GlobalEvents<OnBtnGetRandomSkinClick>.Call(new OnBtnGetRandomSkinClick());
         GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
+        GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
     }
     
     
@@ -526,6 +520,7 @@ public class ScreenGameOver : MonoBehaviour
         
         GlobalEvents<OnBtnWordClick>.Call(new OnBtnWordClick{CoinsCount = 100, IsResetTimer = false});
         GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
+        GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
     }
     
     public void BtnGiftClick()
@@ -539,6 +534,7 @@ public class ScreenGameOver : MonoBehaviour
         GlobalEvents<OnBtnGiftClick>.Call(new OnBtnGiftClick{CoinsCount = _giftValue, IsResetTimer = true});
         _giftValue = 0;
         GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
+        GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
     }
     
     public void BtnRewardedClick()
