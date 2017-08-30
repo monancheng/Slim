@@ -84,7 +84,7 @@ public class ScreenCoins : MonoBehaviour
 
     public void BtnTier3()
     {
-        GlobalEvents<OnRewardedTryShow>.Call(new OnRewardedTryShow());
+        GlobalEvents<OnShowRewarded>.Call(new OnShowRewarded());
         _isWaitReward = true;
     }
 

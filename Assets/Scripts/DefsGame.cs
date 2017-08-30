@@ -54,7 +54,7 @@ public struct DefsGame
     public static void LoadVariables()
     {
         CurrentFaceId = PlayerPrefs.GetInt("currentFaceID", 0);
-        //currentFaceID = 0;
+//        CurrentFaceId = 0;
         GameBestScore = PlayerPrefs.GetInt("BestScore", 0);
         //gameBestScore = 0;
         CoinsCount = PlayerPrefs.GetInt("coinsCount", 0);
@@ -64,8 +64,8 @@ public struct DefsGame
         //loadRewardedClock();
         //loadGiftClock();
 
-        for (var i = 0; i < FaceAvailable.Length; i++)
-            PlayerPrefs.SetInt("faceAvailable_" + i, 0);
+//        for (var i = 0; i < FaceAvailable.Length; i++)
+//            PlayerPrefs.SetInt("faceAvailable_" + i, 0);
         
         for (var i = 0; i < FaceAvailable.Length; i++)
             if (i == 0)

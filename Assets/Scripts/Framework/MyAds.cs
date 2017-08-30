@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class MyAds : MonoBehaviour
 {
-    public static int NoAds;
+    static public int NoAds;
     private static int _rewardedAdCounter;
     private bool _isRewardedVideoReadyToShow;
     private DateTime _rewardDate;
@@ -20,21 +20,24 @@ public class MyAds : MonoBehaviour
     private void Start()
     {
         NoAds = PlayerPrefs.GetInt ("noAds", 0);
+        
         _rewardDate = DateTime.UtcNow;
         _isRewardedWaitTimer = true;
         _isRewardedAdCalcNext = true;
+        _rewardedAdCounter = 0;
 
         _videoDate = DateTime.UtcNow;
         _isVideoWaitTimer = true;
         _isVideoAdCalcNext = true;
         _isFirstTimeVideo = true;
+        _videoAdCounter = 0;
     }
 
     void OnEnable()
     {
         GlobalEvents<OnRewardedTryShow>.Happened += OnRewardedTryShow;
         GlobalEvents<OnAdsVideoTryShow>.Happened += OnAdsVideoTryShow;
-        GlobalEvents<OnRewardedAvailable>.Happened += OnRewardedAvailable;
+        GlobalEvents<OnAdsRewardedShowing>.Happened += OnAdsRewardedShowing;
         GlobalEvents<OnAdsVideoShowing>.Happened += OnAdsVideoShowing;
     }
 
@@ -42,16 +45,21 @@ public class MyAds : MonoBehaviour
     {
         GlobalEvents<OnRewardedTryShow>.Happened -= OnRewardedTryShow;
         GlobalEvents<OnAdsVideoTryShow>.Happened -= OnAdsVideoTryShow;
-        GlobalEvents<OnRewardedAvailable>.Happened -= OnRewardedAvailable;
+        GlobalEvents<OnAdsRewardedShowing>.Happened -= OnAdsRewardedShowing;
         GlobalEvents<OnAdsVideoShowing>.Happened -= OnAdsVideoShowing;
     }
 
     private void OnRewardedTryShow(OnRewardedTryShow obj)
     {
+        Debug.Log("OnRewardedTryShow");
         if (_rewardedAdCounter >= 4 )
         {
-            if (_isRewardedVideoReadyToShow) GlobalEvents<OnShowRewarded>.Call(new OnShowRewarded());
-            _isRewardedAdCalcNext = false;
+            if (_isRewardedVideoReadyToShow)
+            {
+                GlobalEvents<OnShowRewarded>.Call(new OnShowRewarded());
+                Debug.Log("GlobalEvents<OnShowRewarded>");
+            }
+//            _isRewardedAdCalcNext = false;
         }
         else
         {
@@ -61,13 +69,18 @@ public class MyAds : MonoBehaviour
 
     private void OnAdsVideoTryShow(OnAdsVideoTryShow obj)
     {
+        Debug.Log("OnAdsVideoTryShow" + _videoAdCounter + " " + _isVideoReadyToShow + " " + _videoDate);
         if (_isFirstTimeVideo && _videoAdCounter == 3 ||
             _videoAdCounter >= 5)
         {
             if (_isFirstTimeVideo) _isFirstTimeVideo = false;
 
-            if (_isVideoReadyToShow) GlobalEvents<OnShowVideoAds>.Call(new OnShowVideoAds());
-            _isVideoAdCalcNext = false;
+            if (_isVideoReadyToShow)
+            {
+                GlobalEvents<OnShowVideoAds>.Call(new OnShowVideoAds());
+                Debug.Log("GlobalEvents<OnShowVideoAds>");
+            }
+//            _isVideoAdCalcNext = false;
         }
         else
         {
@@ -78,28 +91,25 @@ public class MyAds : MonoBehaviour
     private void OnAdsVideoShowing(OnAdsVideoShowing obj)
     {
         // продолжаем считать геймлпеи, после которых можно показыавть Video рекламу
+        _videoAdCounter = 1;
+        _videoDate = DateTime.UtcNow;
+        _videoDate = _videoDate.AddMinutes(2);
         _isVideoAdCalcNext = true;
-        _videoAdCounter = 0;
     }
-
-    private void OnRewardedAvailable(OnRewardedAvailable e)
+    
+    private void OnAdsRewardedShowing(OnAdsRewardedShowing e)
     {
-        if (e.IsAvailable)
-        {
-        }
-        else
-        {
-            _rewardDate = DateTime.UtcNow;
-            _rewardDate = _rewardDate.AddMinutes(2);
-            _isRewardedVideoReadyToShow = false;
-            _isRewardedWaitTimer = true;
-            _rewardedAdCounter = 0;
+        _rewardDate = DateTime.UtcNow;
+        _rewardDate = _rewardDate.AddMinutes(2);
+        _isRewardedVideoReadyToShow = false;
+        _isRewardedWaitTimer = true;
+        _rewardedAdCounter = 1;
 
-            //Обнуляем Video таймер и коунтер
-            _videoAdCounter = 0;
-            _videoDate = DateTime.UtcNow;
-            _videoDate = _videoDate.AddMinutes(2);
-        }
+        //Обнуляем Video таймер и коунтер
+        _videoAdCounter = 1;
+        _videoDate = DateTime.UtcNow;
+        _videoDate = _videoDate.AddMinutes(1);
+        _isVideoAdCalcNext = true;
         // продолжаем считать геймлпеи, после которых можно показыавть Rewarded рекламу
         _isRewardedAdCalcNext = true;
     }
@@ -119,15 +129,6 @@ public class MyAds : MonoBehaviour
                 _isRewardedWaitTimer = false;
             }
         }
-        
-        if (_isVideoWaitTimer)
-        {
-            TimeSpan difference = _videoDate.Subtract(DateTime.UtcNow);
-            if (difference.TotalSeconds <= 0f)
-            {
-                _isVideoWaitTimer = false;
-            }
-        }
 
         if (!_isRewardedWaitTimer)
         {
@@ -136,6 +137,15 @@ public class MyAds : MonoBehaviour
                 _isRewardedVideoReadyToShow = true;
                 GlobalEvents<OnRewardedAvailable>.Call(
                     new OnRewardedAvailable {IsAvailable = true});
+            }
+        }
+        
+        if (_isVideoWaitTimer)
+        {
+            TimeSpan difference = _videoDate.Subtract(DateTime.UtcNow);
+            if (difference.TotalSeconds <= 0f)
+            {
+                _isVideoWaitTimer = false;
             }
         }
         

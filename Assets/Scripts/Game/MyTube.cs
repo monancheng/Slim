@@ -53,6 +53,7 @@ public class MyTube : MonoBehaviour
     private void OnEnable()
     {
         GlobalEvents<OnGameOver>.Happened += GameOver;
+        GlobalEvents<OnHideTubes>.Happened += OnHideTubes;
         MyPlayer.OnTubeMove += OnTubeMove;
         MyPlayer.OnIncreaseTubeRadius += OnIncreaseTubeRadius;
     }
@@ -60,10 +61,16 @@ public class MyTube : MonoBehaviour
     private void OnDisable()
     {
         GlobalEvents<OnGameOver>.Happened -= GameOver;
+        GlobalEvents<OnHideTubes>.Happened -= OnHideTubes;
         MyPlayer.OnTubeMove -= OnTubeMove;
         MyPlayer.OnIncreaseTubeRadius -= OnIncreaseTubeRadius;
     }
-    
+
+    private void OnHideTubes(OnHideTubes obj)
+    {
+        _isGameOver = true;
+    }
+
     private void OnIncreaseTubeRadius(float scale)
     {
         if (_isHaveCollision) return;
@@ -75,7 +82,8 @@ public class MyTube : MonoBehaviour
             NormalsType.Vertex,
             PivotPosition.Center);
         obj.FitCollider();
-        obj.transform.localPosition = new Vector3(0, tube.height, 0);
+//        obj.transform.SetParent(transform, false);
+//        obj.transform.localPosition = new Vector3(0, tube.height, 0);
     }
 
     public void ChangeRadius(float scale)
@@ -114,7 +122,7 @@ public class MyTube : MonoBehaviour
             if (_isShowAnimation)
             {
                 if (transform.localScale.x < ScaleWeWant)
-                    transform.localScale = new Vector3(transform.localScale.x + _increaseScaleSpeed,
+                    transform.localScale = new Vector3(transform.localScale.x + _increaseScaleSpeed * Scale,
                         transform.localScale.y + _increaseScaleSpeed * Scale,
                         transform.localScale.z + _increaseScaleSpeed * Scale);
                 else
@@ -136,8 +144,8 @@ public class MyTube : MonoBehaviour
             }
             
             if (transform.localScale.x > 0f)
-                transform.localScale = new Vector3(transform.localScale.x - _increaseScaleSpeed, transform.localScale.y - _increaseScaleSpeed,
-                    transform.localScale.z - _increaseScaleSpeed);
+                transform.localScale = new Vector3(transform.localScale.x - _increaseScaleSpeed * Scale, transform.localScale.y - _increaseScaleSpeed * Scale,
+                    transform.localScale.z - _increaseScaleSpeed * Scale);
             else
             {
                 GameEvents.Send(OnDestroy, Id);

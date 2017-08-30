@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using DoozyUI;
 using UnityEngine;
-using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class ScreenSkins : MonoBehaviour
 {
@@ -247,5 +248,23 @@ public class ScreenSkins : MonoBehaviour
                 return;
             }
         GlobalEvents<OnSkinAllOpened>.Call(new OnSkinAllOpened());
+    }
+
+    public void SetRandomSkin()
+    {
+        List<int> availableList = new List<int>();
+        for (int j = 0; j < DefsGame.FaceAvailable.Length; j++)
+        {
+            if (DefsGame.FaceAvailable[j] == 1)
+            {
+                availableList.Add(j);
+            }
+        }
+        
+        int id = Random.Range(0, availableList.Count);
+
+        DefsGame.CurrentFaceId = availableList[id];
+        _choosedSkin.transform.position = _skinBtns[DefsGame.CurrentFaceId].transform.position;
+        availableList.Clear();
     }
 }

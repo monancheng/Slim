@@ -56,10 +56,31 @@ public class TubeManager : MonoBehaviour
 //        Player.OnTubeGetBonusTube += OnTubeGetBonusTube;
         GlobalEvents<OnStartGame>.Happened += StartGame;
         GlobalEvents<OnGameOver>.Happened += OnGameOver;
+        GlobalEvents<OnShowMenu>.Happened += OnShowMenu;
         GlobalEvents<OnNoGameOverButtons>.Happened += OnNoGameOverButtons;
         GlobalEvents<OnWordNeedToWait>.Happened += OnWordNeedToWait;
         GlobalEvents<OnWordCollected>.Happened += OnWordCollected;
         GlobalEvents<OnWordsAvailable>.Happened += OnWordsAvailable;
+    }
+
+    private void OnShowMenu(OnShowMenu obj)
+    {
+        _radiusAddCoeff = 5f;
+        _counter = 0;
+        CreateTubeStart();
+    }
+
+    public void HideTubes()
+    {
+        GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
+    }
+    
+    public void ShowTubes()
+    {
+//        _radiusAddCoeff = 5f;
+//        _counter = 0;
+//        
+//        CreateTubeStart();
     }
 
     private void OnWordsAvailable(OnWordsAvailable obj)
@@ -92,11 +113,6 @@ public class TubeManager : MonoBehaviour
                 _itemList.RemoveAt(i);
                 break;
             }
-        }
-
-        if (_itemList.Count == 0)
-        {
-            CreateTubeStart();
         }
     }
 

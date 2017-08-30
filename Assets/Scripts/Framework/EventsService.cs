@@ -71,6 +71,9 @@ public struct OnRewardedAvailable { public bool IsAvailable; }
 // Начался показ Video рекламы
 public struct OnAdsVideoShowing {}
 
+// Начался показ Rewarded рекламы
+public struct OnAdsRewardedShowing {}
+
 // Можно дарить подарок
 public struct OnGiftAvailable
 {
@@ -253,3 +256,10 @@ public struct OnGifSaved
 public struct OnGifShared
 {
 }
+
+// Спрятать все Tube
+public struct OnHideTubes
+{
+}
+
+
