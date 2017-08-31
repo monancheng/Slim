@@ -10,8 +10,10 @@ public class SkyBoxColors : MonoBehaviour
     private int _nextColorId;
 
     private float _time;
-    public Color[] ColorsDown;
+    public int СurrentId;
     public Color[] ColorsTop;
+    public Color[] ColorsDown;
+    
     public Light Light;
 
     private float startTime;
@@ -20,27 +22,13 @@ public class SkyBoxColors : MonoBehaviour
     {
         _nextColorId = Mathf.RoundToInt(Random.Range(0, ColorsTop.Length - 1));
         ChooseNextColor();
-//		_nextColorId = 19;
         _currColorTop = ColorsTop[_nextColorId];
         GetComponent<Skybox>().material.SetColor("_Color2", _currColorTop);
         _currColorDown = ColorsDown[_nextColorId];
         GetComponent<Skybox>().material.SetColor("_Color1", _currColorDown);
+        
+        
     }
-
-//	private void OnEnable()
-//	{
-//		GlobalEvents<OnStartGame>.Happened += StartGame;
-//	}
-//	
-//	private void OnDisable()
-//	{
-//		GlobalEvents<OnStartGame>.Happened -= StartGame;
-//	}
-//
-//	private void StartGame(OnStartGame obj)
-//	{
-//		ChooseNextColor();
-//	}
 
     private void ChooseNextColor()
     {
@@ -49,6 +37,14 @@ public class SkyBoxColors : MonoBehaviour
         if (_nextColorId >= ColorsTop.Length) _nextColorId = 0;
         startTime = Time.time;
     }
+
+//    private void Update()
+//    {
+//        _currColorTop = ColorsTop[СurrentId];
+//        GetComponent<Skybox>().material.SetColor("_Color2", _currColorTop);
+//        _currColorDown = ColorsDown[СurrentId];
+//        GetComponent<Skybox>().material.SetColor("_Color1", _currColorDown);
+//    }
 
     private void Update()
     {
@@ -72,14 +68,6 @@ public class SkyBoxColors : MonoBehaviour
             _currColorDown = Color.Lerp(_currColorDown, ColorsDown[_nextColorId], fracJourney);
             if (_currColorDown != ColorsDown[_nextColorId])
                 GetComponent<Skybox>().material.SetColor("_Color1", _currColorDown);
-
-//			float r = _currColorTop.r * 2.4f + 0.15f;
-//			if (r > 1) r = 1f; else if (r < 0.5f) r = 0.7f;
-//			float g = _currColorTop.g * 2.4f + 0.15f;
-//			if (g > 1) g = 1f; else if (g < 0.5f) g = 0.7f;
-//			float b = _currColorTop.b * 2.4f + 0.15f;
-//			if (b > 1) b = 1f; else if (b < 0.5f) b = 0.7f;
-//			Light.color = new Color(r, g, b, 1f);
         }
     }
 }

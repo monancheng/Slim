@@ -279,6 +279,7 @@ public class ScreenSkins : MonoBehaviour
         int id = Random.Range(0, availableList.Count);
 
         DefsGame.CurrentFaceId = availableList[id];
+        PlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
         _choosedSkin.transform.position = _skinBtns[DefsGame.CurrentFaceId].transform.position;
         availableList.Clear();
         

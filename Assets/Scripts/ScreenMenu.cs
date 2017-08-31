@@ -7,9 +7,11 @@ public class ScreenMenu : MonoBehaviour
     private bool _isButtonHiden;
     private bool _isShowBtnViveoAds;
     private bool _isWaitReward;
+    private UIButton[] buttons;
 
     private void Start()
     {
+        buttons = GetComponentsInChildren<UIButton>();
         ShowButtons();
     }
 
@@ -175,5 +177,19 @@ public class ScreenMenu : MonoBehaviour
     public void Hide()
     {
         GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
+    }
+
+    // ENABLE / DISABLE BUTTONS ***************************************************************************************
+
+    public void EnableButtons()
+    {
+        foreach (UIButton button in buttons)
+        button.EnableButton();
+    }
+
+    public void DisableButtons()
+    {
+        foreach (UIButton button in buttons)
+        button.DisableButton();
     }
 }

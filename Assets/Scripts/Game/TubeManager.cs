@@ -10,6 +10,7 @@ public class TubeManager : MonoBehaviour
     [SerializeField] private GameObject[] _tubes;
     [HideInInspector] public const float Height = 3.0f;
     [HideInInspector] public static float CurrentSpeed = StartSpeed;
+    public static event Action <float> OnTubesSpeedScale;
     public static event Action OnCreateCoin;
 	public static event Action OnCreateBonusIncrease;
 	public static event Action OnCreateChar;
@@ -119,6 +120,7 @@ public class TubeManager : MonoBehaviour
     {
         CurrentSpeed = StartSpeed;
 		_coinCounter = 0;
+        GameEvents.Send(OnTubesSpeedScale, CurrentSpeed/MaxSpeed);
     }
 
     private void CreateTubeStart()
@@ -263,6 +265,7 @@ public class TubeManager : MonoBehaviour
             _acceleration = 0.5f;
         CurrentSpeed += _acceleration;
         if (CurrentSpeed > MaxSpeed) CurrentSpeed = MaxSpeed;
+        GameEvents.Send(OnTubesSpeedScale, CurrentSpeed/MaxSpeed);
     }
 
     private Shader GetDiffuseShader()
