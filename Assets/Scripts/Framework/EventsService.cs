@@ -58,29 +58,27 @@ public struct OnPointsReset
 //--------------------------------------------------------
 // ADS
 //--------------------------------------------------------
+
+// Показываем Video рекламу, если доступна
+public struct OnAdsVideoTryShow {}
+// Запрос на показ рекламы 
+public struct OnShowVideoAds {}
+// Начался показ Video рекламы
+public struct OnAdsVideoShowing {}
+
+// Rewarded реклама зарузилась
+public struct OnRewardedLoaded { public bool IsAvailable; }
+// Rewarded реклама готова к показу (Время ожидания завершилось)
+public struct OnRewardedWaitTimer { public bool IsWait; }
+// Запрос на показ видео рекламы
+public struct OnShowRewarded {}
+// Начался показ Rewarded рекламы
+public struct OnAdsRewardedShowing {}
 // Дать награду игроку
 public struct OnGiveReward
 {
     public bool IsAvailable;
 }
-
-// Показыаем Rewarded рекламу, если доступна
-public struct OnRewardedTryShow {}
-// Показываем Video рекламу, если доступна
-public struct OnAdsVideoTryShow {}
-
-// Запрос на показ рекламы 
-public struct OnShowVideoAds {}
-// Запрос на показ видео рекламы
-public struct OnShowRewarded {}
-
-// Rewarded реклама готова к показу (Время ожидания завершилось)
-public struct OnRewardedAvailable { public bool IsAvailable; }
-// Начался показ Video рекламы
-public struct OnAdsVideoShowing {}
-
-// Начался показ Rewarded рекламы
-public struct OnAdsRewardedShowing {}
 
 // Можно дарить подарок
 public struct OnGiftAvailable

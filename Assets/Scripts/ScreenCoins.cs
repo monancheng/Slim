@@ -12,14 +12,14 @@ public class ScreenCoins : MonoBehaviour
     private void OnEnable()
     {
         GlobalEvents<OnGiveReward>.Happened += GetReward;
-        GlobalEvents<OnRewardedAvailable>.Happened += OnRewardedAvailable;
+        GlobalEvents<OnRewardedLoaded>.Happened += OnRewardedAvailable;
         GlobalEvents<OnShowScreenCoins>.Happened += OnShowScreenCoins;
     }
 
     private void OnDisable()
     {
         GlobalEvents<OnGiveReward>.Happened -= GetReward;
-        GlobalEvents<OnRewardedAvailable>.Happened -= OnRewardedAvailable;
+        GlobalEvents<OnRewardedLoaded>.Happened -= OnRewardedAvailable;
         GlobalEvents<OnShowScreenCoins>.Happened -= OnShowScreenCoins;
     }
 
@@ -66,7 +66,7 @@ public class ScreenCoins : MonoBehaviour
         UIManager.ShowUiElement("ScreenMenuBtnPlus");
     }
 
-    private void OnRewardedAvailable(OnRewardedAvailable e)
+    private void OnRewardedAvailable(OnRewardedLoaded e)
     {
         isShowBtnViveoAds = e.IsAvailable;
         if (isShowBtnViveoAds)

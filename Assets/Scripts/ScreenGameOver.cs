@@ -42,7 +42,7 @@ public class ScreenGameOver : MonoBehaviour
         // Глобальные
         GlobalEvents<OnStartGame>.Happened += OnHideNotifications;
         GlobalEvents<OnShowGameOverScreen>.Happened += OnShowGameOverScreen;
-        GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedAvailable;
+        GlobalEvents<OnRewardedLoaded>.Happened += IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened += IsGiftAvailable;
         GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
         GlobalEvents<OnWordCollected>.Happened += OnWordCollected;
@@ -63,7 +63,7 @@ public class ScreenGameOver : MonoBehaviour
     {
         GlobalEvents<OnStartGame>.Happened -= OnHideNotifications;
         GlobalEvents<OnShowGameOverScreen>.Happened -= OnShowGameOverScreen;
-        GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedAvailable;
+        GlobalEvents<OnRewardedLoaded>.Happened -= IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened -= IsGiftAvailable;
         GlobalEvents<OnCoinsAdded>.Happened -= OnCoinsAdded;
         GlobalEvents<OnWordCollected>.Happened -= OnWordCollected;
@@ -328,7 +328,7 @@ public class ScreenGameOver : MonoBehaviour
         Hide();
     }
 
-    private void IsRewardedAvailable(OnRewardedAvailable e)
+    private void IsRewardedAvailable(OnRewardedLoaded e)
     {
         _isRewardedAvailable = e.IsAvailable;
     }

@@ -22,7 +22,7 @@ public class ScreenMenu : MonoBehaviour
         GlobalEvents<OnHideMenu>.Happened += OnHideMenu;
         GlobalEvents<OnShowMenuButtons>.Happened += OnShowMenuButtons;
         GlobalEvents<OnHideMenuButtons>.Happened += OnHideMenuButtons;
-        GlobalEvents<OnRewardedAvailable>.Happened += IsRewardedVideoAvailable;
+        GlobalEvents<OnRewardedLoaded>.Happened += IsRewardedVideoAvailable;
     }
 
     private void OnDisable()
@@ -30,7 +30,7 @@ public class ScreenMenu : MonoBehaviour
         GlobalEvents<OnShowMenu>.Happened -= OnShowMenu;
         GlobalEvents<OnHideMenu>.Happened -= OnHideMenu;
         GlobalEvents<OnStartGame>.Happened -= OnStartGame;
-        GlobalEvents<OnRewardedAvailable>.Happened -= IsRewardedVideoAvailable;
+        GlobalEvents<OnRewardedLoaded>.Happened -= IsRewardedVideoAvailable;
     }
 
     private void OnShowMenu(OnShowMenu obj)
@@ -103,7 +103,7 @@ public class ScreenMenu : MonoBehaviour
         _isBtnSettingsClicked = false;
     }
 
-    private void IsRewardedVideoAvailable(OnRewardedAvailable e)
+    private void IsRewardedVideoAvailable(OnRewardedLoaded e)
     {
         _isShowBtnViveoAds = e.IsAvailable;
         if (_isShowBtnViveoAds)
