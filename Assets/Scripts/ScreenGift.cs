@@ -23,15 +23,6 @@ public class ScreenGift : MonoBehaviour
 		GlobalEvents<OnHideGiftScreen>.Happened += OnHideGiftScreen;
 	}
 
-	private void OnDisable()
-	{
-		GlobalEvents<OnBtnGiftClick>.Happened -= OnBtnGiftClick;
-		GlobalEvents<OnBtnWordClick>.Happened -= OnBtnWordClick;
-		GlobalEvents<OnBtnGetRandomSkinClick>.Happened -= OnBtnGetRandomSkinClick;
-		GlobalEvents<OnGiftAnimationDone>.Happened -= OnGiftAnimationDone;
-		GlobalEvents<OnHideGiftScreen>.Happened -= OnHideGiftScreen;
-	}
-
 	private void OnHideGiftScreen(OnHideGiftScreen obj)
 	{
 		// Предлагаем Еще один подарок

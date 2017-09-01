@@ -11,11 +11,6 @@ public class GiftRandomSkin : MonoBehaviour
 		GlobalEvents<OnGiftShowRandomSkinAnimation>.Happened += OnGiftShowRandomSkinAnimation;
 	}
 
-	private void OnDisable()
-	{
-		GlobalEvents<OnGiftShowRandomSkinAnimation>.Happened -= OnGiftShowRandomSkinAnimation;
-	}
-
 	private void OnGiftShowRandomSkinAnimation(OnGiftShowRandomSkinAnimation obj)
 	{
 		int id = GetRandomAvailableSkin();

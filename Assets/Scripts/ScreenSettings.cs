@@ -3,10 +3,20 @@ using UnityEngine;
 
 public class ScreenSettings : MonoBehaviour
 {
-
     [HideInInspector] public string PrevScreenName;
+    public void Show()
+    {
+        DefsGame.CurrentScreen = DefsGame.SCREEN_IAPS;
+        ShowButtons();
+    }
 
-    public void ShowButtons()
+    public void Hide()
+    {
+        DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
+        HideButtons();
+    }
+    
+    private void ShowButtons()
     {
         UIManager.ShowUiElement("ScreenSettingsBtnBack");
         UIManager.ShowUiElement("BtnSound");
@@ -20,7 +30,7 @@ public class ScreenSettings : MonoBehaviour
 #endif
     }
 
-    public void HideButtons()
+    private void HideButtons()
     {
         UIManager.HideUiElement("ScreenSettingsBtnBack");
         UIManager.HideUiElement("ScreenSettingsBtnNoAds");
@@ -29,19 +39,5 @@ public class ScreenSettings : MonoBehaviour
         UIManager.HideUiElement("BtnPlus");
         UIManager.HideUiElement("BtnRate");
         UIManager.HideUiElement("BtnShare");
-    }
-
-    public void Show()
-    {
-        DefsGame.CurrentScreen = DefsGame.SCREEN_IAPS;
-        DefsGame.IsCanPlay = false;
-        ShowButtons();
-    }
-
-    public void Hide()
-    {
-        DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
-        DefsGame.IsCanPlay = true;
-        HideButtons();
     }
 }

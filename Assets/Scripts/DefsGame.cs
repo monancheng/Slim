@@ -10,8 +10,6 @@ public struct DefsGame
     public static int GameBestScore; // Лучший счет
     public static int CoinsCount; // Количество очков игрока
     public static int CurrentFaceId;
-    public static int ThrowsCounter = 0;
-    public static bool IsCanPlay = true;
     public static int[] FaceAvailable = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 //    public static readonly int[] FacePrice = {200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200};
     public static int BTN_GIFT_HIDE_DELAY = 0;
@@ -49,7 +47,6 @@ public struct DefsGame
 
     public static int RateCounter;
     public static Coins Coins { get; set; }
-    public static bool IsNeedToShowCoin = false;
 
     public static void LoadVariables()
     {

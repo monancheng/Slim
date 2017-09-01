@@ -21,24 +21,6 @@ public class ScreenSkins : MonoBehaviour
     {
         GlobalEvents<OnBuySkin>.Happened += OnBuySkin;
         GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
-        GlobalEvents<OnShowSkins>.Happened += OnShowSkins;
-        GlobalEvents<OnHideSkins>.Happened += OnHideSkins;
-    }
-    
-    private void OnShowSkins(OnShowSkins obj)
-    {
-        DefsGame.CurrentScreen = DefsGame.SCREEN_SKINS;
-        DefsGame.IsCanPlay = false;
-        
-        ShowButtons();
-        Invoke("ChooseColorForButtons", 1f);
-    }
-    
-    private void OnHideSkins(OnHideSkins obj)
-    {
-        DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
-        DefsGame.IsCanPlay = true;
-        HideButtons();
     }
 
     private void OnCoinsAdded(OnCoinsAdded obj)
@@ -92,6 +74,20 @@ public class ScreenSkins : MonoBehaviour
         ++DefsGame.QUEST_CHARACTERS_Counter;
         PlayerPrefs.SetInt("QUEST_CHARACTERS_Counter", DefsGame.QUEST_CHARACTERS_Counter);
         ChooseColorForButtons();
+    }
+    
+    public void Show()
+    {
+        DefsGame.CurrentScreen = DefsGame.SCREEN_SKINS;
+        
+        ShowButtons();
+        Invoke("ChooseColorForButtons", 1f);
+    }
+
+    public void Hide()
+    {
+        DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
+        HideButtons();
     }
 
     private void ShowButtons()
@@ -215,16 +211,6 @@ public class ScreenSkins : MonoBehaviour
     public void SetSkin12()
     {
         SetSkin(11);
-    }
-
-    public void Show()
-    {
-        GlobalEvents<OnShowSkins>.Call(new OnShowSkins());
-    }
-
-    public void Hide()
-    {
-        GlobalEvents<OnHideSkins>.Call(new OnHideSkins());
     }
 
     private void ChooseColorForButtons()

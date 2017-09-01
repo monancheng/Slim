@@ -16,19 +16,12 @@ public class ScreenCoins : MonoBehaviour
         GlobalEvents<OnShowScreenCoins>.Happened += OnShowScreenCoins;
     }
 
-    private void OnDisable()
-    {
-        GlobalEvents<OnGiveReward>.Happened -= GetReward;
-        GlobalEvents<OnRewardedLoaded>.Happened -= OnRewardedAvailable;
-        GlobalEvents<OnShowScreenCoins>.Happened -= OnShowScreenCoins;
-    }
-
     private void OnShowScreenCoins(OnShowScreenCoins obj)
     {
         Show();
     }
 
-    public void ShowButtons()
+    private void ShowButtons()
     {
         UIManager.ShowUiElement("ScreenCoinsBackground");
         UIManager.ShowUiElement("ScreenCoins");
@@ -52,7 +45,7 @@ public class ScreenCoins : MonoBehaviour
         UIManager.HideUiElement("ScreenMenuBtnPlus");
     }
 
-    public void HideButtons()
+    private void HideButtons()
     {
         UIManager.HideUiElement("ScreenCoins");
         UIManager.HideUiElement("ScreenCoinsBtnBack");
@@ -101,14 +94,12 @@ public class ScreenCoins : MonoBehaviour
     public void Show()
     {
         DefsGame.CurrentScreen = DefsGame.SCREEN_IAPS;
-        DefsGame.IsCanPlay = false;
         ShowButtons();
     }
 
     public void Hide()
     {
         DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
-        DefsGame.IsCanPlay = true;
         HideButtons();
     }
 }
