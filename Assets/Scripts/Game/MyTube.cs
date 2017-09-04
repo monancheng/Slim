@@ -14,11 +14,10 @@ public class MyTube : MonoBehaviour
     [HideInInspector]public BaseObject ShapeObject;
 
     private float ScaleWeWant;
-    private const int IncreaseIterationCount = 10;
+    private const int IncreaseIterationCount = 20;
     private float _increaseScaleSpeed;
     
    [HideInInspector] public float Scale;
-   [HideInInspector] public bool IsIncreaseSize;
     private bool _isShowAnimation;
     private const float Height = 3f;
     private const int Sides = 32;
@@ -45,8 +44,6 @@ public class MyTube : MonoBehaviour
         GameObject go = Instantiate(prefab);
         go.transform.SetParent(transform, false);
         go.transform.localPosition = new Vector3(0, tube.height*0.5f, 0);
-//        go.transform.localScale = new Vector3(100f, 100f, 100f);
-//        go.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
         
     }
 
@@ -144,8 +141,8 @@ public class MyTube : MonoBehaviour
             }
             
             if (transform.localScale.x > 0f)
-                transform.localScale = new Vector3(transform.localScale.x - _increaseScaleSpeed * Scale, transform.localScale.y - _increaseScaleSpeed * Scale,
-                    transform.localScale.z - _increaseScaleSpeed * Scale);
+                transform.localScale = new Vector3(transform.localScale.x - _increaseScaleSpeed * Scale*2f, transform.localScale.y - _increaseScaleSpeed * Scale*2f,
+                    transform.localScale.z - _increaseScaleSpeed * Scale*2f);
             else
             {
                 GameEvents.Send(OnDestroy, Id);

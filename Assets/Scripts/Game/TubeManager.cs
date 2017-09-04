@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using PrimitivesPro.GameObjects;
 using PrimitivesPro.Primitives;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
 
 public class TubeManager : MonoBehaviour
 {
     [SerializeField] private GameObject[] _tubes;
+    [SerializeField] private Color[] _colors;
     [HideInInspector] public const float Height = 3.0f;
     [HideInInspector] public static float CurrentSpeed = StartSpeed;
     public static event Action <float> OnTubesSpeedScale;
@@ -40,7 +42,6 @@ public class TubeManager : MonoBehaviour
     private bool _isFingerStart;
     private bool _isWordWait;
     private bool _isWordActive;
-    
 
     private void Start()
     {
@@ -62,6 +63,12 @@ public class TubeManager : MonoBehaviour
         GlobalEvents<OnWordNeedToWait>.Happened += OnWordNeedToWait;
         GlobalEvents<OnWordCollected>.Happened += OnWordCollected;
         GlobalEvents<OnWordsAvailable>.Happened += OnWordsAvailable;
+        GlobalEvents<OnTubeCreateExample>.Happened += OnTubeCreateExample;
+    }
+
+    private void OnTubeCreateExample(OnTubeCreateExample obj)
+    {
+        CreateTube(InitRadius, _colors[DefsGame.CurrentFaceId], 200f, true);
     }
 
     private void OnShowMenu(OnShowMenu obj)
@@ -137,9 +144,15 @@ public class TubeManager : MonoBehaviour
             if (outerRadius > OuterRadiusMaxAdd) outerRadius = OuterRadiusMaxAdd;
             if (outerRadius < OuterRadiusMinAdd) outerRadius = OuterRadiusMinAdd;
             if (newRadius + outerRadius < RadiusMin) outerRadius = RadiusMin - newRadius;
-            if (newRadius + outerRadius > RadiusMax) outerRadius = RadiusMax - newRadius;
-        
-            CreateTube(newRadius, ColorTheme.GetTubeColor(), 600f - i*200f);
+            if (newRadius + outerRadius > RadiusMax) outerRadius = RadiusMax;
+
+            Color color = _colors[DefsGame.CurrentFaceId];
+            if (_colors[DefsGame.CurrentFaceId].a == 0f)
+            {
+                color = ColorTheme.GetTubeColor();
+            }
+            
+            CreateTube(newRadius, color, 600f - i*200f);
         }
         _increaseCounter = 1;
     }
@@ -153,39 +166,30 @@ public class TubeManager : MonoBehaviour
     {
         ++_counter;
         
-        Color color;
         if (_counter % 12 == 0)
         {
             ColorTheme.GetNextRandomId();
             _increaseCounter = 0;
         }
-        
-        bool isIncreaseSize = false;
+
         float outerRadius;
         var newRadius = radius + _radiusAddCoeff;
         _radiusAddCoeff -= StartRadiusMinus;
         if (_radiusAddCoeff < 0f) _radiusAddCoeff = 0f;
 
-//        if (_isWantBonusTube)
-//        {
-//            isIncreaseSize = true;
-//            color = new Color(255f / 255.0f, 201f / 255f, 104f / 255f);
-//            newRadius += 0.5f;
-//            outerRadius = newRadius+OuterRadiusGold;
-//            _isWantBonusTube = false;
-//        }
-//        else
-//        {
+        Color color = _colors[DefsGame.CurrentFaceId];
+        if (_colors[DefsGame.CurrentFaceId].a == 0f)
+        {
             color = ColorTheme.GetTubeColor();
-            outerRadius = Random.Range(newRadius, newRadius*OuterRadiusMul) - newRadius;
-            if (outerRadius > OuterRadiusMaxAdd) outerRadius = OuterRadiusMaxAdd;
-            if (outerRadius < OuterRadiusMinAdd) outerRadius = OuterRadiusMinAdd;
-            if (newRadius + outerRadius < RadiusMin) outerRadius = RadiusMin - newRadius;
-            if (newRadius + outerRadius > RadiusMax) outerRadius = RadiusMax - newRadius;
-//        }
+        }
+        outerRadius = Random.Range(newRadius, newRadius*OuterRadiusMul) - newRadius;
+        if (outerRadius > OuterRadiusMaxAdd) outerRadius = OuterRadiusMaxAdd;
+        if (outerRadius < OuterRadiusMinAdd) outerRadius = OuterRadiusMinAdd;
+        if (newRadius + outerRadius < RadiusMin) outerRadius = RadiusMin - newRadius;
+        if (newRadius + outerRadius > RadiusMax) outerRadius = RadiusMax - newRadius;
 
         
-        CreateTube(newRadius, color, 600f, isIncreaseSize);
+        CreateTube(newRadius, color, 600f);
         IncreaseSpeed();
         bool isBonusCreated = false;
         if (!isBonusCreated)
@@ -232,7 +236,7 @@ public class TubeManager : MonoBehaviour
 //        _itemList.Add(script);
 //    }
     
-    private void CreateTube(float radius, Color color, float posY = 600f, bool isIncreaseSize = false)
+    private void CreateTube(float radius, Color color, float posY = 600f, bool _startPos = false)
     {
         BaseObject shapeObject = Tube.Create(radius, InitRadius+5f+2f, Height + Random.value * 2.5f, Sides, 1, 0.0f, false,
             NormalsType.Vertex,
@@ -243,10 +247,13 @@ public class TubeManager : MonoBehaviour
         var currentTube = shapeObject.gameObject;
         currentTube.GetComponent<Renderer>().material = new Material(GetDiffuseShader());
         currentTube.GetComponent<Renderer>().material.SetColor("_Color", color);
-        currentTube.transform.position = new Vector3(Random.Range(-12f, 12f), posY, 0f);
+        currentTube.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+        currentTube.GetComponent<Renderer>().receiveShadows = false;
+        if (_startPos)
+        currentTube.transform.position = new Vector3(0f, posY, 0f); 
+        else currentTube.transform.position = new Vector3(Random.Range(-12f, 12f), posY, 0f);
         var script = currentTube.AddComponent<MyTube>();
         script.ShapeObject = shapeObject;
-        script.IsIncreaseSize = isIncreaseSize;
         script.CreateTubeModel(_tubes[DefsGame.CurrentFaceId]);
         script.ChangeRadius(radius/InitRadius);
         _itemList.Add(script);

@@ -268,4 +268,12 @@ public struct OnHideTubes
 {
 }
 
+//--------------------------------------------------------
+//							Tube Manager
+//--------------------------------------------------------
+
+public struct OnTubeCreateExample
+{
+}
+
 

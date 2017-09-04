@@ -1,6 +1,7 @@
 ﻿using PrimitivesPro.GameObjects;
 using PrimitivesPro.Primitives;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class ComboTubeManager : MonoBehaviour
 {
@@ -65,6 +66,8 @@ public class ComboTubeManager : MonoBehaviour
 
         var go = shapeObject.gameObject;
         go.GetComponent<Renderer>().material = new Material(GetTransparentDiffuseShader());
+        go.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+        go.GetComponent<Renderer>().receiveShadows = false;
         go.GetComponent<Renderer>().material.SetColor("_Color", _color);
         go.transform.position = new Vector3(_comboEffectPosition.x, _comboEffectPositionY, _comboEffectPosition.z);
         var pt = go.AddComponent<PlayerTubeGood>();

@@ -2,6 +2,8 @@
 
 public struct DefsGame
 {
+    public static readonly string AndroidAppID = "com.crazylabs.monsteryumm";
+    public static readonly string iOSApp_ID = "id1192223024";
     public static BillingManager IAPs;
     public static GameServicesManager GameServices;
     public static CameraMovement CameraMovement;

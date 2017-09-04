@@ -35,7 +35,7 @@ public class ItemBonus : MonoBehaviour {
 
 	protected void GameOver(OnGameOver obj)
 	{
-		Hide();
+		if (_isActivate) Hide();
 	}
 
 	protected void Activate()
@@ -123,8 +123,8 @@ public class ItemBonus : MonoBehaviour {
 
 	virtual protected void SetColorAlpha()
 	{
-		Color oldColor = _renderer.material.GetColor("_Color");
-		_renderer.material.SetColor("_Color", oldColor + new Color(0f, 0f, _masterAlpha));
+//		Color oldColor = _renderer.material.GetColor("_Color");
+//		_renderer.material.SetColor("_Color", oldColor + new Color(0f, 0f, _masterAlpha));
 	}
 
 	virtual protected void HideAnimation() {

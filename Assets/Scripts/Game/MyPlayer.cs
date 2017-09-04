@@ -4,6 +4,7 @@ using DG.Tweening;
 using PrimitivesPro.GameObjects;
 using PrimitivesPro.Primitives;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class MyPlayer : MonoBehaviour
 {
@@ -37,10 +38,9 @@ public class MyPlayer : MonoBehaviour
     private Vector3 _startPosition;
     private float _startRadius;
     private Vector3 _cameraStartPosition;
-    private bool _isIncreaseSize;
 
     [SerializeField] private Material[] _materials;
-    [SerializeField] private Renderer _renderer;
+    private Renderer _renderer;
     [SerializeField] private Mesh[] _meshes;
     private MeshFilter _mesh;
     
@@ -104,7 +104,6 @@ public class MyPlayer : MonoBehaviour
         _isDontMove = false;
         _isHaveCollision = false;
 
-//        GetComponent<Renderer>().material.SetColor("_Color", ColorTheme.GetPlayerRandomColor());
         GetComponent<Renderer>().material.SetColor("_Color", ColorTheme.GetPlayerStartColor());
 
         ChangeSize();
@@ -163,7 +162,6 @@ public class MyPlayer : MonoBehaviour
                 _soundGoodId = 0;
 //                Defs.PlaySound(SoundSlice, 0.3f);
                 MasterAudio.PlaySoundAndForget("Slice");
-                _isIncreaseSize = false;
             }
             else
             {
@@ -251,6 +249,8 @@ public class MyPlayer : MonoBehaviour
 
         var go = shapeObject.gameObject;
         go.GetComponent<Renderer>().material = new Material(GetTransparentDiffuseShader());
+        go.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+        go.GetComponent<Renderer>().receiveShadows = false;
         go.GetComponent<Renderer>().material.SetColor("_Color", new Color(255f / 255.0f, 201f / 255f, 104f / 255f));
         go.transform.position = transform.position;
         go.AddComponent<PlayerTubeBad>();
