@@ -47,20 +47,16 @@ public struct DefsGame
     public static int QUEST_MISS_Counter;
 
     public static int RateCounter;
-    public static Coins Coins { get; set; }
 
     public static void LoadVariables()
     {
         CurrentFaceId = PlayerPrefs.GetInt("currentFaceID", 0);
-//        CurrentFaceId = 0;
+//      CurrentFaceId = 0;
         GameBestScore = PlayerPrefs.GetInt("BestScore", 0);
-        //gameBestScore = 0;
+//      gameBestScore = 0;
         CoinsCount = PlayerPrefs.GetInt("coinsCount", 0);
         CoinsCount = 401;
         RateCounter = PlayerPrefs.GetInt("rateCounter", 0);
-
-        //loadRewardedClock();
-        //loadGiftClock();
 
 //        for (var i = 0; i < FaceAvailable.Length; i++)
 //            PlayerPrefs.SetInt("faceAvailable_" + i, 0);

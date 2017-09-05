@@ -11,7 +11,7 @@ public class ScreenGift : MonoBehaviour
 	
 	private float _centerPointY = 60f;
 	[SerializeField] private GameObject _gift;
-	[SerializeField] private GameObject _firework;
+	[SerializeField] private ParticleSystem _firework;
 
 	private void OnEnable()
 	{
@@ -162,6 +162,6 @@ public class ScreenGift : MonoBehaviour
 
 	private void FireworksLaunch()
 	{
-		_firework.SetActive(true);
+		_firework.Play();
 	}
 }

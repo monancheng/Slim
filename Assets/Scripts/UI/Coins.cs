@@ -10,7 +10,6 @@ public class Coins : MonoBehaviour
 
     private void Start()
     {
-        DefsGame.Coins = this;
         textField.text = DefsGame.CoinsCount.ToString();
         _startScale = img.transform.localScale.x;
     }
