@@ -10,7 +10,7 @@ public class TubeManager : MonoBehaviour
 {
     [SerializeField] private GameObject[] _tubes;
     [SerializeField] private Color[] _colors;
-    [HideInInspector] public const float Height = 3.0f;
+    [HideInInspector] public const float Height = 5.0f;
     [HideInInspector] public static float CurrentSpeed = StartSpeed;
     public static event Action <float> OnTubesSpeedScale;
     public static event Action OnCreateCoin;
@@ -77,7 +77,7 @@ public class TubeManager : MonoBehaviour
         CreateTubeStart();
     }
 
-    public void HideTubes()
+    private void HideTubes()
     {
         GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
     }
@@ -237,7 +237,7 @@ public class TubeManager : MonoBehaviour
     
     private void CreateTube(float radius, Color color, float posY = 600f, bool _startPos = false)
     {
-        BaseObject shapeObject = Tube.Create(radius, InitRadius+5f+2f, Height + Random.value * 2.5f, Sides, 1, 0.0f, false,
+        BaseObject shapeObject = Tube.Create(radius, InitRadius+5f+2f, Height, Sides, 1, 0.0f, false,
             NormalsType.Vertex,
             PivotPosition.Botttom);
         

@@ -41,10 +41,10 @@ public class MyTube : MonoBehaviour
 
     public void CreateTubeModel(GameObject prefab)
     {
+        if (prefab == null) return;
         GameObject go = Instantiate(prefab);
         go.transform.SetParent(transform, false);
         go.transform.localPosition = new Vector3(0, tube.height*0.5f, 0);
-        
     }
 
     private void OnEnable()
