@@ -11,6 +11,8 @@ public class Rate : MonoBehaviour
     {
         RateUs();
         GlobalEvents<OnBtnRateClick>.Happened -= OnBtnRateClick;
+        DefsGame.RateCounter = 1;
+        PlayerPrefs.SetInt("RateCounter", 1);
     }
 
     public void RateUs()

@@ -55,6 +55,11 @@ public struct OnPointsReset
 {
 }
 
+// Проиграть анимацию BestScore
+public struct OnBestScoreUpdate
+{
+}
+
 //--------------------------------------------------------
 // ADS
 //--------------------------------------------------------
@@ -84,6 +89,12 @@ public struct OnGiveReward
 public struct OnGiftAvailable
 {
     public bool IsAvailable;
+}
+
+// Добавляем монетки
+public struct OnCoinsAdd
+{
+    public int Count;
 }
 
 // Добавили монеток

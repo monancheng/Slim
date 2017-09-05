@@ -10,7 +10,6 @@ public class MyPlayer : MonoBehaviour
 {
     public static event Action<float> OnTubeCreate;
     public static event Action OnTubeMove;
-    public static event Action OnTubeGetBonusTube;
     public static event Action<int, float, Vector3, float> OnCombo;
     public static event Action<float> OnIncreaseTubeRadius;
 
@@ -165,12 +164,6 @@ public class MyPlayer : MonoBehaviour
             }
             else
             {
-//                if (_comboIncreaseCounter == ComboForIncrease && _currentRadius < _startRadius)
-//                {
-//                    GameEvents.Send(OnTubeGetBonusTube);
-//                    _comboIncreaseCounter = 0;
-//                }
-                
                 GameEvents.Send(OnCombo, 1/*_comboCounter*/, _currentRadius, 
                     new Vector3(transform.position.x, other.gameObject.transform.position.y, other.gameObject.transform.position.z),
                     tubeProc.height);

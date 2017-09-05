@@ -1,11 +1,8 @@
-﻿using System;
-using DarkTonic.MasterAudio;
+﻿using DarkTonic.MasterAudio;
 using UnityEngine;
 
 public class BonusCoin : ItemBonus
-{
-	public static event Action<int> OnAddCoinsVisual;
-    
+{  
 	private void Awake()
 	{
 		Init ();
@@ -28,7 +25,7 @@ public class BonusCoin : ItemBonus
     {
         if (other.CompareTag("Player"))
         {
-            GameEvents.Send(OnAddCoinsVisual, 1);
+            GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 1});
             MasterAudio.PlaySoundAndForget("CoinTake");
             Activate();
         }

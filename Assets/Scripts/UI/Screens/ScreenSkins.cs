@@ -9,7 +9,6 @@ public class ScreenSkins : MonoBehaviour
     [SerializeField] private GameObject[] _skinBtns;
     [SerializeField] private GameObject _choosedSkin;
     private bool _isNewSkinAvailable;
-    public static event Action<int> OnAddCoinsVisual;
 
     private void Start()
     {
@@ -30,7 +29,7 @@ public class ScreenSkins : MonoBehaviour
 
     private void OnBuySkin(OnBuySkin obj)
     {
-        GameEvents.Send(OnAddCoinsVisual, -200);
+        GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = -200});
         OpenSkin(obj.Id);
         AreThereSkins();
         GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = obj.Id});
@@ -86,7 +85,6 @@ public class ScreenSkins : MonoBehaviour
 
     public void Hide()
     {
-        DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
         HideButtons();
     }
 
@@ -152,6 +150,44 @@ public class ScreenSkins : MonoBehaviour
         UIManager.HideUiElement("LabelCoins");
         UIManager.HideUiElement("ScreenMenuBtnPlus");
     }
+    
+    private void ChooseColorForButtons()
+    {
+        for (var i = 0; i < DefsGame.FaceAvailable.Length; i++)
+            if (DefsGame.FaceAvailable[i] == 1)
+            {
+                _skinBtns[i].GetComponent<ScreenSkinsBtn>().SetLock(true);
+            }
+            else
+            {
+                _skinBtns[i].GetComponent<ScreenSkinsBtn>().SetLock(false);
+            }
+        
+        _choosedSkin.transform.position = _skinBtns[DefsGame.CurrentFaceId].transform.position;
+    }
+
+    private void CheckAvailableSkin()
+    {
+        for (var i = 1; i < DefsGame.FaceAvailable.Length; i++)
+            if (DefsGame.FaceAvailable[i] == 0 && DefsGame.CoinsCount >= 200)
+            {
+                _isNewSkinAvailable = true;
+                UIManager.ShowUiElement("LabelNewSkin");
+                return;
+            }
+        _isNewSkinAvailable = false;
+        UIManager.HideUiElement("LabelNewSkin");
+    }
+    
+    public void AreThereSkins()
+    {
+        for (var i = 1; i < DefsGame.FaceAvailable.Length; i++)
+            if (DefsGame.FaceAvailable[i] == 0)
+            {
+                return;
+            }
+        GlobalEvents<OnSkinAllOpened>.Call(new OnSkinAllOpened());
+    }
 
     public void SetSkin1()
     {
@@ -211,44 +247,6 @@ public class ScreenSkins : MonoBehaviour
     public void SetSkin12()
     {
         SetSkin(11);
-    }
-
-    private void ChooseColorForButtons()
-    {
-        for (var i = 0; i < DefsGame.FaceAvailable.Length; i++)
-            if (DefsGame.FaceAvailable[i] == 1)
-            {
-                _skinBtns[i].GetComponent<ScreenSkinBtn>().SetLock(true);
-            }
-            else
-            {
-                _skinBtns[i].GetComponent<ScreenSkinBtn>().SetLock(false);
-            }
-        
-        _choosedSkin.transform.position = _skinBtns[DefsGame.CurrentFaceId].transform.position;
-    }
-
-    private void CheckAvailableSkin()
-    {
-        for (var i = 1; i < DefsGame.FaceAvailable.Length; i++)
-            if (DefsGame.FaceAvailable[i] == 0 && DefsGame.CoinsCount >= 200)
-            {
-                _isNewSkinAvailable = true;
-                UIManager.ShowUiElement("LabelNewSkin");
-                return;
-            }
-        _isNewSkinAvailable = false;
-        UIManager.HideUiElement("LabelNewSkin");
-    }
-    
-    public void AreThereSkins()
-    {
-        for (var i = 1; i < DefsGame.FaceAvailable.Length; i++)
-            if (DefsGame.FaceAvailable[i] == 0)
-            {
-                return;
-            }
-        GlobalEvents<OnSkinAllOpened>.Call(new OnSkinAllOpened());
     }
 
     public void SetRandomSkin()

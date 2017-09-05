@@ -4,66 +4,26 @@ using UnityEngine;
 
 public class ScreenGame : MonoBehaviour
 {
-    private readonly float _missDelay = 0f;
-    private GameObject _backgroundNext;
-    private GameObject _backgroundPrev;
-    private BestScore _bestScore;
-    private Coins _coins;
-    private int _currentBackgroundId;
-    private bool _isBackgroundChange;
-    private bool _isNextLevel;
-
-    private bool _isReviveUsed;
+    [SerializeField] private ScreenColorAnimation _screenAnimation;
 
     private bool _isScreenRateDone;
-    
-
     private bool _isScreenReviveDone;
     private bool _isScreenShareDone;
 
+    enum GameState {Init, Gameplay, GameOver, RedScreen, RedScreenWait, BackToMenu}
+    private GameState _gameState;
+
+    private bool _isRewardedVideoReadyToShow;
     private bool _isWaitReward;
-
-    private ScreenColorAnimation _screenAnimation;
-
-    private int _state = -1;
-    //int hintCounter;
-    //bool isHint = false;
-    //GameObject hint = null;
-    //SpriteRenderer hintSprite;
-
-    private float _time;
-//    public GameObject[] backgrounds;
-    [HideInInspector] public bool IsGameOver;
-    private bool IsRewardedVideoReadyToShow;
-
-    public GameObject screenAnimationObject;
-//    private Vector3 _cameraStartPos;
 
     private void Awake()
     {
         DefsGame.LoadVariables();
     }
 
-    // Use this for initialization
     private void Start()
     {
-        _screenAnimation = screenAnimationObject.GetComponent<ScreenColorAnimation>();
-        _coins = GetComponent<Coins>();
-        _bestScore = GetComponent<BestScore>();
-//		_poinsBmScript = GetComponent<PointsBubbleManager> ();
-
-        _state = 0;
-
-        /*hintCounter = PlayerPrefs.GetInt ("hintCounter", 3);
-        if (hintCounter >= 3) {
-            isHint = true;
-            hint = (GameObject)Instantiate (hintPerefab, new Vector3(0.3f, -1.0f,1), Quaternion.identity);
-            hintSprite = hint.GetComponent<SpriteRenderer>();
-
-            hint.SetActive (true);
-        } */
-        
-//        _cameraStartPos = Camera.main.transform.position;
+        _gameState = GameState.Init;
     }
 
     private void Init()
@@ -89,16 +49,12 @@ public class ScreenGame : MonoBehaviour
         DefsGame.GameServices.ReportProgressWithGlobalID(DefsGame.GameServices.ACHIEVEMENT_EXPLOSIVE,
             DefsGame.QUEST_BOMBS_Counter);
 
-        _coins.UpdateVisual();
-        _bestScore.UpdateVisual();
-
-        _isNextLevel = false;
+        
+        GlobalEvents<OnBestScoreUpdate>.Call(new OnBestScoreUpdate());
 
         _isScreenReviveDone = false;
         _isScreenShareDone = false;
         _isScreenRateDone = false;
-
-        _isReviveUsed = false;
 
         if (DefsGame.GameplayCounter > 1)
             GlobalEvents<OnShowGameOverScreen>.Call(new OnShowGameOverScreen());
@@ -107,39 +63,19 @@ public class ScreenGame : MonoBehaviour
     private void OnEnable()
     {
         GlobalEvents<OnGameOver>.Happened += OnGameOver;
-//        CarSimulator.OnPointsAdd += OnPointsAdd;
         GlobalEvents<OnStartGame>.Happened += OnStartGame;
-        GlobalEvents<OnPointsAdd>.Happened += OnAddPoints;
         GlobalEvents<OnGiveReward>.Happened += GetReward;
-		GlobalEvents<OnGifSaved>.Happened += OnGifSaved;
+        GlobalEvents<OnGifSaved>.Happened += OnGifSaved;
     }
 
-    private void OnDisable()
+    private void OnGifSaved(OnGifSaved obj)
     {
-        GlobalEvents<OnGameOver>.Happened -= OnGameOver;
-//        CarSimulator.OnPointsAdd -= OnPointsAdd;
-        GlobalEvents<OnStartGame>.Happened -= OnStartGame;
-        GlobalEvents<OnPointsAdd>.Happened -= OnAddPoints;
-        GlobalEvents<OnGiveReward>.Happened -= GetReward;
     }
 
-	private void OnGifSaved(OnGifSaved obj) {
-		
-	}
-
-    private void OnAddPoints(OnPointsAdd e)
-    {
-        if (IsGameOver)
-            return;
-
-        _isNextLevel = true;
-    }
-    
     private void OnGameOver(OnGameOver e)
     {
-        if (IsGameOver)
+        if (_gameState == GameState.GameOver)
             return;
-
 
 //        Record.DOSave();
         MasterAudio.PlaySoundAndForget("GameOver");
@@ -152,7 +88,7 @@ public class ScreenGame : MonoBehaviour
                 DefsGame.QUEST_MISS_Counter);
         }
 
-        _state = 3;
+        _gameState = GameState.GameOver;
     }
 
     public void StartGame()
@@ -162,23 +98,18 @@ public class ScreenGame : MonoBehaviour
 
     private void OnStartGame(OnStartGame e)
     {
-        if (IsGameOver)
+        if (_gameState == GameState.GameOver)
             return;
-        
+
         MasterAudio.PlaySoundAndForget("GameStart");
 //        Record.DORec();
 
         ++DefsGame.QUEST_THROW_Counter;
 
         if (DefsGame.GameplayCounter == 1) GlobalEvents<OnPointsShow>.Call(new OnPointsShow());
-        if (_state == 1)
-        {
-            DefsGame.CurrentScreen = DefsGame.SCREEN_GAME;
-            GlobalEvents<OnPointsReset>.Call(new OnPointsReset());
-            _state = 2;
-        }
-
-        //isHint = false;
+            
+        DefsGame.CurrentScreen = DefsGame.SCREEN_GAME;
+        GlobalEvents<OnPointsReset>.Call(new OnPointsReset());
     }
 
     public void EndCurrentGame()
@@ -191,8 +122,6 @@ public class ScreenGame : MonoBehaviour
                 UIManager.ShowUiElement ("ScreenReviveBtnBack");
                 D.Log ("isScreenReviveDone"); 
                 Defs.PlaySound (sndShowScreen);
-
-                FlurryEventsManager.SendEvent ("RV_revive_impression");
                 return;
             }
         }
@@ -205,8 +134,6 @@ public class ScreenGame : MonoBehaviour
                 UIManager.ShowUiElement ("ScreenShareBtnBack");
                 Defs.PlaySound (sndShowScreen);
                 D.Log ("isScreenShareDone"); 
-
-                FlurryEventsManager.SendEvent ("high_score_share_impression");
                 return;
             }
         }
@@ -222,136 +149,62 @@ public class ScreenGame : MonoBehaviour
                 UIManager.ShowUiElement ("ScreenRateBtnBack");
                 Defs.PlaySound (sndShowScreen);
                 D.Log ("isScreenRateDone"); 
-
-                FlurryEventsManager.SendEvent ("rate_us_impression", "revive_screen");
                 return;
             }
         }*/
 
-        _state = 6;
-
-        //PublishingService.Instance.ShowSceneTransition();
+        _gameState = GameState.BackToMenu;
     }
 
     private void Update()
     {
         BtnEscapeUpdate();
-//        BackgroundUpdate();
 
-        switch (_state)
+        switch (_gameState)
         {
-            case 0:
-                _state = 1;
+            case GameState.Init:
                 Init();
+                _gameState = GameState.Gameplay;
                 return;
-            case 1:
-                /*if (isHint) {
-                if (hintSprite.color.a < 1f) {
-                    Color _color = hintSprite.color;
-                    _color.a += 0.05f;
-                    hintSprite.color = _color;
-                }
-            }*/
+            case GameState.Gameplay:
+                // Gameplay
                 break;
-            case 2:
-                if (_isNextLevel)
-                    _isNextLevel = false;
-                break;
-            case 3:
-                _time += Time.deltaTime;
-                if (_time >= _missDelay)
-                {
-                    _time = 0f;
-                    _screenAnimation.SetAlphaMax(0.75f);
-                    _screenAnimation.SetAnimation(false, 0.1f);
-                    _screenAnimation.Show();
-                    _screenAnimation.SetAnimation(true, 0.02f);
-                    _screenAnimation.SetColor(1.0f, 0.21f, 0.21f);
-                    _screenAnimation.SetAutoHide(true);
+            case GameState.GameOver:
+                _screenAnimation.SetAlphaMax(0.75f);
+                _screenAnimation.SetAnimation(false, 0.1f);
+                _screenAnimation.Show();
+                _screenAnimation.SetAnimation(true, 0.02f);
+                _screenAnimation.SetColor(1.0f, 0.21f, 0.21f);
+                _screenAnimation.SetAutoHide(true);
 
-                    _state = 4;
-		            
-                }
+                _gameState = GameState.RedScreen;
                 break;
-            case 4:
+            case GameState.RedScreen:
                 if (!_screenAnimation.isActiveAndEnabled)
                 {
-                    _state = 5;
-//                    Camera.main.transform.position = _cameraStartPos;
+                    _gameState = GameState.RedScreenWait;
                     EndCurrentGame();
                 }
                 break;
-            case 5:
+            case GameState.RedScreenWait:
                 break;
-            case 6:
-                /*FlurryEventsManager.SendEndEvent ("attempt_length");
-            FlurryEventsManager.SendEventPlayed (isReviveUsed, fail_reason);
+            case GameState.BackToMenu:
 
-            if ((DefsGame.gameBestScore == DefsGame.currentPointsCount)&&(DefsGame.gameBestScore != 0)) {
-                DefsGame.gameServices.SubmitScore (DefsGame.gameBestScore);
-                PlayerPrefs.SetInt ("BestScore", DefsGame.gameBestScore);
-            }*/
+//            if ((DefsGame.gameBestScore == DefsGame.currentPointsCount)&&(DefsGame.gameBestScore != 0)) {
+//                DefsGame.gameServices.SubmitScore (DefsGame.gameBestScore);
+//                PlayerPrefs.SetInt ("BestScore", DefsGame.gameBestScore);
+//            }
                 PlayerPrefs.SetInt("coinsCount", DefsGame.CoinsCount);
 
-                HintCheck();
-                IsGameOver = false;
-//                NextBackground();
                 GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
-                DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
 
-                Init();
-                _state = 1;
-//	            _state = 7;
-                break;
-            case 7:
-                _time += Time.deltaTime;
-                if (_time >= 0.8f)
-                {
-                    _time = 0f;
-                    Init();
-                    _state = 1;
-                }
+                _gameState = GameState.Init;
                 break;
         }
-
-        /*if ((!isHint)&&(hint)&&(hint.activeSelf)) {
-            if (hintSprite.color.a > 0f) {
-                Color _color = hintSprite.color;
-                _color.a -= 0.05f;
-                hintSprite.color = _color;
-            } else {
-                hint.SetActive (false);
-            }
-        }*/
-    }
-
-    private void HintCheck()
-    {
-        /*if (DefsGame.currentPointsCount < 3) {
-            ++hintCounter;
-            if (hintCounter >= 3) {
-                isHint = true;
-                if (!hint) {
-                    hint = (GameObject)Instantiate (hintPerefab, new Vector3 (0.3f, -1.0f, 1), Quaternion.identity);
-                    hintSprite = hint.GetComponent<SpriteRenderer> ();
-                }
-                Color _color = hintSprite.color;
-                _color.a = 0;
-                hintSprite.color = _color;
-                hint.SetActive (true);
-            } 
-        } else {
-            if (hintCounter != 0) {
-                isHint = false;
-                hintCounter = 0;
-                PlayerPrefs.SetInt ("hintCounter", 0);
-            }
-        }*/
     }
 
     public void Revive()
     {
-        FlurryEventsManager.SendEvent("RV_revive");
         GlobalEvents<OnShowRewarded>.Call(new OnShowRewarded());
         _isWaitReward = true;
     }
@@ -363,21 +216,15 @@ public class ScreenGame : MonoBehaviour
             _isWaitReward = false;
             if (e.IsAvailable)
             {
-                _state = 2;
-                _isNextLevel = true;
-                IsGameOver = false;
-                _isReviveUsed = true;
-//				_bubbleField.Hide();
+                _gameState = GameState.Gameplay;
 
                 ReviveClose();
                 MasterAudio.PlaySoundAndForget("GUI_Grab");
-
-                FlurryEventsManager.SendEvent("RV_revive_complete");
             }
             else
             {
                 ReviveClose();
-                _state = 6;
+                _gameState = GameState.BackToMenu;
             }
         }
     }
@@ -390,7 +237,6 @@ public class ScreenGame : MonoBehaviour
 //        if (SystemInfo.deviceModel.Contains("iPad")) Defs.ShareVoxel.ShareClick();
 //        else Defs.Share.ShareClick();
         GlobalEvents<OnBtnShareClick>.Call(new OnBtnShareClick());
-        FlurryEventsManager.SendEvent("high_score_share");
         MasterAudio.PlaySoundAndForget("GUI_Grab");
         EndCurrentGame();
     }
@@ -403,7 +249,6 @@ public class ScreenGame : MonoBehaviour
         UIManager.HideUiElement("ScreenRateBtnBack");
         MasterAudio.PlaySoundAndForget("GUI_Grab");
         GlobalEvents<OnBtnRateClick>.Call(new OnBtnRateClick());
-        FlurryEventsManager.SendEvent("rate_us_impression", "revive_screen");
         EndCurrentGame();
     }
 
@@ -413,8 +258,6 @@ public class ScreenGame : MonoBehaviour
         UIManager.HideUiElement("ScreenReviveBtnRevive");
         UIManager.HideUiElement("ScreenReviveBtnBack");
         EndCurrentGame();
-
-        FlurryEventsManager.SendEvent("RV_revive_home");
     }
 
     public void ShareClose()
@@ -423,8 +266,6 @@ public class ScreenGame : MonoBehaviour
         UIManager.HideUiElement("ScreenShareBtnShare");
         UIManager.HideUiElement("ScreenShareBtnBack");
         EndCurrentGame();
-
-        FlurryEventsManager.SendEvent("high_score_home");
     }
 
     public void RateClose()
@@ -434,45 +275,6 @@ public class ScreenGame : MonoBehaviour
         UIManager.HideUiElement("ScreenRateBtnBack");
         EndCurrentGame();
     }
-
-//    private void NextBackground()
-//    {
-//        if (backgrounds.Length == 0) return;
-//
-//        _isBackgroundChange = true;
-//        _backgroundPrev = backgrounds[_currentBackgroundId];
-//        ++_currentBackgroundId;
-//        if (_currentBackgroundId >= backgrounds.Length)
-//            _currentBackgroundId = 0;
-//
-//        _backgroundNext = backgrounds[_currentBackgroundId];
-//        _backgroundNext.SetActive(true);
-//        var color = _backgroundPrev.GetComponent<SpriteRenderer>().color;
-//        color.a = 0;
-//        _backgroundNext.GetComponent<SpriteRenderer>().color = color;
-//    }
-//
-//    private void BackgroundUpdate()
-//    {
-//        if (backgrounds.Length == 0) return;
-//        if (_isBackgroundChange)
-//        {
-//            var color = _backgroundPrev.GetComponent<SpriteRenderer>().color;
-//            if (color.a > 0) color.a -= 0.05f;
-//            _backgroundPrev.GetComponent<SpriteRenderer>().color = color;
-//
-//            color = _backgroundNext.GetComponent<SpriteRenderer>().color;
-//            if (color.a < 1) color.a += 0.05f;
-//            _backgroundNext.GetComponent<SpriteRenderer>().color = color;
-//
-//            if (color.a >= 1)
-//            {
-//                _isBackgroundChange = false;
-//                _backgroundPrev.SetActive(false);
-//                _backgroundPrev = null;
-//            }
-//        }
-//    }
 
     private void BtnEscapeUpdate()
     {
@@ -491,7 +293,7 @@ public class ScreenGame : MonoBehaviour
 //            {
 //                HideExitPanel();
 //            }            else 
-        if (DefsGame.CurrentScreen == DefsGame.SCREEN_MENU)
+            if (DefsGame.CurrentScreen == DefsGame.SCREEN_MENU)
             {
                 ShowExitPanel();
             }
@@ -505,24 +307,13 @@ public class ScreenGame : MonoBehaviour
                     RateClose();
                 else
                     GameOver();
-            }
-//            else if (DefsGame.CurrentScreen == DefsGame.SCREEN_SKINS)
-//            {
-//                DefsGame.ScreenSkins.Hide();
-//                GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
-//            }
-//            else if (DefsGame.CurrentScreen == DefsGame.SCREEN_IAPS)
-//            {
-//                DefsGame.ScreenCoins.Hide();
-//                GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
-//       }         
-}
+            }       
+    }
 
 
     private void GameOver()
     {
-        IsGameOver = true;
-        _state = 3;
+        _gameState = GameState.GameOver;
     }
 
     public void HideExitPanel()

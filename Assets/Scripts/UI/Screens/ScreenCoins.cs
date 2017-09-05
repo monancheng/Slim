@@ -1,13 +1,10 @@
-﻿using System;
-using DoozyUI;
+﻿using DoozyUI;
 using UnityEngine;
 
 public class ScreenCoins : MonoBehaviour
 {
     private bool _isWaitReward;
     private bool isShowBtnViveoAds;
-
-    public static event Action<int> OnAddCoinsVisual;
 
     private void OnEnable()
     {
@@ -87,7 +84,7 @@ public class ScreenCoins : MonoBehaviour
         {
             _isWaitReward = false;
             if (e.IsAvailable)
-                GameEvents.Send(OnAddCoinsVisual, 25);
+                GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 25});
         }
     }
 
@@ -99,7 +96,6 @@ public class ScreenCoins : MonoBehaviour
 
     public void Hide()
     {
-        DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
         HideButtons();
     }
 }

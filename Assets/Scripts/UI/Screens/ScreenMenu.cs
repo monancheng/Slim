@@ -3,10 +3,7 @@ using UnityEngine;
 
 public class ScreenMenu : MonoBehaviour
 {
-    private bool _isBtnSettingsClicked;
     private bool _isButtonHiden;
-    private bool _isShowBtnViveoAds;
-    private bool _isWaitReward;
     private UIButton[] buttons;
 
     private void Start()
@@ -22,15 +19,6 @@ public class ScreenMenu : MonoBehaviour
         GlobalEvents<OnHideMenu>.Happened += OnHideMenu;
         GlobalEvents<OnShowMenuButtons>.Happened += OnShowMenuButtons;
         GlobalEvents<OnHideMenuButtons>.Happened += OnHideMenuButtons;
-        GlobalEvents<OnRewardedLoaded>.Happened += IsRewardedVideoAvailable;
-    }
-
-    private void OnDisable()
-    {
-        GlobalEvents<OnShowMenu>.Happened -= OnShowMenu;
-        GlobalEvents<OnHideMenu>.Happened -= OnHideMenu;
-        GlobalEvents<OnStartGame>.Happened -= OnStartGame;
-        GlobalEvents<OnRewardedLoaded>.Happened -= IsRewardedVideoAvailable;
     }
 
     private void OnShowMenu(OnShowMenu obj)
@@ -58,7 +46,6 @@ public class ScreenMenu : MonoBehaviour
             return;
 
         _isButtonHiden = true;
-        FlurryEventsManager.SendEndEvent("start_screen_length");
         //UIManager.HideUiElement ("MainMenu");
         UIManager.HideUiElement("LabelBestScore");
         UIManager.HideUiElement("elementBestScore");
@@ -94,78 +81,17 @@ public class ScreenMenu : MonoBehaviour
 #if UNITY_ANDROID || UNITY_EDITOR
         UIManager.ShowUiElement("BtnGameServices");
 #endif
-        
-        if (_isShowBtnViveoAds)
-        {
-            UIManager.ShowUiElement("BtnVideoAds");
-        }
-        
-        _isBtnSettingsClicked = false;
-    }
-
-    private void IsRewardedVideoAvailable(OnRewardedLoaded e)
-    {
-        _isShowBtnViveoAds = e.IsAvailable;
-        if (_isShowBtnViveoAds)
-        {
-            if (DefsGame.CurrentScreen == DefsGame.SCREEN_MENU)
-            {
-                UIManager.ShowUiElement("BtnVideoAds");
-            }
-        }
-        else
-        {
-            UIManager.HideUiElement("BtnVideoAds");
-        }
     }
 
     public void ShowButtons()
     {
         GlobalEvents<OnShowMenuButtons>.Call(new OnShowMenuButtons());
+        DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
     }
 
     public void HideButtons()
     {
         GlobalEvents<OnHideMenuButtons>.Call(new OnHideMenuButtons());
-    }
-
-    public void BtnSettingsClick()
-    {
-        _isBtnSettingsClicked = !_isBtnSettingsClicked;
-
-        if (_isBtnSettingsClicked)
-        {
-            UIManager.ShowUiElement("BtnSound");
-            UIManager.ShowUiElement("BtnInaps");
-            UIManager.ShowUiElement("BtnGameServices");
-        }
-        else
-        {
-            UIManager.HideUiElement("BtnSound");
-            UIManager.HideUiElement("BtnInaps");
-            UIManager.HideUiElement("BtnGameServices");
-        }
-    }
-
-    public void OnMoreAppsClicked()
-    {
-        //PublishingService.Instance.ShowAppShelf();
-    }
-
-    public void OnVideoAdsClicked()
-    {
-        GlobalEvents<OnShowRewarded>.Call(new OnShowRewarded());
-        _isWaitReward = true;
-    }
-
-    public void RateUs()
-    {
-        GlobalEvents<OnBtnRateClick>.Call(new OnBtnRateClick());
-    }
-
-    public void BtnSkinsClick()
-    {
-        HideButtons();
     }
 
     public void Show()

@@ -6,13 +6,12 @@ public class ScreenSettings : MonoBehaviour
     [HideInInspector] public string PrevScreenName;
     public void Show()
     {
-        DefsGame.CurrentScreen = DefsGame.SCREEN_IAPS;
+        DefsGame.CurrentScreen = DefsGame.SCREEN_SETTINGS;
         ShowButtons();
     }
 
     public void Hide()
     {
-        DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
         HideButtons();
     }
     

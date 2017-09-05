@@ -8,11 +8,6 @@ public class CameraMovement : MonoBehaviour
     public Transform Target;
     [HideInInspector] public Vector3 TargetPosition;
 
-    private void Awake()
-    {
-        DefsGame.CameraMovement = this;
-    }
-
     // Update is called once per frame
     private void Update()
     {

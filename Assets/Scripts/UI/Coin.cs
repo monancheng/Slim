@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class Coin : MonoBehaviour
@@ -7,7 +6,6 @@ public class Coin : MonoBehaviour
     private const float VelocityMax = 30.0f;
     private float _addAngleCoeff;
     private bool _isAnglePlus;
-    private bool _isHideAnimation;
     private bool _isMoveToTarget;
     private bool _isShowAnimation;
     private float _moveAngle;
@@ -15,18 +13,10 @@ public class Coin : MonoBehaviour
     private float _velocity;
 
     [HideInInspector] public GameObject ParentObj;
-    public static event Action<int> OnAddCoinsVisual;
 
     public void Show()
     {
         _isShowAnimation = true;
-    }
-
-    public void Hide(bool isAnimation)
-    {
-        _isHideAnimation = isAnimation;
-
-        if (!_isHideAnimation) Destroy(transform.parent.gameObject);
     }
 
     // Update is called once per frame
@@ -40,11 +30,6 @@ public class Coin : MonoBehaviour
                 _isShowAnimation = false;
                 transform.localScale = new Vector3(1f, 1f, 1f);
             }
-        }
-        else if (_isHideAnimation)
-        {
-            transform.localScale = new Vector3(transform.localScale.x - 0.1f, transform.localScale.y - 0.1f, 1f);
-            if (transform.localScale.x <= 0f) Destroy(transform.parent.gameObject);
         }
         else if (_isMoveToTarget)
         {
@@ -77,7 +62,7 @@ public class Coin : MonoBehaviour
             {
                 _isMoveToTarget = false;
 
-                GameEvents.Send(OnAddCoinsVisual, 1);
+                GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 1});
                 Destroy(transform.parent.gameObject);
             }
         }

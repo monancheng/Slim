@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class ScreenSkinBtn : MonoBehaviour {
+public class ScreenSkinsBtn : MonoBehaviour {
 
 	[SerializeField] private GameObject _button;
 	[SerializeField] private GameObject _coinImage;

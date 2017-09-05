@@ -16,7 +16,6 @@ public class TubeManager : MonoBehaviour
     public static event Action OnCreateCoin;
 	public static event Action OnCreateBonusIncrease;
 	public static event Action OnCreateChar;
-    public static float RotateSpeed = 1f;
 
     private const int Sides = 32;
     

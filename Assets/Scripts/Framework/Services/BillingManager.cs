@@ -6,8 +6,6 @@ using UnityEngine;
 
 public class BillingManager : MonoBehaviour
 {
-    public static event Action<int> OnAddCoinsVisual;
-
     // Use this for initialization
     private void Start()
     {
@@ -137,11 +135,11 @@ public class BillingManager : MonoBehaviour
                 {
                     // Your code to handle purchased products
                     if (_transaction.ProductIdentifier == NPSettings.Billing.Products [0].ProductIdentifier) {
-                        GameEvents.Send (OnAddCoinsVisual, 200);
+                        GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 200});
                         D.Log ("OnDidFinishTransaction() - 200 coins (bought)");
 
                     } else if (_transaction.ProductIdentifier == NPSettings.Billing.Products [1].ProductIdentifier) {
-                            GameEvents.Send (OnAddCoinsVisual, 1000);
+                            GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 1000});
                             D.Log ("OnDidFinishTransaction() - 1000 coins (bought)");
                     } else if (_transaction.ProductIdentifier == NPSettings.Billing.Products [2].ProductIdentifier) {
                         PublishingService.Instance.DisableAdsPermanently();

@@ -39,7 +39,6 @@ public class Points : MonoBehaviour
     private void OnPointsAdd(OnPointsAdd e)
     {
         AddPoint(e.PointsCount);
-//		_poinsBmScript.AddPoints (pointsCount);
     }
 
     private void ShowAnimation()
@@ -98,9 +97,4 @@ public class Points : MonoBehaviour
         textField.text = DefsGame.CurrentPointsCount.ToString();
         textField.transform.localScale = new Vector3(_startScale * 1.4f, _startScale * 1.4f, 1f);
     }
-//    }
-//        textField.text = DefsGame.CurrentPointsCount.ToString();
-//    {
-
-//    private void UpdateVisual()
 }

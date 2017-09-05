@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DoozyUI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,24 +17,16 @@ public class ScreenGameOver : MonoBehaviour
     private bool _isGiftAvailable;
     private bool _isRewardedAvailable;
     private readonly List<string> _activeNamesList  = new List<string>();
-
-    private int _showCounter;
-    private int _showCounterGlobal;
     
     private int _shareRewardValue;
 
     private bool _isGotNewCharacter;
     private int _giftValue;
-    private bool isVisual;
+    private bool _isVisual;
     private bool _isGotWord;
     private bool _isWaitNewWord;
     private bool _isWordActive;
     private bool _isAllSkinsOpened;
-
-    private void Start()
-    {
-        _showCounterGlobal = PlayerPrefs.GetInt("showCounterGlobal", 0);
-    }
 
     private void OnEnable()
     {
@@ -53,36 +44,15 @@ public class ScreenGameOver : MonoBehaviour
         
         // Внутренние
         GlobalEvents<OnGotNewCharacter>.Happened += OnGotNewCharacter;
-        GlobalEvents<OnBtnRateClick>.Happened += OnBtnRateClick;
         GlobalEvents<OnGiftCollected>.Happened += OnGiftCollected;
 		GlobalEvents<OnGifShared>.Happened += OnGifShared;
 //		Record.OnShareGIFEvent += OnShareGIFEvent;
-    }
-
-    private void OnDisable()
-    {
-        GlobalEvents<OnStartGame>.Happened -= OnHideNotifications;
-        GlobalEvents<OnShowGameOverScreen>.Happened -= OnShowGameOverScreen;
-        GlobalEvents<OnRewardedLoaded>.Happened -= IsRewardedAvailable;
-        GlobalEvents<OnGiftAvailable>.Happened -= IsGiftAvailable;
-        GlobalEvents<OnCoinsAdded>.Happened -= OnCoinsAdded;
-        GlobalEvents<OnWordCollected>.Happened -= OnWordCollected;
-        GlobalEvents<OnWordUpdateProgress>.Happened -= OnWordGotChar;
-        GlobalEvents<OnWordNeedToWait>.Happened -= OnWordNeedToWait;
-        GlobalEvents<OnWordsAvailable>.Happened -= OnWordsAvailable;
-        GlobalEvents<OnSkinAllOpened>.Happened -= OnSkinAllOpened;
-        GlobalEvents<OnGotNewCharacter>.Happened -= OnGotNewCharacter;
-        GlobalEvents<OnBtnRateClick>.Happened -= OnBtnRateClick;
-        GlobalEvents<OnGiftCollected>.Happened -= OnGiftCollected;
     }
 
     private void OnShowGameOverScreen(OnShowGameOverScreen e)
     {
 
         DefsGame.CurrentScreen = DefsGame.SCREEN_NOTIFICATIONS;
-            
-        ++_showCounter;
-        PlayerPrefs.SetInt("showCounterGlobal", ++_showCounterGlobal);
 
         float ran = Random.value;
         
@@ -281,7 +251,7 @@ public class ScreenGameOver : MonoBehaviour
             }
         }
         
-        isVisual = true;
+        _isVisual = true;
     }
 
     private float CalcStartPosition(int notificationCounter)
@@ -317,7 +287,7 @@ public class ScreenGameOver : MonoBehaviour
                 UIManager.HideUiElement(t);
             }
         }
-        isVisual = false;
+        _isVisual = false;
 
 		// TEMP
 		UIManager.HideUiElement ("ScreenGameOverImageShareGif");
@@ -338,7 +308,7 @@ public class ScreenGameOver : MonoBehaviour
         _isGiftAvailable = e.IsAvailable;
         
         int idNotifyOld = _activeNamesList.IndexOf("NotifyGiftWaiting");
-        if (!_isGiftAvailable || !isVisual || idNotifyOld == -1) return;
+        if (!_isGiftAvailable || !_isVisual || idNotifyOld == -1) return;
 
         AddNotifyGift();
    
@@ -364,7 +334,7 @@ public class ScreenGameOver : MonoBehaviour
     {
         int idNotifyOld = _activeNamesList.IndexOf("NotifyNextCharacter");
         
-        if (!isVisual || idNotifyOld == -1) return;
+        if (!_isVisual || idNotifyOld == -1) return;
 
         if (obj.Total >= 200)
         {
@@ -420,7 +390,7 @@ public class ScreenGameOver : MonoBehaviour
         
         int idNotifyOld = _activeNamesList.IndexOf("NotifyWordTimer");
         
-        if (!isVisual || idNotifyOld == -1) return;
+        if (!_isVisual || idNotifyOld == -1) return;
 
         _activeNamesList.Add("NotifyWordProgress");
         
@@ -491,12 +461,6 @@ public class ScreenGameOver : MonoBehaviour
         UIManager.HideUiElement("NotifyRate");
     }
     
-    private void OnBtnRateClick(OnBtnRateClick obj)
-    {
-        DefsGame.RateCounter = 1;
-        PlayerPrefs.SetInt("RateCounter", 1);
-    }
-    
     public void BtnNewSkinClick()
     {
         HideActiveItems();
@@ -509,7 +473,6 @@ public class ScreenGameOver : MonoBehaviour
         GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
         GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
     }
-    
     
     public void BtnWordClick()
     {

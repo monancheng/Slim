@@ -6,7 +6,6 @@ public struct DefsGame
     public static readonly string iOSApp_ID = "id1192223024";
     public static BillingManager IAPs;
     public static GameServicesManager GameServices;
-    public static CameraMovement CameraMovement;
     public static int GameplayCounter = 0; // Считает количество игр сыгранных в этой игровой сессии
     public static int CurrentPointsCount = 0;
     public static int GameBestScore; // Лучший счет
@@ -25,6 +24,7 @@ public struct DefsGame
     public static int SCREEN_GAME = 1;
     public static int SCREEN_SKINS = 2;
     public static int SCREEN_IAPS = 3;
+    public static int SCREEN_SETTINGS = 4;
     public static int SCREEN_EXIT = 10;
     public static int SCREEN_NOTIFICATIONS = 11;
 
@@ -41,7 +41,6 @@ public struct DefsGame
     public static int IS_ACHIEVEMENT_COLLECTION;
 
     public static int QUEST_GAMEPLAY_Counter;
-    public static int QUEST_GOALS_Counter;
     public static int QUEST_THROW_Counter;
     public static int QUEST_CHARACTERS_Counter;
     public static int QUEST_BOMBS_Counter;
@@ -86,7 +85,6 @@ public struct DefsGame
         IS_ACHIEVEMENT_COLLECTION = PlayerPrefs.GetInt("IS_ACHIEVEMENT_COLLECTION", 0);
 
         QUEST_GAMEPLAY_Counter = PlayerPrefs.GetInt("QUEST_GAMEPLAY_Counter", 0);
-        QUEST_GOALS_Counter = PlayerPrefs.GetInt("QUEST_GOALS_Counter", 0);
         QUEST_THROW_Counter = PlayerPrefs.GetInt("QUEST_THROW_Counter", 0);
         QUEST_CHARACTERS_Counter = PlayerPrefs.GetInt("QUEST_CHARACTERS_Counter", 0);
         QUEST_CHARACTERS_Counter = 0;
