@@ -19,8 +19,6 @@ public class MyTube : MonoBehaviour
     
    [HideInInspector] public float Scale;
     private bool _isShowAnimation;
-    private const float Height = 3f;
-    private const int Sides = 32;
     public static event Action OnCanMove;
     public static event Action OnCanSpawnBonus;
     public static event Action <int> OnDestroy;
@@ -86,7 +84,6 @@ public class MyTube : MonoBehaviour
     public void ChangeRadius(float scale)
     {
         Scale = scale;
-//        transform.localScale = new Vector3(ScaleWeWant * Scale, ScaleWeWant * Scale, ScaleWeWant * Scale);
     }
 
     private void OnTubeMove()

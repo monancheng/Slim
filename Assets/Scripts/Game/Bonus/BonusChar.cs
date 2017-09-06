@@ -2,7 +2,7 @@ using System;
 using DarkTonic.MasterAudio;
 using UnityEngine;
 
-public class BonusChar : ItemBonus
+public class BonusChar : BonusItem
 {
     public static event Action OnBonusGot;
 	[SerializeField] private MeshRenderer _meshRenderer;
@@ -21,10 +21,10 @@ public class BonusChar : ItemBonus
 
     private void OnEnable()
     {
+	    TubeManager.OnCreateChar += OnCreate;
+	    
         MyTube.OnCanSpawnBonus += OnCanSpawn;
-        TubeManager.OnCreateChar += OnCreate;
 		Words.OnWordSetChar += OnWordSetChar;
-
         GlobalEvents<OnGameOver>.Happened += GameOver;
     }
 	

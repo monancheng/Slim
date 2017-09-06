@@ -11,22 +11,23 @@ public class ScreenGameOver : MonoBehaviour
     [SerializeField] private Text _wordsProgressText;
     [SerializeField] private Text _wordsText;
     
+    private bool _isVisual;
     private float _centerPointY = 60f;
     private const float ItemHeightHalf = 50f;
     private const float HeightStep = 120f;
-    private bool _isGiftAvailable;
-    private bool _isRewardedAvailable;
     private readonly List<string> _activeNamesList  = new List<string>();
     
-    private int _shareRewardValue;
-
+    private bool _isGiftAvailable;
+    private bool _isRewardedAvailable;
     private bool _isGotNewCharacter;
-    private int _giftValue;
-    private bool _isVisual;
+    private bool _isAllSkinsOpened;
     private bool _isGotWord;
     private bool _isWaitNewWord;
     private bool _isWordActive;
-    private bool _isAllSkinsOpened;
+    
+    private int _shareRewardValue;
+    private int _giftValue;
+    private bool _isWordGifted;
 
     private void OnEnable()
     {
@@ -163,22 +164,6 @@ public class ScreenGameOver : MonoBehaviour
         _activeNamesList.Add("NotifyNewCharacter");
     }
 
-    private void ShuffleItems()
-    {
-        // Перемешиваем 10 раз
-        for (int n = 0; n < 10; n++)
-        for (int i = 0; i < _activeNamesList.Count; i++)
-        {
-            int j = Random.Range(0, _activeNamesList.Count-1);
-            if (j != i)
-            {
-                string str = _activeNamesList[i];
-                _activeNamesList[i] = _activeNamesList[j];
-                _activeNamesList[j] = str;
-            }
-        }
-    }
-
     private void AddNotifyGift()
     {
         _activeNamesList.Add("NotifyGift");
@@ -201,6 +186,22 @@ public class ScreenGameOver : MonoBehaviour
         if (DefsGame.CoinsCount - spendMoneyCount < 200 && DefsGame.QUEST_CHARACTERS_Counter < DefsGame.FaceAvailable.Length - 1)
         {
             _activeNamesList.Add("NotifyNextCharacter");
+        }
+    }
+    
+    private void ShuffleItems()
+    {
+        // Перемешиваем 10 раз
+        for (int n = 0; n < 10; n++)
+        for (int i = 0; i < _activeNamesList.Count; i++)
+        {
+            int j = Random.Range(0, _activeNamesList.Count-1);
+            if (j != i)
+            {
+                string str = _activeNamesList[i];
+                _activeNamesList[i] = _activeNamesList[j];
+                _activeNamesList[j] = str;
+            }
         }
     }
 
@@ -367,13 +368,12 @@ public class ScreenGameOver : MonoBehaviour
     
     private void OnGiftCollected(OnGiftCollected obj)
     {
-        int idNotifyOld = _activeNamesList.IndexOf("NotifyWord");
-        if (idNotifyOld != -1)
-        { 
-            _activeNamesList.RemoveAt(idNotifyOld);
+        if (_isWordGifted)
+        {
+            _isWordGifted = false;
             AddWordTimerOrProgress();
         }
-
+        
         SetItemsPositions();
         ShowActiveItems();
         DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
@@ -477,9 +477,12 @@ public class ScreenGameOver : MonoBehaviour
     public void BtnWordClick()
     {
         HideActiveItems();
+        int idNotifyOld = _activeNamesList.IndexOf("NotifyWord");
+        if (idNotifyOld != -1)
+            _activeNamesList.RemoveAt(idNotifyOld);
 
         _isGotWord = false;
-//        AddNotifyNextSkin(200);
+        _isWordGifted = true;
         
         GlobalEvents<OnBtnWordClick>.Call(new OnBtnWordClick{CoinsCount = 100, IsResetTimer = false});
         GlobalEvents<OnHideMenu>.Call(new OnHideMenu());

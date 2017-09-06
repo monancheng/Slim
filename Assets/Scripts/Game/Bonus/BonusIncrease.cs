@@ -2,7 +2,7 @@
 using DarkTonic.MasterAudio;
 using UnityEngine;
 
-public class BonusIncrease : ItemBonus
+public class BonusIncrease : BonusItem
 {
     public static event Action OnBonusGrow;
 
@@ -13,8 +13,9 @@ public class BonusIncrease : ItemBonus
 
     private void OnEnable()
     {
-        MyTube.OnCanSpawnBonus += OnCanSpawn;
         TubeManager.OnCreateBonusIncrease += OnCreate;
+        
+        MyTube.OnCanSpawnBonus += OnCanSpawn;
         GlobalEvents<OnGameOver>.Happened += GameOver;
     }
 

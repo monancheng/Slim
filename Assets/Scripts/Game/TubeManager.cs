@@ -54,7 +54,6 @@ public class TubeManager : MonoBehaviour
     {
         MyTube.OnDestroy += RemoveItem;
         MyPlayer.OnTubeCreate += OnTubeCreate;
-//        Player.OnTubeGetBonusTube += OnTubeGetBonusTube;
         GlobalEvents<OnStartGame>.Happened += StartGame;
         GlobalEvents<OnGameOver>.Happened += OnGameOver;
         GlobalEvents<OnShowMenu>.Happened += OnShowMenu;
@@ -75,11 +74,6 @@ public class TubeManager : MonoBehaviour
         _radiusAddCoeff = 5f;
         _counter = 0;
         CreateTubeStart();
-    }
-
-    private void HideTubes()
-    {
-        GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
     }
 
     private void OnWordsAvailable(OnWordsAvailable obj)
@@ -146,7 +140,7 @@ public class TubeManager : MonoBehaviour
             if (newRadius + outerRadius > RadiusMax) outerRadius = RadiusMax;
 
             Color color = _colors[DefsGame.CurrentFaceId];
-            if (_colors[DefsGame.CurrentFaceId].a == 0f)
+            if (Math.Abs(_colors[DefsGame.CurrentFaceId].a) < 0.1f)
             {
                 color = ColorTheme.GetTubeColor();
             }
@@ -177,7 +171,7 @@ public class TubeManager : MonoBehaviour
         if (_radiusAddCoeff < 0f) _radiusAddCoeff = 0f;
 
         Color color = _colors[DefsGame.CurrentFaceId];
-        if (_colors[DefsGame.CurrentFaceId].a == 0f)
+        if (Math.Abs(_colors[DefsGame.CurrentFaceId].a) < 0.1f)
         {
             color = ColorTheme.GetTubeColor();
         }
@@ -188,34 +182,31 @@ public class TubeManager : MonoBehaviour
         if (newRadius + outerRadius > RadiusMax) outerRadius = RadiusMax - newRadius;
 
         
-        CreateTube(newRadius, color, 600f);
+        CreateTube(newRadius, color);
         IncreaseSpeed();
         bool isBonusCreated = false;
-        if (!isBonusCreated)
-        {
-            ++_increaseCounter;
-            if (_increaseCounter >= 12)
-            {
-                GameEvents.Send(OnCreateBonusIncrease);
-                isBonusCreated = true;
-                _increaseCounter = 0;
-            }
-        }
-
+        
+        ++_increaseCounter;
+//        if (_increaseCounter >= 12)
+//        {
+//            GameEvents.Send(OnCreateBonusIncrease);
+//            isBonusCreated = true;
+//            _increaseCounter = 0;
+//        }
+//
 		++_coinCounter;
-
-		if (!isBonusCreated) {
-			
-			if (_coinCounter % 5 == 0) {
-//				if (Random.value > 0.5f) {
-					GameEvents.Send (OnCreateCoin);
-					isBonusCreated = true;
-//				}
-			}
-		}
+//
+//		if (!isBonusCreated) {
+//			if (_coinCounter % 5 == 0) {			
+//			    if (Random.value > 0.5f) {
+//					GameEvents.Send (OnCreateCoin);
+//					isBonusCreated = true;
+//			    }
+//			}
+//		}
 			
 		if (!isBonusCreated && !_isWordWait && _isWordActive) {
-			if (_coinCounter % 15 == 0) {
+			if (_coinCounter % 5 == 0) {
 				if (Random.value > 0.5f) {
 					GameEvents.Send (OnCreateChar);
 					isBonusCreated = true;
@@ -223,19 +214,8 @@ public class TubeManager : MonoBehaviour
 			}
 		}
     }
-
-//    private void CreateTube(float radius, Color color, float posY = 600f,
-//        bool isIncreaseSize = false)
-//    {
-//        GameObject go = Instantiate(_tubes[DefsGame.CurrentFaceId], new Vector3(Random.Range(-12f, 12f), posY, 0f), Quaternion.identity);
-//        var script = go.GetComponent<MyTube>();
-//        script.IsIncreaseSize = isIncreaseSize;
-//        script.ChangeRadius(radius/InitRadius);
-//        script.CreateTube(radius, color, posY, isIncreaseSize);
-//        _itemList.Add(script);
-//    }
     
-    private void CreateTube(float radius, Color color, float posY = 600f, bool _startPos = false)
+    private void CreateTube(float radius, Color color, float posY = 600f, bool startPos = false)
     {
         BaseObject shapeObject = Tube.Create(radius, InitRadius+5f+2f, Height, Sides, 1, 0.0f, false,
             NormalsType.Vertex,
@@ -248,8 +228,7 @@ public class TubeManager : MonoBehaviour
         currentTube.GetComponent<Renderer>().material.SetColor("_Color", color);
         currentTube.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
         currentTube.GetComponent<Renderer>().receiveShadows = false;
-        if (_startPos)
-        currentTube.transform.position = new Vector3(0f, posY, 0f); 
+        if (startPos) currentTube.transform.position = new Vector3(0f, posY, 0f); 
         else currentTube.transform.position = new Vector3(Random.Range(-12f, 12f), posY, 0f);
         var script = currentTube.AddComponent<MyTube>();
         script.ShapeObject = shapeObject;

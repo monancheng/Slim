@@ -1,28 +1,25 @@
 ﻿using UnityEngine;
 
-public class ItemBonus : MonoBehaviour {
+public class BonusItem : MonoBehaviour {
 	[SerializeField] protected ParticleSystem _ps;
 	protected bool IsVisible;
 
 	protected Collider _collider;
-	protected float _currentAngle;
 	protected bool _isHideAnimation;
 	protected bool _isActivate;
 
 	protected bool _isShowAnimation;
 	protected bool _isTimeToCreate;
-	protected MeshRenderer _renderer;
 	protected AnimationScript _script;
 	protected float _masterAlpha;
 
 	protected void Init() {
 		_script = GetComponentInChildren<AnimationScript>();
 		_collider = GetComponent<Collider>();
-		_renderer = GetComponentInChildren<MeshRenderer>();
 		Hide(false);
 	}
 
-	virtual protected void OnCreate()
+	protected void OnCreate()
 	{
 		_isTimeToCreate = true;
 	}
@@ -35,7 +32,7 @@ public class ItemBonus : MonoBehaviour {
 
 	protected void GameOver(OnGameOver obj)
 	{
-		if (_isActivate) Hide();
+		Hide();
 	}
 
 	protected void Activate()
@@ -57,18 +54,15 @@ public class ItemBonus : MonoBehaviour {
 	protected void Hide(bool isHideAnimation = true)
 	{
 		_isHideAnimation = isHideAnimation;
-		if (isHideAnimation)
-		{
-		}
-		else
+		if (!isHideAnimation)
 		{
 			transform.localScale = Vector3.zero;
 			IsVisible = false;
 		}
 		_isShowAnimation = false;
 		_script.isAnimated = false;
-
 		_collider.enabled = false;
+		_isActivate = false;
 	}
 
 	protected void Show()
@@ -87,7 +81,7 @@ public class ItemBonus : MonoBehaviour {
 		_isShowAnimation = true;
 	}
 
-	virtual protected void MoveUpdate() {
+	protected void MoveUpdate() {
 		if (_isActivate)
 		{
 			transform.localScale = new Vector3(transform.localScale.x + 0.55f, transform.localScale.y + 0.55f,
@@ -128,12 +122,10 @@ public class ItemBonus : MonoBehaviour {
 	}
 
 	virtual protected void HideAnimation() {
-		transform.localScale = new Vector3 (transform.localScale.x - 0.1f, transform.localScale.y - 0.1f,
-			transform.localScale.z - 0.1f);
-		if (_renderer.material.color.a > 0f) {
-			_renderer.material.SetColor ("_Color", new Color (
-				_renderer.material.color.r, _renderer.material.color.g, _renderer.material.color.b,
-				_renderer.material.color.a - 0.1f));
+		
+		if (transform.localScale.x > 0f) {
+			transform.localScale = new Vector3 (transform.localScale.x - 0.2f, transform.localScale.y - 0.2f,
+				transform.localScale.z - 0.2f);
 		} else {
 			_isHideAnimation = false;
 			transform.localScale = Vector3.zero;

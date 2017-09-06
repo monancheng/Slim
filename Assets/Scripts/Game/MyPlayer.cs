@@ -16,11 +16,8 @@ public class MyPlayer : MonoBehaviour
     private const float MinSize = 1.0f;
     private const float ErrorCoeff = 0.63f;
     private const float BonusRadiusCoeff = 2.0f;
-    private const int ComboForIncrease = 4;
     private const float CirclePositionY = 80f;
 
-//    private int _comboCounter;
-    private int _comboIncreaseCounter;
     private float _currentAngle;
     private float _currentRadius;
     private float _startScaleValue;
@@ -29,8 +26,6 @@ public class MyPlayer : MonoBehaviour
     private bool _isHaveCollision;
     private bool _isMoveToExit;
 
-    private int _sides;
-    private int _soundGoodId;
     private Vector3 _startCursorPoint;
 
     private float _startDistance;
@@ -49,7 +44,6 @@ public class MyPlayer : MonoBehaviour
         _cameraStartPosition = Camera.main.transform.position;
         _startPosition = transform.position;
         _height = 24f;
-        _sides = 32;
         _startRadius = 7f;
 
         _startScaleValue = transform.localScale.x;
@@ -96,8 +90,6 @@ public class MyPlayer : MonoBehaviour
         Camera.main.transform.position = _cameraStartPosition;
         _currentAngle = Mathf.Atan2(CirclePositionY - transform.position.y, transform.position.x) * Mathf.Rad2Deg;
 
-//        _comboCounter = 0;
-        _comboIncreaseCounter = 0;
         _isMoveToExit = false;
         _currentRadius = _startRadius;
         _isDontMove = false;
@@ -141,13 +133,6 @@ public class MyPlayer : MonoBehaviour
         if (cutSize > ErrorCoeff)
         {
             _currentRadius -= cutSize;
-//            _comboCounter = 0;
-            _comboIncreaseCounter = 0;
-        }
-        else
-        {
-//            ++_comboCounter;
-            ++_comboIncreaseCounter; 
         }
 
         if (_currentRadius > MinSize)
@@ -156,10 +141,6 @@ public class MyPlayer : MonoBehaviour
             {
                 ChangeSize();
                 CreateCutTube(cutSize);
-//                _comboCounter = 0;
-                _comboIncreaseCounter = 0;
-                _soundGoodId = 0;
-//                Defs.PlaySound(SoundSlice, 0.3f);
                 MasterAudio.PlaySoundAndForget("Slice");
             }
             else
@@ -167,7 +148,6 @@ public class MyPlayer : MonoBehaviour
                 GameEvents.Send(OnCombo, 1/*_comboCounter*/, _currentRadius, 
                     new Vector3(transform.position.x, other.gameObject.transform.position.y, other.gameObject.transform.position.z),
                     tubeProc.height);
-//                Defs.PlaySound(GetNextGoodSound());
                 MasterAudio.PlaySoundAndForget("GoodFit");
             }
             GlobalEvents<OnPointsAdd>.Call(new OnPointsAdd {PointsCount = /*_comboCounter+*/1});
@@ -194,24 +174,6 @@ public class MyPlayer : MonoBehaviour
         // Даем ему команду двигаться
         GameEvents.Send(OnTubeMove);
     }
-
-//    private void CheckCombo()
-//    {
-//        if (_isIncreaseSize)
-//        {
-//            _isIncreaseSize = false;
-//            if (_currentRadius < _startRadius)
-//            {
-//                _currentRadius += BonusRadiusCoeff;
-//            }
-//            else
-//            {
-//                _currentRadius = _startRadius;
-//            }
-//            ChangeSize();
-//            GameEvents.Send(OnIncreaseTubeRadius, _currentRadius);
-//        }
-//    }
     
     private void OnBonusGrow()
     {
@@ -274,10 +236,10 @@ public class MyPlayer : MonoBehaviour
             if (_startCursorPoint == Vector3.zero) _startCursorPoint = Input.mousePosition;
             
             Vector2 cursorPosition = Input.mousePosition;
-            var newX = (_startCursorPoint.x - cursorPosition.x) / 10f;
+            var newX = (_startCursorPoint.x - cursorPosition.x) / 7f;
             _currentAngle += newX;
             float xCoeff = _startDistance * Mathf.Cos(_currentAngle * Mathf.Deg2Rad);
-            float yCoeff = _startDistance * Mathf.Sin(_currentAngle * Mathf.Deg2Rad);
+//            float yCoeff = _startDistance * Mathf.Sin(_currentAngle * Mathf.Deg2Rad);
             
             transform.position = new Vector3(xCoeff,
                 transform.position.y,
@@ -288,11 +250,4 @@ public class MyPlayer : MonoBehaviour
             _startCursorPoint = cursorPosition;
         }
     }
-    
-//    private AudioClip GetNextGoodSound()
-//    {
-//        ++_soundGoodId;
-//        if (_soundGoodId > SoundsGood.Length - 1) _soundGoodId = 0;
-//        return SoundsGood[_soundGoodId];
-//    }
 }

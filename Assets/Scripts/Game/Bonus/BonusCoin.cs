@@ -1,7 +1,7 @@
 ﻿using DarkTonic.MasterAudio;
 using UnityEngine;
 
-public class BonusCoin : ItemBonus
+public class BonusCoin : BonusItem
 {  
 	private void Awake()
 	{
@@ -10,8 +10,9 @@ public class BonusCoin : ItemBonus
 
     private void OnEnable()
     {
-        MyTube.OnCanSpawnBonus += OnCanSpawn;
         TubeManager.OnCreateCoin += OnCreate;
+        
+        MyTube.OnCanSpawnBonus += OnCanSpawn;
         GlobalEvents<OnGameOver>.Happened += GameOver;
     }
 
