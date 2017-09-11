@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DoozyUI;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -31,11 +30,9 @@ public class ScreenSkins : MonoBehaviour
     {
         GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = -200});
         OpenSkin(obj.Id);
-        AreThereSkins();
-        GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = obj.Id});
     }
 
-    private void SetSkin(int id)
+    public void SetSkin(int id)
     {
         if (id == DefsGame.CurrentFaceId)
             return;
@@ -46,22 +43,47 @@ public class ScreenSkins : MonoBehaviour
             GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = id});
             PlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
             ChooseColorForButtons();
-        }
+            Hide();
+            GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
+        } else
+        // Social
+        if (id == DefsGame.SKIN_FACEBOOK)
+        {
+            Application.OpenURL("http://facebook.com");
+            OpenSkin(id);
+        } else 
+        if (id == DefsGame.SKIN_TWITTER)
+        {
+            Application.OpenURL("http://twitter.com");
+            OpenSkin(id);
+        } else 
+        if (id == DefsGame.SKIN_INSTAGRAM)
+        {
+            Application.OpenURL("http://instagram.com");
+            OpenSkin(id);
+        } else 
+        if (id == DefsGame.SKIN_SPONSOR)
+        {
+            Application.OpenURL("http://squaredino.com");
+            OpenSkin(id);
+        } 
         else if (DefsGame.CoinsCount >= 200/*DefsGame.FacePrice[_id - 1]*/)
         {
-            GlobalEvents<OnBuySkin>.Call(new OnBuySkin{Id = id});
-
-            //DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_NEW_SKIN, 1);
-            //DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_COLLECTION, DefsGame.QUEST_CHARACTERS_Counter);
-            GlobalEvents<OnGotNewCharacter>.Call(new OnGotNewCharacter());
+            BuySkin(id);
         }
         else
         {
             GlobalEvents<OnShowScreenCoins>.Call(new OnShowScreenCoins());
         }
-        
-        Hide();
-        GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
+    }
+
+    private void BuySkin(int id)
+    {
+        GlobalEvents<OnBuySkin>.Call(new OnBuySkin{Id = id});
+
+        //DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_NEW_SKIN, 1);
+        //DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_COLLECTION, DefsGame.QUEST_CHARACTERS_Counter);
+        GlobalEvents<OnGotNewCharacter>.Call(new OnGotNewCharacter());
     }
 
     private void OpenSkin(int id)
@@ -73,23 +95,16 @@ public class ScreenSkins : MonoBehaviour
         ++DefsGame.QUEST_CHARACTERS_Counter;
         PlayerPrefs.SetInt("QUEST_CHARACTERS_Counter", DefsGame.QUEST_CHARACTERS_Counter);
         ChooseColorForButtons();
+        AreThereSkins();
+        GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = id});
     }
     
     public void Show()
     {
         DefsGame.CurrentScreen = DefsGame.SCREEN_SKINS;
         
-        ShowButtons();
-        Invoke("ChooseColorForButtons", 1f);
-    }
-
-    public void Hide()
-    {
-        HideButtons();
-    }
-
-    private void ShowButtons()
-    {
+        GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
+        
         UIManager.ShowUiElement("ScreenSkins");
         UIManager.ShowUiElement("ScreenSkinsTopBar");
 //        UIManager.ShowUiElement("ScreenSkinsBackground");
@@ -121,9 +136,11 @@ public class ScreenSkins : MonoBehaviour
         // Other screens
         UIManager.ShowUiElement("LabelCoins");
         UIManager.ShowUiElement("ScreenMenuBtnPlus");
+        
+        Invoke("ChooseColorForButtons", 1f);
     }
 
-    private void HideButtons()
+    public void Hide()
     {
         UIManager.HideUiElement("ScreenSkins");
         UIManager.HideUiElement("ScreenSkinsTopBar");
@@ -168,7 +185,7 @@ public class ScreenSkins : MonoBehaviour
 
     private void CheckAvailableSkin()
     {
-        for (var i = 1; i < DefsGame.FaceAvailable.Length; i++)
+        for (var i = DefsGame.FacesGeneralMin; i < DefsGame.FacesGeneralMax; i++)
             if (DefsGame.FaceAvailable[i] == 0 && DefsGame.CoinsCount >= 200)
             {
                 _isNewSkinAvailable = true;
@@ -179,7 +196,7 @@ public class ScreenSkins : MonoBehaviour
         UIManager.HideUiElement("LabelNewSkin");
     }
     
-    public void AreThereSkins()
+    private void AreThereSkins()
     {
         for (var i = 1; i < DefsGame.FaceAvailable.Length; i++)
             if (DefsGame.FaceAvailable[i] == 0)
@@ -187,66 +204,6 @@ public class ScreenSkins : MonoBehaviour
                 return;
             }
         GlobalEvents<OnSkinAllOpened>.Call(new OnSkinAllOpened());
-    }
-
-    public void SetSkin1()
-    {
-        SetSkin(0);
-    }
-
-    public void SetSkin2()
-    {
-        SetSkin(1);
-    }
-
-    public void SetSkin3()
-    {
-        SetSkin(2);
-    }
-
-    public void SetSkin4()
-    {
-        SetSkin(3);
-    }
-
-    public void SetSkin5()
-    {
-        SetSkin(4);
-    }
-
-    public void SetSkin6()
-    {
-        SetSkin(5);
-    }
-
-    public void SetSkin7()
-    {
-        SetSkin(6);
-    }
-
-    public void SetSkin8()
-    {
-        SetSkin(7);
-    }
-
-    public void SetSkin9()
-    {
-        SetSkin(8);
-    }
-
-    public void SetSkin10()
-    {
-        SetSkin(9);
-    }
-
-    public void SetSkin11()
-    {
-        SetSkin(10);
-    }
-
-    public void SetSkin12()
-    {
-        SetSkin(11);
     }
 
     public void SetRandomSkin()

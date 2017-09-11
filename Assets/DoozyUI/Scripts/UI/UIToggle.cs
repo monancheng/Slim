@@ -677,9 +677,9 @@ namespace DoozyUI
             cDisableButton = null;
         }
         /// <summary>
-        /// Disables the button for the set BETWEEN_CLICKS_DISABLE_INTERVAL value.
+        /// Disables the button for the set disableButtonInterval value.
         /// </summary>
-        void DisableButtonAfterClick() { DisableButton(BETWEEN_CLICKS_DISABLE_INTERVAL); }
+        void DisableButtonAfterClick() { DisableButton(disableButtonInterval); }
         #endregion
 
         #region OnPointerEnter

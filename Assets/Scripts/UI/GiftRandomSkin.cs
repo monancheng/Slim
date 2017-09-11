@@ -24,11 +24,11 @@ public class GiftRandomSkin : MonoBehaviour
 	private int GetRandomAvailableSkin()
 	{
 		if (DefsGame.QUEST_CHARACTERS_Counter == DefsGame.FaceAvailable.Length - 1) return -1;
-		int tryCount = Random.Range(0, DefsGame.FaceAvailable.Length);
-		int i = -1;
+		int tryCount = Random.Range(DefsGame.FacesGeneralMin, DefsGame.FacesGeneralMax + 1);
+		int i = DefsGame.FacesGeneralMin-1;
 		while (i < tryCount)
 		{
-			for (int id = 1; id < DefsGame.FaceAvailable.Length; id++)
+			for (int id = DefsGame.FacesGeneralMin+1; id < DefsGame.FacesGeneralMax; id++)
 			{
 				if (DefsGame.FaceAvailable[id] == 0)
 				{

@@ -213,12 +213,14 @@ namespace DoozyUI
 #if dUI_SOURCE
             return;
 #endif
-            if (DUI.DUISettings.InternalSettings_ExecutedUpgrade) { return; }
+            if (DUI.DUISettings == null || DUI.DUISettings.InternalSettings_ExecutedUpgrade) { return; }
             Debug.Log("[DoozyUI] [UpgradeManager] Starting automated upgrade...");
             bool databaseUpgraded = UpgradeDatabase();
             CleanFiles();
             Debug.Log("[DoozyUI] [UpgradeManager] Finished automated upgrade...");
             DUI.DUISettings.InternalSettings_ExecutedUpgrade = true;
+            QuickEditor.QUI.SetDirty(DUI.DUISettings);
+            AssetDatabase.SaveAssets();
             EditorUtility.ClearProgressBar();
             if (databaseUpgraded)
             {

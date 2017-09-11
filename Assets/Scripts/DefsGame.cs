@@ -11,7 +11,15 @@ public struct DefsGame
     public static int GameBestScore; // Лучший счет
     public static int CoinsCount; // Количество очков игрока
     public static int CurrentFaceId;
-    public static int[] FaceAvailable = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    public static int FacesGeneralMin = 0;
+    public static int FacesGeneralMax = 14;
+    public static int[] FaceAvailable = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    
+    public static int SKIN_FACEBOOK = 15;
+    public static int SKIN_TWITTER = 16;
+    public static int SKIN_INSTAGRAM = 17;
+    public static int SKIN_SPONSOR = 18;
+      
 //    public static readonly int[] FacePrice = {200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200};
     public static int BTN_GIFT_HIDE_DELAY = 0;
     public static int BTN_GIFT_HIDE_DELAY_COUNTER;
@@ -55,7 +63,7 @@ public struct DefsGame
         GameBestScore = PlayerPrefs.GetInt("BestScore", 0);
 //      gameBestScore = 0;
         CoinsCount = PlayerPrefs.GetInt("coinsCount", 0);
-        CoinsCount = 401;
+        CoinsCount = 1000;
         RateCounter = PlayerPrefs.GetInt("rateCounter", 0);
 
 //        for (var i = 0; i < FaceAvailable.Length; i++)

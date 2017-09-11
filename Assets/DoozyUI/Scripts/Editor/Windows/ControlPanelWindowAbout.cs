@@ -8,7 +8,7 @@ namespace DoozyUI
 {
     public partial class ControlPanelWindow : QWindow
     {
-        public const string VERSION = "Version 2.8.0p8";
+        public const string VERSION = "Version 2.8.1p1";
         public const string COPYRIGHT = "Copyright (c) 2015 - 2017 Doozy Entertainment / Marlink Trading SRL. All Rights Reserved.";
 
         void DrawAbout()

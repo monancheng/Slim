@@ -27,7 +27,13 @@ public class ScreenGameOver : MonoBehaviour
     
     private int _shareRewardValue;
     private int _giftValue;
-    private bool _isWordGifted;
+    
+    enum GiftCollectedType
+    {
+        None, Gift, Skin, Word
+    }
+
+    private GiftCollectedType _giftCollectedType = GiftCollectedType.None;
 
     private void OnEnable()
     {
@@ -59,10 +65,8 @@ public class ScreenGameOver : MonoBehaviour
         
         // Важность - Высокая
 
-        if (!_isAllSkinsOpened && DefsGame.CoinsCount >= 200 && DefsGame.QUEST_CHARACTERS_Counter < DefsGame.FaceAvailable.Length - 1)
-        {
-            AddNotifyNewGift();
-        }
+        
+        AddNotifySkin();
 
         if (_isGiftAvailable)
         {
@@ -112,12 +116,12 @@ public class ScreenGameOver : MonoBehaviour
                                            || _activeNamesList.Count == 1 && ran > 0.75f
                                            || _activeNamesList.Count == 2 && ran > 0.80f))
         {
-            _activeNamesList.Add("NotifyGiftWaiting");
+            AddNotifyGiftWaiting();
         }
 
-        if (!_isAllSkinsOpened && _activeNamesList.Count < 4 && (_activeNamesList.Count == 0 && ran > 0.7f
-                                              || _activeNamesList.Count == 1 && ran > 0.75f
-                                              || _activeNamesList.Count == 2 && ran > 0.80f)
+        if (_activeNamesList.Count < 4 && (_activeNamesList.Count == 0 && ran > 0.7f
+                                        || _activeNamesList.Count == 1 && ran > 0.75f
+                                        || _activeNamesList.Count == 2 && ran > 0.80f)
         && ran > 0.4f)
         {
             AddNotifyNextSkin();
@@ -159,9 +163,22 @@ public class ScreenGameOver : MonoBehaviour
         }
     }
 
-    private void AddNotifyNewGift()
+    private bool AddNotifySkin()
     {
-        _activeNamesList.Add("NotifyNewCharacter");
+        if (!_isAllSkinsOpened && DefsGame.CoinsCount >= 200)
+        {
+            _activeNamesList.Add("NotifyNewCharacter");
+            return true;
+        }
+        return false;
+    }
+    
+    private void AddNotifyNextSkin()
+    {
+        if (!_isAllSkinsOpened && DefsGame.CoinsCount < 200)
+        {
+            _activeNamesList.Add("NotifyNextCharacter");
+        }
     }
 
     private void AddNotifyGift()
@@ -175,18 +192,15 @@ public class ScreenGameOver : MonoBehaviour
             else _giftValue = 45;
         }
     }
+
+    private void AddNotifyGiftWaiting()
+    {
+        _activeNamesList.Add("NotifyGiftWaiting");
+    }
     
     private void AddNotifyWord()
     {
         _activeNamesList.Add("NotifyWord");
-    }
-    
-    private void AddNotifyNextSkin(int spendMoneyCount = 0)
-    {
-        if (DefsGame.CoinsCount - spendMoneyCount < 200 && DefsGame.QUEST_CHARACTERS_Counter < DefsGame.FaceAvailable.Length - 1)
-        {
-            _activeNamesList.Add("NotifyNextCharacter");
-        }
     }
     
     private void ShuffleItems()
@@ -312,7 +326,6 @@ public class ScreenGameOver : MonoBehaviour
         if (!_isGiftAvailable || !_isVisual || idNotifyOld == -1) return;
 
         AddNotifyGift();
-   
             
         var element = GetUIElement(_activeNamesList[idNotifyOld]);
         UIManager.HideUiElement(_activeNamesList[idNotifyOld]);
@@ -333,32 +346,31 @@ public class ScreenGameOver : MonoBehaviour
     
     private void OnCoinsAdded(OnCoinsAdded obj)
     {
-        int idNotifyOld = _activeNamesList.IndexOf("NotifyNextCharacter");
+        int toNextSkin = 200 - obj.Total;
+        _nextCharacterText.text = toNextSkin.ToString();
         
+        int idNotifyOld = _activeNamesList.IndexOf("NotifyNextCharacter");
         if (!_isVisual || idNotifyOld == -1) return;
 
         if (obj.Total >= 200)
         {
-            AddNotifyNewGift();
-            var element = GetUIElement(_activeNamesList[idNotifyOld]);
-            UIManager.HideUiElement(_activeNamesList[idNotifyOld]);
-            var element2 = GetUIElement("NotifyNewCharacter");
-            if (element)
-            {
-                element2.customStartAnchoredPosition = element.customStartAnchoredPosition;
-                element2.inAnimations.move.moveDirection = element.inAnimations.move.moveDirection;
-                element2.outAnimations.move.moveDirection = element.outAnimations.move.moveDirection;
-                element2.inAnimations.move.startDelay = element.inAnimations.move.startDelay;
-                element2.outAnimations.move.startDelay = element.outAnimations.move.startDelay;
-                element2.useCustomStartAnchoredPosition = true;
+            if (AddNotifySkin()) {
+                var element = GetUIElement(_activeNamesList[idNotifyOld]);
+                UIManager.HideUiElement(_activeNamesList[idNotifyOld]);
+                var element2 = GetUIElement("NotifyNewCharacter");
+                if (element)
+                {
+                    element2.customStartAnchoredPosition = element.customStartAnchoredPosition;
+                    element2.inAnimations.move.moveDirection = element.inAnimations.move.moveDirection;
+                    element2.outAnimations.move.moveDirection = element.outAnimations.move.moveDirection;
+                    element2.inAnimations.move.startDelay = element.inAnimations.move.startDelay;
+                    element2.outAnimations.move.startDelay = element.outAnimations.move.startDelay;
+                    element2.useCustomStartAnchoredPosition = true;
+                }
+                UIManager.ShowUiElement("NotifyNewCharacter");
             }
-            _activeNamesList.RemoveAt(idNotifyOld);
-            UIManager.ShowUiElement("NotifyNewCharacter");
-        } else 
-        {
-            int toNextSkin = 200 - obj.Total;
-            _nextCharacterText.text = toNextSkin.ToString();
-        }
+            _activeNamesList.RemoveAt(idNotifyOld);   
+        } 
     }
 
     private void OnGotNewCharacter(OnGotNewCharacter obj)
@@ -368,9 +380,16 @@ public class ScreenGameOver : MonoBehaviour
     
     private void OnGiftCollected(OnGiftCollected obj)
     {
-        if (_isWordGifted)
+        if (_giftCollectedType == GiftCollectedType.Gift)
         {
-            _isWordGifted = false;
+            _activeNamesList.Add("NotifyGiftWaiting");
+        } else if (_giftCollectedType == GiftCollectedType.Skin)
+        {
+            AddNotifySkin();
+            AddNotifyNextSkin();
+        } else 
+        if (_giftCollectedType == GiftCollectedType.Word)
+        {
             AddWordTimerOrProgress();
         }
         
@@ -463,11 +482,10 @@ public class ScreenGameOver : MonoBehaviour
     
     public void BtnNewSkinClick()
     {
+        _giftCollectedType = GiftCollectedType.Skin;
         HideActiveItems();
         int id = _activeNamesList.IndexOf("NotifyNewCharacter"); 
         if (id != -1) _activeNamesList.RemoveAt(id);
-
-        AddNotifyNextSkin(200);
         
         GlobalEvents<OnBtnGetRandomSkinClick>.Call(new OnBtnGetRandomSkinClick());
         GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
@@ -476,13 +494,13 @@ public class ScreenGameOver : MonoBehaviour
     
     public void BtnWordClick()
     {
+        _giftCollectedType = GiftCollectedType.Word;
         HideActiveItems();
         int idNotifyOld = _activeNamesList.IndexOf("NotifyWord");
         if (idNotifyOld != -1)
             _activeNamesList.RemoveAt(idNotifyOld);
 
         _isGotWord = false;
-        _isWordGifted = true;
         
         GlobalEvents<OnBtnWordClick>.Call(new OnBtnWordClick{CoinsCount = 100, IsResetTimer = false});
         GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
@@ -491,11 +509,10 @@ public class ScreenGameOver : MonoBehaviour
     
     public void BtnGiftClick()
     {
+        _giftCollectedType = GiftCollectedType.Gift;
         HideActiveItems();
         int id = _activeNamesList.IndexOf("NotifyGift"); 
         if (id != -1) _activeNamesList.RemoveAt(id);
-        
-        _activeNamesList.Add("NotifyGiftWaiting");
             
         GlobalEvents<OnBtnGiftClick>.Call(new OnBtnGiftClick{CoinsCount = _giftValue, IsResetTimer = true});
         _giftValue = 0;

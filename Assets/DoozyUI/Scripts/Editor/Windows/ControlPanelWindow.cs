@@ -143,6 +143,9 @@ namespace DoozyUI
         public static void Open(Section section)
         {
             Init();
+#if UNITY_EDITOR_OSX
+            QUI.ExitGUI();
+#endif
             CurrentSection = section;
             refreshData = true;
         }
@@ -613,7 +616,6 @@ namespace DoozyUI
             SearchPattern = ""; //reset search pattern
             SearchPatternAnimBool.value = false; //reset ui for search pattern
         }
-
 
         bool ButtonBar(string text, AnimBool aBool, float width)
         {
