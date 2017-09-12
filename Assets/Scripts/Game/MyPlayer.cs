@@ -236,7 +236,7 @@ public class MyPlayer : MonoBehaviour
             if (_startCursorPoint == Vector3.zero) _startCursorPoint = Input.mousePosition;
             
             Vector2 cursorPosition = Input.mousePosition;
-            var newX = (_startCursorPoint.x - cursorPosition.x) / 7f;
+            var newX = (_startCursorPoint.x - cursorPosition.x) / 6f;
             _currentAngle += newX;
             float xCoeff = _startDistance * Mathf.Cos(_currentAngle * Mathf.Deg2Rad);
 //            float yCoeff = _startDistance * Mathf.Sin(_currentAngle * Mathf.Deg2Rad);

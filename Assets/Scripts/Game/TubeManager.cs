@@ -10,18 +10,19 @@ public class TubeManager : MonoBehaviour
 {
     [SerializeField] private GameObject[] _tubes;
     [SerializeField] private Color[] _colors;
-    [HideInInspector] public const float Height = 5.0f;
-    [HideInInspector] public static float CurrentSpeed = StartSpeed;
+    
+    public static float CurrentSpeed = StartSpeed;
     public static event Action <float> OnTubesSpeedScale;
     public static event Action OnCreateCoin;
 	public static event Action OnCreateBonusIncrease;
 	public static event Action OnCreateChar;
-
-    private const int Sides = 32;
     
-    private const float OuterRadiusMul = 1.8f;
-    private const float OuterRadiusMaxAdd = 8f;
-    private const float OuterRadiusMinAdd = 4f;
+    public static readonly float Height = 7f;
+    public static readonly int Sides = 32;
+    public static readonly float OuterRadius = 14f;
+//    private const float OuterRadiusMul = 1.8f;
+//    private const float OuterRadiusMaxAdd = 8f;
+//    private const float OuterRadiusMinAdd = 4f;
     private const float InitRadius = 7f;
     private const float RadiusMin = 10f;
     private const float RadiusMax = 12f;
@@ -133,11 +134,11 @@ public class TubeManager : MonoBehaviour
             _radiusAddCoeff -= StartRadiusMinus;
             if (_radiusAddCoeff < 0f) _radiusAddCoeff = 0f;
         
-            float outerRadius = Random.Range(newRadius, newRadius*OuterRadiusMul) - newRadius;
-            if (outerRadius > OuterRadiusMaxAdd) outerRadius = OuterRadiusMaxAdd;
-            if (outerRadius < OuterRadiusMinAdd) outerRadius = OuterRadiusMinAdd;
-            if (newRadius + outerRadius < RadiusMin) outerRadius = RadiusMin - newRadius;
-            if (newRadius + outerRadius > RadiusMax) outerRadius = RadiusMax;
+//            float outerRadius = Random.Range(newRadius, newRadius*OuterRadiusMul) - newRadius;
+//            if (outerRadius > OuterRadiusMaxAdd) outerRadius = OuterRadiusMaxAdd;
+//            if (outerRadius < OuterRadiusMinAdd) outerRadius = OuterRadiusMinAdd;
+//            if (newRadius + outerRadius < RadiusMin) outerRadius = RadiusMin - newRadius;
+//            if (newRadius + outerRadius > RadiusMax) outerRadius = RadiusMax;
 
             Color color = _colors[DefsGame.CurrentFaceId];
             if (Math.Abs(_colors[DefsGame.CurrentFaceId].a) < 0.1f)
@@ -165,7 +166,7 @@ public class TubeManager : MonoBehaviour
             _increaseCounter = 0;
         }
 
-        float outerRadius;
+//        float outerRadius;
         var newRadius = radius + _radiusAddCoeff;
         _radiusAddCoeff -= StartRadiusMinus;
         if (_radiusAddCoeff < 0f) _radiusAddCoeff = 0f;
@@ -175,11 +176,11 @@ public class TubeManager : MonoBehaviour
         {
             color = ColorTheme.GetTubeColor();
         }
-        outerRadius = Random.Range(newRadius, newRadius*OuterRadiusMul) - newRadius;
-        if (outerRadius > OuterRadiusMaxAdd) outerRadius = OuterRadiusMaxAdd;
-        if (outerRadius < OuterRadiusMinAdd) outerRadius = OuterRadiusMinAdd;
-        if (newRadius + outerRadius < RadiusMin) outerRadius = RadiusMin - newRadius;
-        if (newRadius + outerRadius > RadiusMax) outerRadius = RadiusMax - newRadius;
+//        outerRadius = Random.Range(newRadius, newRadius*OuterRadiusMul) - newRadius;
+//        if (outerRadius > OuterRadiusMaxAdd) outerRadius = OuterRadiusMaxAdd;
+//        if (outerRadius < OuterRadiusMinAdd) outerRadius = OuterRadiusMinAdd;
+//        if (newRadius + outerRadius < RadiusMin) outerRadius = RadiusMin - newRadius;
+//        if (newRadius + outerRadius > RadiusMax) outerRadius = RadiusMax - newRadius;
 
         
         CreateTube(newRadius, color);
@@ -217,7 +218,7 @@ public class TubeManager : MonoBehaviour
     
     private void CreateTube(float radius, Color color, float posY = 600f, bool startPos = false)
     {
-        BaseObject shapeObject = Tube.Create(radius, InitRadius+5f+2f, Height, Sides, 1, 0.0f, false,
+        BaseObject shapeObject = Tube.Create(radius, OuterRadius, Height, Sides, 1, 0.0f, false,
             NormalsType.Vertex,
             PivotPosition.Botttom);
         

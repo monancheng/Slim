@@ -25,7 +25,6 @@ public class MyTube : MonoBehaviour
 
     private Tube tube;
 
-
     private void Awake()
     {
         tag = "Tube";
@@ -73,7 +72,7 @@ public class MyTube : MonoBehaviour
         ChangeRadius(scale);
 
         Tube obj = ShapeObject.gameObject.GetComponent<Tube>();
-        obj.GenerateGeometry(scale*7f, 14f, obj.height, obj.sides, 1, 0f, false,
+        obj.GenerateGeometry(scale*7f, TubeManager.OuterRadius, TubeManager.Height, TubeManager.Sides, 1, 0f, false,
             NormalsType.Vertex,
             PivotPosition.Center);
         obj.FitCollider();
@@ -117,7 +116,7 @@ public class MyTube : MonoBehaviour
             {
                 if (transform.localScale.x < ScaleWeWant)
                     transform.localScale = new Vector3(transform.localScale.x + _increaseScaleSpeed * Scale,
-                        transform.localScale.y + _increaseScaleSpeed * Scale,
+                        transform.localScale.y,
                         transform.localScale.z + _increaseScaleSpeed * Scale);
                 else
                 {
@@ -138,7 +137,7 @@ public class MyTube : MonoBehaviour
             }
             
             if (transform.localScale.x > 0f)
-                transform.localScale = new Vector3(transform.localScale.x - _increaseScaleSpeed * Scale*2f, transform.localScale.y - _increaseScaleSpeed * Scale*2f,
+                transform.localScale = new Vector3(transform.localScale.x - _increaseScaleSpeed * Scale*2f, transform.localScale.y,
                     transform.localScale.z - _increaseScaleSpeed * Scale*2f);
             else
             {
