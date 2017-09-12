@@ -17,15 +17,10 @@ public class TubeManager : MonoBehaviour
 	public static event Action OnCreateBonusIncrease;
 	public static event Action OnCreateChar;
     
-    public static readonly float Height = 7f;
-    public static readonly int Sides = 32;
-    public static readonly float OuterRadius = 14f;
-//    private const float OuterRadiusMul = 1.8f;
-//    private const float OuterRadiusMaxAdd = 8f;
-//    private const float OuterRadiusMinAdd = 4f;
-    private const float InitRadius = 7f;
-    private const float RadiusMin = 10f;
-    private const float RadiusMax = 12f;
+    private const float Height = 7f;
+    private const int Sides = 32;
+    private const float OuterRadius = 14f;
+    public static readonly float InitRadius = 7f;
     
     private const float MaxSpeed = 195f;
     private float _acceleration = 2.9f;
@@ -133,12 +128,6 @@ public class TubeManager : MonoBehaviour
         {
             _radiusAddCoeff -= StartRadiusMinus;
             if (_radiusAddCoeff < 0f) _radiusAddCoeff = 0f;
-        
-//            float outerRadius = Random.Range(newRadius, newRadius*OuterRadiusMul) - newRadius;
-//            if (outerRadius > OuterRadiusMaxAdd) outerRadius = OuterRadiusMaxAdd;
-//            if (outerRadius < OuterRadiusMinAdd) outerRadius = OuterRadiusMinAdd;
-//            if (newRadius + outerRadius < RadiusMin) outerRadius = RadiusMin - newRadius;
-//            if (newRadius + outerRadius > RadiusMax) outerRadius = RadiusMax;
 
             Color color = _colors[DefsGame.CurrentFaceId];
             if (Math.Abs(_colors[DefsGame.CurrentFaceId].a) < 0.1f)
@@ -166,7 +155,6 @@ public class TubeManager : MonoBehaviour
             _increaseCounter = 0;
         }
 
-//        float outerRadius;
         var newRadius = radius + _radiusAddCoeff;
         _radiusAddCoeff -= StartRadiusMinus;
         if (_radiusAddCoeff < 0f) _radiusAddCoeff = 0f;
@@ -176,13 +164,7 @@ public class TubeManager : MonoBehaviour
         {
             color = ColorTheme.GetTubeColor();
         }
-//        outerRadius = Random.Range(newRadius, newRadius*OuterRadiusMul) - newRadius;
-//        if (outerRadius > OuterRadiusMaxAdd) outerRadius = OuterRadiusMaxAdd;
-//        if (outerRadius < OuterRadiusMinAdd) outerRadius = OuterRadiusMinAdd;
-//        if (newRadius + outerRadius < RadiusMin) outerRadius = RadiusMin - newRadius;
-//        if (newRadius + outerRadius > RadiusMax) outerRadius = RadiusMax - newRadius;
 
-        
         CreateTube(newRadius, color);
         IncreaseSpeed();
         bool isBonusCreated = false;
@@ -220,7 +202,7 @@ public class TubeManager : MonoBehaviour
     {
         BaseObject shapeObject = Tube.Create(radius, OuterRadius, Height, Sides, 1, 0.0f, false,
             NormalsType.Vertex,
-            PivotPosition.Botttom);
+            PivotPosition.Center);
         
         shapeObject.AddMeshCollider(true);
 

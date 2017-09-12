@@ -41,7 +41,7 @@ public class MyTube : MonoBehaviour
         if (prefab == null) return;
         GameObject go = Instantiate(prefab);
         go.transform.SetParent(transform, false);
-        go.transform.localPosition = new Vector3(0, tube.height*0.5f, 0);
+        go.transform.localPosition = Vector3.zero;
     }
 
     private void OnEnable()
@@ -72,7 +72,7 @@ public class MyTube : MonoBehaviour
         ChangeRadius(scale);
 
         Tube obj = ShapeObject.gameObject.GetComponent<Tube>();
-        obj.GenerateGeometry(scale*7f, TubeManager.OuterRadius, TubeManager.Height, TubeManager.Sides, 1, 0f, false,
+        obj.GenerateGeometry(scale*TubeManager.InitRadius, obj.radius1, obj.height, obj.sides, 1, 0f, false,
             NormalsType.Vertex,
             PivotPosition.Center);
         obj.FitCollider();
