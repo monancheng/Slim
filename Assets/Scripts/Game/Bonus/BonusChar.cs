@@ -1,13 +1,13 @@
 using System;
 using DarkTonic.MasterAudio;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BonusChar : BonusItem
 {
     public static event Action OnBonusGot;
 	[SerializeField] private MeshRenderer _meshRenderer;
-	[SerializeField] private MeshRenderer _meshRendererText;
-	[SerializeField] private TextMesh _textMesh;
+	[SerializeField] private Text _text;
 
 	private Material _material;
 
@@ -31,7 +31,7 @@ public class BonusChar : BonusItem
 	override protected void OnCanSpawn()
 	{
 		if (!IsVisible && _isTimeToCreate)
-			_textMesh.text = _nextChar;
+			_text.text = _nextChar;
 		
 		base.OnCanSpawn();
 	}
@@ -59,12 +59,18 @@ public class BonusChar : BonusItem
 
 	override protected void HideAnimation() {
 		base.HideAnimation ();
-		_meshRendererText.material.SetColor ("_Color", new Color(_meshRendererText.material.color.r, _meshRendererText.material.color.g, _meshRendererText.material.color.b, _material.color.a));
+		Color color = _text.color;
+		color.a = _material.color.a;
+		_text.color = color;
+//		_meshRendererText.material.SetColor ("_Color", new Color(_meshRendererText.material.color.r, _meshRendererText.material.color.g, _meshRendererText.material.color.b, _material.color.a));
 	}
 
 
 	override protected void ShowAnimation() {
 		base.ShowAnimation ();
-		_meshRendererText.material.SetColor ("_Color", new Color(_meshRendererText.material.color.r, _meshRendererText.material.color.g, _meshRendererText.material.color.b, _material.color.a));
+		Color color = _text.color;
+		color.a = _material.color.a;
+		_text.color = color;
+//		_meshRendererText.material.SetColor ("_Color", new Color(_meshRendererText.material.color.r, _meshRendererText.material.color.g, _meshRendererText.material.color.b, _material.color.a));
 	}
 }

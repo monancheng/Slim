@@ -1,4 +1,5 @@
 ﻿using DarkTonic.MasterAudio;
+using PrefsEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,7 +24,7 @@ public class Coins : MonoBehaviour
     {
         MasterAudio.PlaySoundAndForget("GUI_CoinTake");
         DefsGame.CoinsCount += obj.Count;
-        PlayerPrefs.SetInt("coinsCount", DefsGame.CoinsCount);
+        SecurePlayerPrefs.SetInt("coinsCount", DefsGame.CoinsCount);
         GlobalEvents<OnCoinsAdded>.Call(new OnCoinsAdded{Total = DefsGame.CoinsCount});
         textField.text = DefsGame.CoinsCount.ToString();
         img.transform.localScale = new Vector3(_startScale * 1.4f, _startScale * 1.4f, 1f);

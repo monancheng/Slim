@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using PrefsEditor;
 using UnityEngine;
 
 public class AppSeconds : MonoBehaviour
@@ -26,7 +27,7 @@ public class AppSeconds : MonoBehaviour
     public static int GetSeconds()
     {
         var seconds = 0;
-        seconds = PlayerPrefs.GetInt("GameTotalTime", 0);
+        seconds = SecurePlayerPrefs.GetInt("GameTotalTime", 0);
         seconds = Mathf.Clamp(seconds, 0, int.MaxValue);
         return seconds;
     }

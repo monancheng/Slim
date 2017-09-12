@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DoozyUI;
+using PrefsEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -41,7 +42,7 @@ public class ScreenSkins : MonoBehaviour
         {
             DefsGame.CurrentFaceId = id;
             GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = id});
-            PlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
+            SecurePlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
             ChooseColorForButtons();
             Hide();
             GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
@@ -90,10 +91,10 @@ public class ScreenSkins : MonoBehaviour
     {
         DefsGame.FaceAvailable[id] = 1;
         DefsGame.CurrentFaceId = id;
-        PlayerPrefs.SetInt("currentFaceID", id);
-        PlayerPrefs.SetInt("faceAvailable_" + id, 1);
+        SecurePlayerPrefs.SetInt("currentFaceID", id);
+        SecurePlayerPrefs.SetInt("faceAvailable_" + id, 1);
         ++DefsGame.QUEST_CHARACTERS_Counter;
-        PlayerPrefs.SetInt("QUEST_CHARACTERS_Counter", DefsGame.QUEST_CHARACTERS_Counter);
+        SecurePlayerPrefs.SetInt("QUEST_CHARACTERS_Counter", DefsGame.QUEST_CHARACTERS_Counter);
         ChooseColorForButtons();
         AreThereSkins();
         GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = id});
@@ -220,7 +221,7 @@ public class ScreenSkins : MonoBehaviour
         int id = Random.Range(0, availableList.Count);
 
         DefsGame.CurrentFaceId = availableList[id];
-        PlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
+        SecurePlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
         _choosedSkin.transform.position = _skinBtns[DefsGame.CurrentFaceId].transform.position;
         availableList.Clear();
         

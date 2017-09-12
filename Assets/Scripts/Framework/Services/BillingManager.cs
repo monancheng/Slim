@@ -145,7 +145,7 @@ public class BillingManager : MonoBehaviour
                         PublishingService.Instance.DisableAdsPermanently();
 
                         MyAds.noAds = 1;
-                        PlayerPrefs.SetInt ("noAds", MyAds.noAds);
+                        SecurePlayerPrefs.SetInt ("noAds", MyAds.noAds);
                         D.Log ("OnDidFinishTransaction() - NoAds (bought)");
                     } 
 

@@ -145,9 +145,9 @@ public class MyPlayer : MonoBehaviour
             }
             else
             {
-                GameEvents.Send(OnCombo, 1/*_comboCounter*/, _currentRadius, 
-                    new Vector3(transform.position.x, other.gameObject.transform.position.y, other.gameObject.transform.position.z),
-                    tubeProc.height);
+//                GameEvents.Send(OnCombo, 1/*_comboCounter*/, _currentRadius, 
+//                    new Vector3(transform.position.x, other.gameObject.transform.position.y, other.gameObject.transform.position.z),
+//                    tubeProc.height);
                 MasterAudio.PlaySoundAndForget("GoodFit");
             }
             GlobalEvents<OnPointsAdd>.Call(new OnPointsAdd {PointsCount = /*_comboCounter+*/1});

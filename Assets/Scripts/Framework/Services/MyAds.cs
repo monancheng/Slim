@@ -1,4 +1,5 @@
 ﻿using System;
+using PrefsEditor;
 using UnityEngine;
 
 public class MyAds : MonoBehaviour
@@ -15,7 +16,7 @@ public class MyAds : MonoBehaviour
 
     private void Start()
     {
-        NoAds = PlayerPrefs.GetInt("noAds, 0");
+        NoAds = SecurePlayerPrefs.GetInt("noAds, 0");
         _rewardDate = DateTime.UtcNow;
         _isRewardedWaitTimer = true;
 

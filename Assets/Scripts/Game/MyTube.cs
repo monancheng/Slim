@@ -116,7 +116,7 @@ public class MyTube : MonoBehaviour
             {
                 if (transform.localScale.x < ScaleWeWant)
                     transform.localScale = new Vector3(transform.localScale.x + _increaseScaleSpeed * Scale,
-                        transform.localScale.y,
+                        transform.localScale.y + _increaseScaleSpeed * Scale,
                         transform.localScale.z + _increaseScaleSpeed * Scale);
                 else
                 {
@@ -137,7 +137,8 @@ public class MyTube : MonoBehaviour
             }
             
             if (transform.localScale.x > 0f)
-                transform.localScale = new Vector3(transform.localScale.x - _increaseScaleSpeed * Scale*2f, transform.localScale.y,
+                transform.localScale = new Vector3(transform.localScale.x - _increaseScaleSpeed * Scale*2f,
+                    transform.localScale.y - _increaseScaleSpeed * Scale*2f,
                     transform.localScale.z - _increaseScaleSpeed * Scale*2f);
             else
             {

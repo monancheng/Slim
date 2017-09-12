@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using PrefsEditor;
+using UnityEngine;
 
 public struct DefsGame
 {
@@ -58,21 +59,25 @@ public struct DefsGame
 
     public static void LoadVariables()
     {
-        CurrentFaceId = PlayerPrefs.GetInt("currentFaceID", 0);
+        SecurePlayerPrefs.PassPhrase = "squaredino.com";
+        SecurePlayerPrefs.UseSecurePrefs = true;
+        SecurePlayerPrefs.AutoConvertUnsecurePrefs = true;
+        
+        CurrentFaceId = SecurePlayerPrefs.GetInt("currentFaceID", 0);
 //      CurrentFaceId = 0;
-        GameBestScore = PlayerPrefs.GetInt("BestScore", 0);
+        GameBestScore = SecurePlayerPrefs.GetInt("BestScore", 0);
 //      gameBestScore = 0;
-        CoinsCount = PlayerPrefs.GetInt("coinsCount", 0);
+        CoinsCount = SecurePlayerPrefs.GetInt("coinsCount", 0);
         CoinsCount = 1000;
         RateCounter = PlayerPrefs.GetInt("rateCounter", 0);
 
 //        for (var i = 0; i < FaceAvailable.Length; i++)
-//            PlayerPrefs.SetInt("faceAvailable_" + i, 0);
+//            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 0);
         
         for (var i = 0; i < FaceAvailable.Length; i++)
             if (i == 0)
                 FaceAvailable[0] = 1;
-            else FaceAvailable[i] = PlayerPrefs.GetInt("faceAvailable_" + i, 0);
+            else FaceAvailable[i] = SecurePlayerPrefs.GetInt("faceAvailable_" + i, 0);
 
         BTN_GIFT_HIDE_DELAY_COUNTER = PlayerPrefs.GetInt("BTN_GIFT_HIDE_DELAY_COUNTER", 0);
         //BTN_GIFT_HIDE_DELAY_COUNTER = 0;
@@ -91,7 +96,7 @@ public struct DefsGame
         QUEST_GAMEPLAY_Counter = PlayerPrefs.GetInt("QUEST_GAMEPLAY_Counter", 0);
         QUEST_THROW_Counter = PlayerPrefs.GetInt("QUEST_THROW_Counter", 0);
         QUEST_CHARACTERS_Counter = PlayerPrefs.GetInt("QUEST_CHARACTERS_Counter", 0);
-        QUEST_CHARACTERS_Counter = 0;
+//        QUEST_CHARACTERS_Counter = 0;
         QUEST_BOMBS_Counter = PlayerPrefs.GetInt("QUEST_BOMBS_Counter", 0);
         QUEST_MISS_Counter = PlayerPrefs.GetInt("QUEST_MISS_Counter", 0);
     }
