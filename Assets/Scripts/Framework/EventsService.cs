@@ -108,7 +108,11 @@ public struct OnCoinsAdded
 //--------------------------------------------------------
 
 // Показываем нотификейшины на экране
-public struct OnShowGameOverScreen
+public struct OnGameOverScreenShow
+{
+}
+// Показываем активные нотификейшины на экране
+public struct OnGameOverScreenShowActiveItems
 {
 }
 
@@ -179,6 +183,11 @@ public struct OnSkinAllOpened
 {
 }
 
+// Все GENERAL скины открыты
+public struct OnSkinAllGeneralOpened
+{
+}
+
 // На финишном эране нет кнопок для показа
 public struct OnNoGameOverButtons
 {
@@ -207,7 +216,6 @@ public struct OnGiftShowRandomSkinAnimation
 // Скрыть экран подарка
 public struct OnHideGiftScreen
 {
-    public int Type;
 }
 
 // Закончили проигрывание анимации подарка

@@ -9,7 +9,7 @@ public class ScreenGift : MonoBehaviour
 	private int _giftType;
 	private bool isFirstTime;
 	
-	private float _centerPointY = 60f;
+	private float _centerPointY = 20f;
 	[SerializeField] private GameObject _gift;
 	[SerializeField] private ParticleSystem _firework;
 
@@ -79,7 +79,7 @@ public class ScreenGift : MonoBehaviour
 		isFirstTime = true;
 		_giftType = 2;
 
-		D.Log("CREATE GIFT ANIMATION");
+		Debug.Log("OnBtnGetRandomSkinClick");
 		CreateGiftAnimation();
 	}
 
@@ -115,12 +115,14 @@ public class ScreenGift : MonoBehaviour
 	
 	private void CreateGiftAnimation()
 	{
+		Debug.Log("CreateGiftAnimation");
 		Instantiate(_gift);
 		Invoke("FireworksLaunch", 1.4f);
 	}
 	
 	private void OnGiftAnimationDone(OnGiftAnimationDone obj)
 	{
+		Debug.Log("OnGiftAnimationDone(OnGiftAnimationDone obj)");
 		UIManager.ShowUiElement("ScreenGift");
 		if (_giftType == 1) MakeAGift();
 		else if (_giftType == 2) MakeAGiftRandomSkin();
@@ -136,6 +138,7 @@ public class ScreenGift : MonoBehaviour
 	
 	private void MakeAGiftRandomSkin()
 	{
+		Debug.Log("MakeAGiftRandomSkin()");
 		GlobalEvents<OnGiftShowRandomSkinAnimation>.Call(new OnGiftShowRandomSkinAnimation());
 		GlobalEvents<OnTubeCreateExample>.Call(new OnTubeCreateExample());
 	}

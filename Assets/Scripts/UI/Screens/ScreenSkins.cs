@@ -13,6 +13,7 @@ public class ScreenSkins : MonoBehaviour
     private void Start()
     {
         AreThereSkins();
+        AreThereSkinsGeneral();
         CheckAvailableSkin();
     }
 
@@ -36,7 +37,12 @@ public class ScreenSkins : MonoBehaviour
     public void SetSkin(int id)
     {
         if (id == DefsGame.CurrentFaceId)
+        {
+            Hide();
+            GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
+            GlobalEvents<OnGameOverScreenShowActiveItems>.Call(new OnGameOverScreenShowActiveItems());
             return;
+        }
 
         if (DefsGame.FaceAvailable[id] == 1)
         {
@@ -44,8 +50,6 @@ public class ScreenSkins : MonoBehaviour
             GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = id});
             SecurePlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
             ChooseColorForButtons();
-            Hide();
-            GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
         } else
         // Social
         if (id == DefsGame.SKIN_FACEBOOK)
@@ -97,6 +101,7 @@ public class ScreenSkins : MonoBehaviour
         SecurePlayerPrefs.SetInt("QUEST_CHARACTERS_Counter", DefsGame.QUEST_CHARACTERS_Counter);
         ChooseColorForButtons();
         AreThereSkins();
+        AreThereSkinsGeneral();
         GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = id});
     }
     
@@ -205,6 +210,16 @@ public class ScreenSkins : MonoBehaviour
                 return;
             }
         GlobalEvents<OnSkinAllOpened>.Call(new OnSkinAllOpened());
+    }
+    
+    private void AreThereSkinsGeneral()
+    {
+        for (var i = DefsGame.FacesGeneralMin; i < DefsGame.FacesGeneralMax; i++)
+            if (DefsGame.FaceAvailable[i] == 0)
+            {
+                return;
+            }
+        GlobalEvents<OnSkinAllGeneralOpened>.Call(new OnSkinAllGeneralOpened());
     }
 
     public void SetRandomSkin()

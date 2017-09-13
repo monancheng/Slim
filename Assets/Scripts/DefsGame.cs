@@ -79,6 +79,11 @@ public struct DefsGame
                 FaceAvailable[0] = 1;
             else FaceAvailable[i] = SecurePlayerPrefs.GetInt("faceAvailable_" + i, 0);
 
+        for (var i = 0; i < FaceAvailable.Length; i++)
+        {
+            if (FaceAvailable[i] == 1) ++QUEST_CHARACTERS_Counter;
+        }
+
         BTN_GIFT_HIDE_DELAY_COUNTER = PlayerPrefs.GetInt("BTN_GIFT_HIDE_DELAY_COUNTER", 0);
         //BTN_GIFT_HIDE_DELAY_COUNTER = 0;
 
@@ -95,7 +100,7 @@ public struct DefsGame
 
         QUEST_GAMEPLAY_Counter = PlayerPrefs.GetInt("QUEST_GAMEPLAY_Counter", 0);
         QUEST_THROW_Counter = PlayerPrefs.GetInt("QUEST_THROW_Counter", 0);
-        QUEST_CHARACTERS_Counter = PlayerPrefs.GetInt("QUEST_CHARACTERS_Counter", 0);
+        
 //        QUEST_CHARACTERS_Counter = 0;
         QUEST_BOMBS_Counter = PlayerPrefs.GetInt("QUEST_BOMBS_Counter", 0);
         QUEST_MISS_Counter = PlayerPrefs.GetInt("QUEST_MISS_Counter", 0);

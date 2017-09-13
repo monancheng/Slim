@@ -12,7 +12,7 @@ public class ScreenGameOver : MonoBehaviour
     [SerializeField] private Text _wordsText;
     
     private bool _isVisual;
-    private float _centerPointY = 60f;
+    private float _centerPointY = 20f;
     private const float ItemHeightHalf = 50f;
     private const float HeightStep = 120f;
     private readonly List<string> _activeNamesList  = new List<string>();
@@ -20,7 +20,7 @@ public class ScreenGameOver : MonoBehaviour
     private bool _isGiftAvailable;
     private bool _isRewardedAvailable;
     private bool _isGotNewCharacter;
-    private bool _isAllSkinsOpened;
+    private bool _isSkinsAllGeneralOpened;
     private bool _isGotWord;
     private bool _isWaitNewWord;
     private bool _isWordActive;
@@ -38,8 +38,9 @@ public class ScreenGameOver : MonoBehaviour
     private void OnEnable()
     {
         // Глобальные
-        GlobalEvents<OnStartGame>.Happened += OnHideNotifications;
-        GlobalEvents<OnShowGameOverScreen>.Happened += OnShowGameOverScreen;
+        GlobalEvents<OnStartGame>.Happened += OnHideGameOverScreen;
+        GlobalEvents<OnGameOverScreenShow>.Happened += OnShowGameOverScreen;
+        GlobalEvents<OnGameOverScreenShowActiveItems>.Happened += OnGameOverScreenShowActiveItems;
         GlobalEvents<OnRewardedLoaded>.Happened += IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened += IsGiftAvailable;
         GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
@@ -47,7 +48,7 @@ public class ScreenGameOver : MonoBehaviour
         GlobalEvents<OnWordUpdateProgress>.Happened += OnWordGotChar;
         GlobalEvents<OnWordNeedToWait>.Happened += OnWordNeedToWait;
         GlobalEvents<OnWordsAvailable>.Happened += OnWordsAvailable;
-        GlobalEvents<OnSkinAllOpened>.Happened += OnSkinAllOpened;
+        GlobalEvents<OnSkinAllGeneralOpened>.Happened += OnSkinAllGeneralOpened;
         
         // Внутренние
         GlobalEvents<OnGotNewCharacter>.Happened += OnGotNewCharacter;
@@ -56,7 +57,12 @@ public class ScreenGameOver : MonoBehaviour
 //		Record.OnShareGIFEvent += OnShareGIFEvent;
     }
 
-    private void OnShowGameOverScreen(OnShowGameOverScreen e)
+    private void OnGameOverScreenShowActiveItems(OnGameOverScreenShowActiveItems obj)
+    {
+        ShowActiveItems();
+    }
+
+    private void OnShowGameOverScreen(OnGameOverScreenShow e)
     {
 
         DefsGame.CurrentScreen = DefsGame.SCREEN_NOTIFICATIONS;
@@ -165,7 +171,7 @@ public class ScreenGameOver : MonoBehaviour
 
     private bool AddNotifySkin()
     {
-        if (!_isAllSkinsOpened && DefsGame.CoinsCount >= 200)
+        if (!_isSkinsAllGeneralOpened && DefsGame.CoinsCount >= 200)
         {
             _activeNamesList.Add("NotifyNewCharacter");
             return true;
@@ -175,7 +181,7 @@ public class ScreenGameOver : MonoBehaviour
     
     private void AddNotifyNextSkin()
     {
-        if (!_isAllSkinsOpened && DefsGame.CoinsCount < 200)
+        if (!_isSkinsAllGeneralOpened && DefsGame.CoinsCount < 200)
         {
             _activeNamesList.Add("NotifyNextCharacter");
         }
@@ -308,7 +314,7 @@ public class ScreenGameOver : MonoBehaviour
 		UIManager.HideUiElement ("ScreenGameOverImageShareGif");
     }
 
-    private void OnHideNotifications(OnStartGame e)
+    private void OnHideGameOverScreen(OnStartGame e)
     {
         Hide();
     }
@@ -429,12 +435,11 @@ public class ScreenGameOver : MonoBehaviour
         UIManager.ShowUiElement("NotifyWordProgress");
     }
     
-    private void OnSkinAllOpened(OnSkinAllOpened obj)
+    private void OnSkinAllGeneralOpened(OnSkinAllGeneralOpened obj)
     {
-        _isAllSkinsOpened = true;
+        _isSkinsAllGeneralOpened = true;
     }
 
-//	private void OnShareGIFEvent ()
 	private void OnGifShared(OnGifShared obj)
 	{
 		int id = _activeNamesList.IndexOf("NotifyShare"); 

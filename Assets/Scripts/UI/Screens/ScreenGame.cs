@@ -57,7 +57,7 @@ public class ScreenGame : MonoBehaviour
         _isScreenRateDone = false;
 
         if (DefsGame.GameplayCounter > 1)
-            GlobalEvents<OnShowGameOverScreen>.Call(new OnShowGameOverScreen());
+            GlobalEvents<OnGameOverScreenShow>.Call(new OnGameOverScreenShow());
     }
 
     private void OnEnable()

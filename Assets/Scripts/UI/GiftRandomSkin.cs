@@ -3,27 +3,38 @@ using UnityEngine;
 
 public class GiftRandomSkin : MonoBehaviour
 {
+	private bool _isSkinsAllGeneralOpened;
+
 	private void OnEnable()
 	{
 		GlobalEvents<OnGiftShowRandomSkinAnimation>.Happened += OnGiftShowRandomSkinAnimation;
+		GlobalEvents<OnSkinAllGeneralOpened>.Happened += OnSkinAllGeneralOpened;
+	}
+
+	private void OnSkinAllGeneralOpened(OnSkinAllGeneralOpened obj)
+	{
+		_isSkinsAllGeneralOpened = true;
 	}
 
 	private void OnGiftShowRandomSkinAnimation(OnGiftShowRandomSkinAnimation obj)
 	{
+		Debug.Log("OnGiftShowRandomSkinAnimation(OnGiftShowRandomSkinAnimation obj)");
 		int id = GetRandomAvailableSkin();
 		if (id != -1)
 		{
-			transform.localScale = Vector3.one;
-			
-			Invoke("ShowBtnClose", 1.5f);
+			transform.localScale = Vector3.one;	
 
 			GlobalEvents<OnBuySkin>.Call(new OnBuySkin {Id = id});
 		}
+		
+		Invoke("ShowBtnClose", 1.5f);
 	}
 
 	private int GetRandomAvailableSkin()
 	{
-		if (DefsGame.QUEST_CHARACTERS_Counter == DefsGame.FaceAvailable.Length - 1) return -1;
+		Debug.Log("GetRandomAvailableSkin");
+		
+		if (_isSkinsAllGeneralOpened) return -1;
 		int tryCount = Random.Range(DefsGame.FacesGeneralMin, DefsGame.FacesGeneralMax + 1);
 		int i = DefsGame.FacesGeneralMin-1;
 		while (i < tryCount)
@@ -35,11 +46,13 @@ public class GiftRandomSkin : MonoBehaviour
 					++i;
 					if (i == tryCount)
 					{
+						Debug.Log("GetRandomAvailableSkin RETURN id = " + id);
 						return id;
 					}
 				}
 			}
 		}
+		Debug.Log("GetRandomAvailableSkin RETURN id = " + -1);
 		return -1;
 	}
 

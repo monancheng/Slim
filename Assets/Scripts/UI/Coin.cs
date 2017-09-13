@@ -70,7 +70,7 @@ public class Coin : MonoBehaviour
 
     public void MoveToEnd()
     {
-        transform.position = new Vector3(Screen.width*0.5f + Random.Range(-33, 33), Screen.height*0.5f + Random.Range(-33, 33), 0f);
+        transform.position = Camera.main.ScreenToViewportPoint(new Vector3(Screen.width*0.5f + Random.Range(-33, 33), Screen.height*0.5f + Random.Range(-33, 33), 0f));
 	    _targetPos = new Vector3(ParentObj.transform.position.x, ParentObj.transform.position.y, transform.position.z);
         _velocity = 5.0f + Random.value * 5.0f;
         if (Random.value < 0.5f) _moveAngle = Random.value * 180f * Mathf.Deg2Rad;

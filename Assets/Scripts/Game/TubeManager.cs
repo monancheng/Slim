@@ -180,7 +180,7 @@ public class TubeManager : MonoBehaviour
 		++_coinCounter;
 
 		if (!isBonusCreated) {
-			if (_coinCounter % 5 == 0) {			
+			if (_coinCounter % 6 == 0) {			
 			    if (Random.value > 0.5f) {
 					GameEvents.Send (OnCreateCoin);
 					isBonusCreated = true;
