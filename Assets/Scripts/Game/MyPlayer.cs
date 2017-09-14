@@ -33,10 +33,9 @@ public class MyPlayer : MonoBehaviour
     private float _startRadius;
     private Vector3 _cameraStartPosition;
 
-    [SerializeField] private Material[] _materials;
-    private Renderer _renderer;
-    [SerializeField] private Mesh[] _meshes;
-    private MeshFilter _mesh;
+    [SerializeField] private Color[] _colors;
+//    [SerializeField] private Mesh[] _meshes;
+//    private MeshFilter _mesh;
     
 
     private void Start()
@@ -48,14 +47,16 @@ public class MyPlayer : MonoBehaviour
 
         _startScaleValue = transform.localScale.x;
 
-        _mesh = GetComponent<MeshFilter>();
-        _renderer = GetComponent<MeshRenderer>();
+//        _mesh = GetComponent<MeshFilter>();
+//        _renderer = GetComponent<MeshRenderer>();
 
         RespownAndWait();
 
         transform.DORotate(new Vector3(0, 0, 20f), 1, RotateMode.LocalAxisAdd).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
 
         _startDistance = Vector3.Distance(new Vector3(0f, CirclePositionY, transform.position.z), transform.position);
+
+        GetComponent<Renderer>().material.SetColor("_Color", _colors[DefsGame.CurrentFaceId]);
     }
 
     private void OnEnable()
@@ -65,12 +66,20 @@ public class MyPlayer : MonoBehaviour
         GlobalEvents<OnStartGame>.Happened += StartGame;
         GlobalEvents<OnGameOver>.Happened += GameOver;
         GlobalEvents<OnChangeSkin>.Happened += OnChangeSkin;
+
+//        TubeManager.OnSendCurrentColorToPlayer += OnSendCurrentColorToPlayer;
     }
+
+//    private void OnSendCurrentColorToPlayer(Color obj)
+//    {
+//        GetComponent<Renderer>().material.SetColor("_Color", obj);
+//    }
 
     private void OnChangeSkin(OnChangeSkin obj)
     {
-        _renderer.material = _materials[obj.Id];
-        _mesh.mesh = _meshes[obj.Id];
+        GetComponent<Renderer>().material.SetColor("_Color", _colors[obj.Id]);
+//        GetComponent<Renderer>().material = _materials[obj.Id];
+//        GetComponent<Renderer>().mesh = _meshes[obj.Id];
     }
 
     private void GameOver(OnGameOver e)
@@ -95,8 +104,6 @@ public class MyPlayer : MonoBehaviour
         _isDontMove = false;
         _isHaveCollision = false;
 
-        GetComponent<Renderer>().material.SetColor("_Color", ColorTheme.GetPlayerStartColor());
-
         ChangeSize();
     }
 
@@ -110,9 +117,14 @@ public class MyPlayer : MonoBehaviour
         GameEvents.Send(OnTubeMove);
     }
 
-    private Shader GetTransparentDiffuseShader()
+//    private Shader GetTransparentDiffuseShader()
+//    {
+//        return Shader.Find("Transparent/Diffuse");
+//    }
+    
+    private Shader GetShader()
     {
-        return Shader.Find("Transparent/Diffuse");
+        return Shader.Find("Standard");
     }
 
     private void OnTriggerEnter(Collider other)
@@ -203,7 +215,7 @@ public class MyPlayer : MonoBehaviour
             PivotPosition.Center);
 
         var go = shapeObject.gameObject;
-        go.GetComponent<Renderer>().material = new Material(GetTransparentDiffuseShader());
+        go.GetComponent<Renderer>().material = new Material(GetShader());
         go.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
         go.GetComponent<Renderer>().receiveShadows = false;
         go.GetComponent<Renderer>().material.SetColor("_Color", new Color(255f / 255.0f, 201f / 255f, 104f / 255f));

@@ -16,6 +16,7 @@ public class TubeManager : MonoBehaviour
     public static event Action OnCreateCoin;
 	public static event Action OnCreateBonusIncrease;
 	public static event Action OnCreateChar;
+//	public static event Action <Color> OnSendCurrentColorToPlayer;
     
     private const float Height = 7f;
     private const int Sides = 32;
@@ -44,6 +45,7 @@ public class TubeManager : MonoBehaviour
         _counter = 0;
         
         CreateTubeStart();
+//        GameEvents.Send(OnSendCurrentColorToPlayer, _colors[DefsGame.CurrentFaceId]);
     }
 
     private void OnEnable()
@@ -58,7 +60,13 @@ public class TubeManager : MonoBehaviour
         GlobalEvents<OnWordCollected>.Happened += OnWordCollected;
         GlobalEvents<OnWordsAvailable>.Happened += OnWordsAvailable;
         GlobalEvents<OnTubeCreateExample>.Happened += OnTubeCreateExample;
+//        GlobalEvents<OnChangeSkin>.Happened += OnChangeSkin;
     }
+    
+//    private void OnChangeSkin(OnChangeSkin obj)
+//    {
+//        GameEvents.Send(OnSendCurrentColorToPlayer, _colors[DefsGame.CurrentFaceId]);
+//    }
 
     private void OnTubeCreateExample(OnTubeCreateExample obj)
     {
@@ -200,17 +208,28 @@ public class TubeManager : MonoBehaviour
     
     private void CreateTube(float radius, Color color, float posY = 600f, bool startPos = false)
     {
-        BaseObject shapeObject = Tube.Create(radius, OuterRadius, Height, Sides, 1, 0.0f, false,
+        float outer = OuterRadius;
+        if (DefsGame.CurrentFaceId == 0)
+        {
+            outer += 7f;
+        }
+    
+        BaseObject shapeObject = Tube.Create(radius, outer, Height, Sides, 1, 0.0f, false,
             NormalsType.Vertex,
             PivotPosition.Center);
         
         shapeObject.AddMeshCollider(true);
 
         var currentTube = shapeObject.gameObject;
-        currentTube.GetComponent<Renderer>().material = new Material(GetDiffuseShader());
-        currentTube.GetComponent<Renderer>().material.SetColor("_Color", color);
+        currentTube.GetComponent<Renderer>().material = new Material(GetShader());
+//        StandardShaderUtils.ChangeRenderMode(currentTube.GetComponent<Renderer>().material,
+//            StandardShaderUtils.BlendMode.Opaque);
+        Material _material = currentTube.GetComponent<Renderer>().material;
+        _material.SetColor("_Color", color);
         currentTube.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
         currentTube.GetComponent<Renderer>().receiveShadows = false;
+        _material.DisableKeyword("_SPECULARHIGHLIGHTS_OFF");
+        _material.SetFloat("_SpecularHighlights",1f);
         if (startPos) currentTube.transform.position = new Vector3(0f, posY, 0f); 
         else currentTube.transform.position = new Vector3(Random.Range(-12f, 12f), posY, 0f);
         var script = currentTube.AddComponent<MyTube>();
@@ -236,9 +255,9 @@ public class TubeManager : MonoBehaviour
         GameEvents.Send(OnTubesSpeedScale, CurrentSpeed/MaxSpeed);
     }
 
-    private Shader GetDiffuseShader()
+    private Shader GetShader()
     {
-        return Shader.Find("Diffuse");
+        return Shader.Find("Standard");
     }
 
     private void Update()
