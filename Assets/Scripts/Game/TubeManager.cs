@@ -23,7 +23,7 @@ public class TubeManager : MonoBehaviour
     private const float OuterRadius = 14f;
     public static readonly float InitRadius = 7f;
     
-    private const float MaxSpeed = 195f;
+    private const float MaxSpeed = 200f;
     private float _acceleration = 2.9f;
     
     private const float StartSpeed = 133f;
@@ -197,11 +197,11 @@ public class TubeManager : MonoBehaviour
 		}
 			
 		if (!isBonusCreated && !_isWordWait && _isWordActive) {
-			if (_coinCounter % 5 == 0) {
-//				if (Random.value > 0.5f) {
+			if (_coinCounter % 15 == 0) {
+				if (Random.value > 0.5f) {
 					GameEvents.Send (OnCreateChar);
 					isBonusCreated = true;
-//				}
+				}
 			}
 		}
     }

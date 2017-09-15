@@ -197,7 +197,7 @@ public class MyPlayer : MonoBehaviour
             _currentRadius = _startRadius;
         }
         ChangeSize();
-        GameEvents.Send(OnIncreaseTubeRadius, _currentRadius/_startRadius);
+        GameEvents.Send(OnIncreaseTubeRadius, _currentRadius/_startRadius + 0.1f);
     }
 
     private void ChangeSize()

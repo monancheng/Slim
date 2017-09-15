@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using DoozyUI;
-using NUnit.Framework;
 using UnityEngine;
 
 public class GiftRandomSkin : MonoBehaviour
