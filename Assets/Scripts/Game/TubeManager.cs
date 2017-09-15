@@ -197,11 +197,11 @@ public class TubeManager : MonoBehaviour
 		}
 			
 		if (!isBonusCreated && !_isWordWait && _isWordActive) {
-			if (_coinCounter % 15 == 0) {
-				if (Random.value > 0.5f) {
+			if (_coinCounter % 5 == 0) {
+//				if (Random.value > 0.5f) {
 					GameEvents.Send (OnCreateChar);
 					isBonusCreated = true;
-				}
+//				}
 			}
 		}
     }

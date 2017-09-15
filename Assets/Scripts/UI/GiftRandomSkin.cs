@@ -1,4 +1,6 @@
-﻿using DoozyUI;
+﻿using System.Collections.Generic;
+using DoozyUI;
+using NUnit.Framework;
 using UnityEngine;
 
 public class GiftRandomSkin : MonoBehaviour
@@ -35,23 +37,24 @@ public class GiftRandomSkin : MonoBehaviour
 		Debug.Log("GetRandomAvailableSkin");
 		
 		if (_isSkinsAllGeneralOpened) return -1;
-		int tryCount = Random.Range(DefsGame.FacesGeneralMin, DefsGame.FacesGeneralMax + 1);
-		int i = DefsGame.FacesGeneralMin-1;
-		while (i < tryCount)
+		
+		// Создаем список со всеми доступными скинами
+		List<int> availableSkins = new List<int>();
+		for (int j = 0; j < DefsGame.FaceAvailable.Length; j++)
 		{
-			for (int id = DefsGame.FacesGeneralMin+1; id < DefsGame.FacesGeneralMax; id++)
+			if (DefsGame.FaceAvailable[j] == 1)
 			{
-				if (DefsGame.FaceAvailable[id] == 0)
-				{
-					++i;
-					if (i == tryCount)
-					{
-						Debug.Log("GetRandomAvailableSkin RETURN id = " + id);
-						return id;
-					}
-				}
+				availableSkins.Add(j);
 			}
 		}
+
+		if (availableSkins.Count > 0)
+		{
+			int id = Random.Range(0, availableSkins.Count + 1);
+			Debug.Log("GetRandomAvailableSkin RETURN id = " + id);
+			return id;
+		}
+
 		Debug.Log("GetRandomAvailableSkin RETURN id = " + -1);
 		return -1;
 	}
