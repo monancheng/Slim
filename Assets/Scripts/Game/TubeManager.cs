@@ -248,7 +248,8 @@ public class TubeManager : MonoBehaviour
         if (CurrentSpeed < 155f) _acceleration = 1.25f; else
         if (CurrentSpeed < 165f) _acceleration = 1.10f; else
         if (CurrentSpeed < 170f) _acceleration = 1.0f; else
-        if (CurrentSpeed < 175f) _acceleration = 0.75f; else
+        if (CurrentSpeed < 175f) _acceleration = 0.95f; else
+        if (CurrentSpeed < 180f) _acceleration = 0.90f; else
             _acceleration = 0.5f;
         CurrentSpeed += _acceleration;
         if (CurrentSpeed > MaxSpeed) CurrentSpeed = MaxSpeed;
