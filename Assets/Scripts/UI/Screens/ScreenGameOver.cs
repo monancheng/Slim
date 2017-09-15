@@ -30,7 +30,7 @@ public class ScreenGameOver : MonoBehaviour
     
     enum GiftCollectedType
     {
-        None, Gift, Skin, Word
+        None, Gift, Skin, Word, Share
     }
 
     private GiftCollectedType _giftCollectedType = GiftCollectedType.None;
@@ -397,6 +397,10 @@ public class ScreenGameOver : MonoBehaviour
         if (_giftCollectedType == GiftCollectedType.Word)
         {
             AddWordTimerOrProgress();
+        } else 
+        if (_giftCollectedType == GiftCollectedType.Share)
+        {
+            ShuffleItems();
         }
         
         SetItemsPositions();
@@ -442,20 +446,10 @@ public class ScreenGameOver : MonoBehaviour
 
 	private void OnGifShared(OnGifShared obj)
 	{
-		int id = _activeNamesList.IndexOf("NotifyShare"); 
-		if (id != -1) {
-			_activeNamesList.RemoveAt (id);
-
 //			Record.DOReset ();
 
-			GlobalEvents<OnBtnShareGifClick>.Call (new OnBtnShareGifClick{CoinsCount = _shareRewardValue});
-			_shareRewardValue = 0;
-
-			HideActiveItems ();
-
-			UIManager.HideUiElement ("NotifyShare");
-			GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
-		}
+        GlobalEvents<OnBtnShareGifClick>.Call (new OnBtnShareGifClick{CoinsCount = _shareRewardValue});
+        _shareRewardValue = 0;
 	}
     
     private void OnWordGotChar(OnWordUpdateProgress obj)
@@ -475,8 +469,13 @@ public class ScreenGameOver : MonoBehaviour
 
     public void BtnShareClick()
     {
+        _giftCollectedType = GiftCollectedType.Share;
+        HideActiveItems();
+        int id = _activeNamesList.IndexOf("NotifyShare"); 
+        if (id != -1) _activeNamesList.RemoveAt(id);
         GlobalEvents<OnBtnShareClick>.Call(new OnBtnShareClick());
-        UIManager.HideUiElement("NotifyShare");
+        GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
+        GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
     }
     
     public void BtnRateClick()
