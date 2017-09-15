@@ -23,8 +23,6 @@ public class MyTube : MonoBehaviour
     public static event Action OnCanSpawnBonus;
     public static event Action <int> OnDestroy;
 
-    private Tube tube;
-
     private void Awake()
     {
         tag = "Tube";
@@ -32,7 +30,6 @@ public class MyTube : MonoBehaviour
         ScaleWeWant = transform.localScale.x;
         _increaseScaleSpeed = ScaleWeWant/IncreaseIterationCount;
         transform.localScale = Vector3.zero;
-        tube = GetComponent <Tube>();
         Scale = 1;
     }
 

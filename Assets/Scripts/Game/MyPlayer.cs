@@ -55,8 +55,6 @@ public class MyPlayer : MonoBehaviour
         transform.DORotate(new Vector3(0, 0, 20f), 1, RotateMode.LocalAxisAdd).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
 
         _startDistance = Vector3.Distance(new Vector3(0f, CirclePositionY, transform.position.z), transform.position);
-
-        GetComponent<Renderer>().material.SetColor("_Color", _colors[DefsGame.CurrentFaceId]);
     }
 
     private void OnEnable()
@@ -105,6 +103,7 @@ public class MyPlayer : MonoBehaviour
         _isHaveCollision = false;
 
         ChangeSize();
+        GetComponent<Renderer>().material.SetColor("_Color", _colors[DefsGame.CurrentFaceId]);
     }
 
     private void StartGame(OnStartGame obj)

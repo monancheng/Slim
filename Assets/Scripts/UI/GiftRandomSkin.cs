@@ -42,7 +42,7 @@ public class GiftRandomSkin : MonoBehaviour
 		List<int> availableSkins = new List<int>();
 		for (int j = 0; j < DefsGame.FaceAvailable.Length; j++)
 		{
-			if (DefsGame.FaceAvailable[j] == 1)
+			if (DefsGame.FaceAvailable[j] == 0)
 			{
 				availableSkins.Add(j);
 			}
