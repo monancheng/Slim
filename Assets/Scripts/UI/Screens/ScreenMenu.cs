@@ -31,13 +31,13 @@ public class ScreenMenu : MonoBehaviour
     private void OnHideMenu(OnHideMenu obj)
     {
         UIManager.HideUiElement("GameName");
-        UIManager.ShowUiElement("LabelPoints");
         HideButtons();
     }
     
     private void OnStartGame(OnStartGame obj)
     {
         Hide();
+        UIManager.ShowUiElement("LabelPoints");
     }
     
     private void OnHideMenuButtons(OnHideMenuButtons obj)

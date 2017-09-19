@@ -19,7 +19,7 @@ public class BonusItem : MonoBehaviour {
 		Hide(false);
 	}
 
-	protected void OnCreate()
+	protected void OnCreateChar()
 	{
 		_isTimeToCreate = true;
 	}

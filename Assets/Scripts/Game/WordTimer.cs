@@ -1,4 +1,5 @@
 ﻿using System;
+using PrefsEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,12 +12,12 @@ public class WordTimer : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		//Grab the old time from the player prefs as a long
-		PlayerPrefs.SetInt("isNeedToWaitWord", 1);
-		PlayerPrefs.SetString("WaitNewWordDate", "");
-		int isNeedToWait = PlayerPrefs.GetInt("isNeedToWaitWord", 0);
+		SecurePlayerPrefs.SetInt("isNeedToWaitWord", 1);
+		SecurePlayerPrefs.SetString("WaitNewWordDate", "");
+		int isNeedToWait = SecurePlayerPrefs.GetInt("isNeedToWaitWord", 0);
 		if (isNeedToWait == 1)
 		{
-			string strTime = PlayerPrefs.GetString("WaitNewWordDate");
+			string strTime = SecurePlayerPrefs.GetString("WaitNewWordDate");
 
 			if (strTime == "")
 			{
@@ -70,8 +71,8 @@ public class WordTimer : MonoBehaviour {
 			{
 				_isWaitTime = false;
 				
-				PlayerPrefs.SetInt("isNeedToWaitWord", 0);
-				PlayerPrefs.SetString("WaitNewWordDate", "");
+				SecurePlayerPrefs.SetInt("isNeedToWaitWord", 0);
+				SecurePlayerPrefs.SetString("WaitNewWordDate", "");
 		
 				GlobalEvents<OnWordNeedToWait>.Call(new OnWordNeedToWait{IsWait = _isWaitTime});
 			}
@@ -100,8 +101,8 @@ public class WordTimer : MonoBehaviour {
 		_nextDate = DateTime.UtcNow;
 		_nextDate = _nextDate.AddMinutes(1);
 		
-		PlayerPrefs.SetInt("isNeedToWaitWord", 1);
-		PlayerPrefs.SetString("WaitNewWordDate", _nextDate.ToBinary().ToString());
+		SecurePlayerPrefs.SetInt("isNeedToWaitWord", 1);
+		SecurePlayerPrefs.SetString("WaitNewWordDate", _nextDate.ToBinary().ToString());
 		
 		GlobalEvents<OnWordNeedToWait>.Call(new OnWordNeedToWait{IsWait = _isWaitTime});
 	}

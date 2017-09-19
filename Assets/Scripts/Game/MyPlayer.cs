@@ -116,15 +116,15 @@ public class MyPlayer : MonoBehaviour
         GameEvents.Send(OnTubeMove);
     }
 
-//    private Shader GetTransparentDiffuseShader()
-//    {
-//        return Shader.Find("Transparent/Diffuse");
-//    }
-    
     private Shader GetShader()
     {
-        return Shader.Find("Standard");
+        return Shader.Find("Transparent/Diffuse");
     }
+    
+//    private Shader GetShader()
+//    {
+//        return Shader.Find("Standard");
+//    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -217,7 +217,7 @@ public class MyPlayer : MonoBehaviour
         go.GetComponent<Renderer>().material = new Material(GetShader());
         go.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
         go.GetComponent<Renderer>().receiveShadows = false;
-        go.GetComponent<Renderer>().material.SetColor("_Color", new Color(255f / 255.0f, 201f / 255f, 104f / 255f));
+        go.GetComponent<Renderer>().material.SetColor("_Color", new Color(255f / 255.0f, 201f / 255f, 104f / 255f, 0.8f));
         go.transform.position = transform.position;
         go.AddComponent<PlayerTubeBad>();
     }

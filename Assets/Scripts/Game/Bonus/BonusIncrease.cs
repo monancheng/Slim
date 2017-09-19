@@ -13,7 +13,7 @@ public class BonusIncrease : BonusItem
 
     private void OnEnable()
     {
-        TubeManager.OnCreateBonusIncrease += OnCreate;
+        TubeManager.OnCreateBonusIncrease += OnCreateChar;
         
         MyTube.OnCanSpawnBonus += OnCanSpawn;
         GlobalEvents<OnGameOver>.Happened += GameOver;

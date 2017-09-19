@@ -43,7 +43,7 @@ public class FootstepsSoundsInspector : Editor {
         }
         PopulateGroupNames(_groupNames);
 
-        DTGUIHelper.HelpHeader("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/FootstepSounds.htm");
+        DTGUIHelper.HelpHeader("http://www.dtdevtools.com/docs/masteraudio/FootstepSounds.htm");
 
         _isDirty = false;
 
@@ -176,7 +176,7 @@ public class FootstepsSoundsInspector : Editor {
                 step.isExpanded = state;
             }
 
-            DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/FootstepSounds.htm#FootstepSound");
+            DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/FootstepSounds.htm#FootstepSound");
 
             EditorGUILayout.EndHorizontal();
 

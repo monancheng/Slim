@@ -2,7 +2,7 @@
 
 public class SkyBoxColors : MonoBehaviour
 {
-    private const float Delay = 12f;
+    private const float Delay = 4f;
     private const float Speed = 0.05f;
     private Color _currColorDown;
     private int _currColorID;

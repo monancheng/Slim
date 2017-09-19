@@ -57,13 +57,23 @@ public class DynamicGroupVariationInspector : Editor {
             switch (buttonPressed) {
                 case DTGUIHelper.DTFunctionButtons.Play:
                     isDirty = true;
-                    var calcVolume = _variation.VarAudio.volume * _variation.ParentGroup.groupMasterVolume;
 
                     previewer = MasterAudioInspector.GetPreviewer();
 
+                    var randPitch = SoundGroupVariationInspector.GetRandomPreviewPitch(_variation);
+                    var varVol = SoundGroupVariationInspector.GetRandomPreviewVolume(_variation);
+
+                    if (_variation.audLocation != MasterAudio.AudioLocation.FileOnInternet) {
+                        if (previewer != null) {
+                            MasterAudioInspector.StopPreviewer();
+                            previewer.pitch = randPitch;
+                        }
+                    }
+
+                    var calcVolume = varVol * _variation.ParentGroup.groupMasterVolume;
+
                     switch (_variation.audLocation) {
                         case MasterAudio.AudioLocation.ResourceFile:
-                            MasterAudioInspector.StopPreviewer();
                             var fileName = AudioResourceOptimizer.GetLocalizedDynamicSoundGroupFileName(previewLang, _variation.useLocalization, _variation.resourceFileName);
 
                             var clip = Resources.Load(fileName) as AudioClip;
@@ -77,10 +87,8 @@ public class DynamicGroupVariationInspector : Editor {
                             break;
                         case MasterAudio.AudioLocation.Clip:
                             if (previewer != null) {
-                                _variation.Trans.position = previewer.transform.position;
+                                previewer.PlayOneShot(_variation.VarAudio.clip, calcVolume);
                             }
-
-                            _variation.VarAudio.PlayOneShot(_variation.VarAudio.clip, calcVolume);
                             break;
                         case MasterAudio.AudioLocation.FileOnInternet:
                             if (!string.IsNullOrEmpty(_variation.internetFileUrl)) {
@@ -88,12 +96,11 @@ public class DynamicGroupVariationInspector : Editor {
                             }
                             break;
                     }
+
                     break;
                 case DTGUIHelper.DTFunctionButtons.Stop:
-                    if (_variation.audLocation == MasterAudio.AudioLocation.ResourceFile) {
+                    if (_variation.audLocation != MasterAudio.AudioLocation.FileOnInternet) {
                         MasterAudioInspector.StopPreviewer();
-                    } else {
-                        _variation.VarAudio.Stop();
                     }
                     break;
             }
@@ -101,7 +108,7 @@ public class DynamicGroupVariationInspector : Editor {
 
         EditorGUILayout.EndHorizontal();
 
-        DTGUIHelper.HelpHeader("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/SoundGroupVariations.htm");
+        DTGUIHelper.HelpHeader("http://www.dtdevtools.com/docs/masteraudio/SoundGroupVariations.htm");
 
         if (!Application.isPlaying) {
             DTGUIHelper.ShowColorWarning(MasterAudio.PreviewText);
@@ -110,7 +117,7 @@ public class DynamicGroupVariationInspector : Editor {
         var oldLocation = _variation.audLocation;
         EditorGUILayout.BeginHorizontal();
         var newLocation = (MasterAudio.AudioLocation)EditorGUILayout.EnumPopup("Audio Origin", _variation.audLocation);
-        DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/SoundGroupVariations.htm#AudioOrigin");
+        DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/SoundGroupVariations.htm#AudioOrigin");
         EditorGUILayout.EndHorizontal();
 
         if (newLocation != oldLocation) {
@@ -254,7 +261,7 @@ public class DynamicGroupVariationInspector : Editor {
 
         EditorGUILayout.BeginHorizontal();
         var newWeight = EditorGUILayout.IntSlider("Voices (Weight)", _variation.weight, 0, 100);
-        DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/SoundGroupVariations.htm#Voices");
+        DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/SoundGroupVariations.htm#Voices");
         EditorGUILayout.EndHorizontal();
         if (newWeight != _variation.weight) {
             AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, _variation, "change Voices (Weight)");
@@ -279,7 +286,7 @@ public class DynamicGroupVariationInspector : Editor {
 
         EditorGUILayout.BeginHorizontal();
         var newFilterIndex = EditorGUILayout.Popup("Add Filter Effect", 0, filterList.ToArray());
-        DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/FilterFX.htm");
+        DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/FilterFX.htm");
         EditorGUILayout.EndHorizontal();
         switch (newFilterIndex) {
             case 1:

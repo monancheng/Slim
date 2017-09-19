@@ -21,7 +21,7 @@ public class BonusChar : BonusItem
 
     private void OnEnable()
     {
-	    TubeManager.OnCreateChar += OnCreate;
+	    TubeManager.OnCreateChar += OnCreateChar;
 	    
         MyTube.OnCanSpawnBonus += OnCanSpawn;
 		Words.OnWordSetChar += OnWordSetChar;

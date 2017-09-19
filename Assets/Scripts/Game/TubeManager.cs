@@ -23,7 +23,7 @@ public class TubeManager : MonoBehaviour
     private const float OuterRadius = 14f;
     public static readonly float InitRadius = 7f;
     
-    private const float MaxSpeed = 200f;
+    private const float MaxSpeed = 210f;
     private float _acceleration = 2.9f;
     
     private const float StartSpeed = 133f;
@@ -115,8 +115,6 @@ public class TubeManager : MonoBehaviour
 
     private void OnGameOver(OnGameOver obj)
     {
-        _radiusAddCoeff = 5f;
-        _counter = 0;
         _itemList.Clear();
     }
 
@@ -143,7 +141,7 @@ public class TubeManager : MonoBehaviour
                 color = ColorTheme.GetTubeColor();
             }
             
-            CreateTube(newRadius, color, 600f - i*200f);
+            CreateTube(newRadius, color, 630f - i*210f);
         }
         _increaseCounter = 1;
     }
@@ -173,7 +171,7 @@ public class TubeManager : MonoBehaviour
             color = ColorTheme.GetTubeColor();
         }
 
-        CreateTube(newRadius, color);
+        CreateTube(newRadius, color, 630);
         IncreaseSpeed();
         bool isBonusCreated = false;
         
@@ -206,7 +204,7 @@ public class TubeManager : MonoBehaviour
 		}
     }
     
-    private void CreateTube(float radius, Color color, float posY = 600f, bool startPos = false)
+    private void CreateTube(float radius, Color color, float posY, bool startPos = false)
     {
         float outer = OuterRadius;
         if (DefsGame.CurrentFaceId == 0)
@@ -242,12 +240,12 @@ public class TubeManager : MonoBehaviour
 
     private void IncreaseSpeed()
     {
-        if (CurrentSpeed < 140f) _acceleration = 2.8f; else
-        if (CurrentSpeed < 145f) _acceleration = 2.1f; else
-        if (CurrentSpeed < 150f) _acceleration = 1.5f; else
-        if (CurrentSpeed < 155f) _acceleration = 1.25f; else
-        if (CurrentSpeed < 165f) _acceleration = 1.10f; else
-        if (CurrentSpeed < 170f) _acceleration = 1.0f; else
+        if (CurrentSpeed < 140f) _acceleration = 2.9f; else
+        if (CurrentSpeed < 145f) _acceleration = 2.5f; else
+        if (CurrentSpeed < 150f) _acceleration = 2.0f; else
+        if (CurrentSpeed < 155f) _acceleration = 1.5f; else
+        if (CurrentSpeed < 165f) _acceleration = 1.25f; else
+        if (CurrentSpeed < 170f) _acceleration = 1.1f; else
         if (CurrentSpeed < 175f) _acceleration = 0.95f; else
         if (CurrentSpeed < 180f) _acceleration = 0.90f; else
             _acceleration = 0.5f;

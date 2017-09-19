@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 // ReSharper disable once CheckNamespace
 namespace DarkTonic.MasterAudio {
@@ -725,6 +726,19 @@ namespace DarkTonic.MasterAudio {
 
             return false;
         }
+
+		public bool WasTriggeredFromAnyOfTransformMap(HashSet<Transform> transMap) {
+			if (ObjectToFollow != null && transMap.Contains(ObjectToFollow)) {
+				return true;
+			}
+			
+			if (ObjectToTriggerFrom != null && transMap.Contains(ObjectToTriggerFrom)) {
+				return true;
+			}
+			
+			return false;
+		}
+
         /*! \endcond */
 
         /// <summary>

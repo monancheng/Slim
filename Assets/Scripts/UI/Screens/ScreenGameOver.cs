@@ -42,7 +42,7 @@ public class ScreenGameOver : MonoBehaviour
         GlobalEvents<OnGameOverScreenShow>.Happened += OnShowGameOverScreen;
         GlobalEvents<OnGameOverScreenShowActiveItems>.Happened += OnGameOverScreenShowActiveItems;
         GlobalEvents<OnRewardedLoaded>.Happened += IsRewardedAvailable;
-        GlobalEvents<OnGiftAvailable>.Happened += IsGiftAvailable;
+        GlobalEvents<OnGiftAvailable>.Happened += OnGiftAvailable;
         GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
         GlobalEvents<OnWordCollected>.Happened += OnWordCollected;
         GlobalEvents<OnWordUpdateProgress>.Happened += OnWordGotChar;
@@ -70,7 +70,6 @@ public class ScreenGameOver : MonoBehaviour
         float ran = Random.value;
         
         // Важность - Высокая
-
         
         AddNotifySkin();
 
@@ -92,17 +91,20 @@ public class ScreenGameOver : MonoBehaviour
             _isGotNewCharacter = false;
         }
         
-        if (_activeNamesList.Count < 4 && (DefsGame.GameplayCounter == 3 || (DefsGame.GameplayCounter-3) % 5 == 0)/* && _isRewardedAvailable*/)
+        if (_activeNamesList.Count < 4 && (DefsGame.GameplayCounter == 5 || 
+                                           DefsGame.GameplayCounter > 5 && (DefsGame.GameplayCounter-5) % 5 == 0/* && _isRewardedAvailable*/))
         {
             _activeNamesList.Add("NotifyRewarded");
         }
         
-        if (Random.value > 0.5f) AddWordTimerOrProgress();
+        if (Random.value > 0.7f) AddWordTimerOrProgress();
 
         if (_activeNamesList.Count < 4 && (DefsGame.CurrentPointsCount > DefsGame.GameBestScore * 0.5f
                                            || _isGotNewCharacter
                                            || _activeNamesList.Count == 0 && ran < 0.3f
-                                           || _activeNamesList.Count == 1 && ran < 0.25f))
+                                           || _activeNamesList.Count == 1 && ran < 0.25f
+                                           || _activeNamesList.Count == 2 && ran < 0.20f
+                                           || _activeNamesList.Count == 3 && ran < 0.15f))
         {
             _activeNamesList.Add("NotifyShare");
 			UIManager.ShowUiElement ("ScreenGameOverImageShareGif");
@@ -118,32 +120,34 @@ public class ScreenGameOver : MonoBehaviour
         
         // Важность - Низкая
         ran = Random.value;
-        if (_giftValue == 0 && _activeNamesList.Count < 4 && (_activeNamesList.Count == 0 && ran > 0.7f
-                                           || _activeNamesList.Count == 1 && ran > 0.75f
-                                           || _activeNamesList.Count == 2 && ran > 0.80f))
+        if (_giftValue == 0 && _activeNamesList.Count < 4  && (_activeNamesList.Count == 0 && ran > 0.65f
+                                                               || _activeNamesList.Count == 1 && ran > 0.70f
+                                                               || _activeNamesList.Count == 2 && ran > 0.75f
+                                                               || _activeNamesList.Count == 3 && ran > 0.80f))
         {
             AddNotifyGiftWaiting();
         }
-
-        if (_activeNamesList.Count < 4 && (_activeNamesList.Count == 0 && ran > 0.7f
-                                        || _activeNamesList.Count == 1 && ran > 0.75f
-                                        || _activeNamesList.Count == 2 && ran > 0.80f)
-        && ran > 0.4f)
+        
+        ran = Random.value;
+        if (_activeNamesList.Count < 4 && (_activeNamesList.Count == 0 && ran > 0.65f
+                                        || _activeNamesList.Count == 1 && ran > 0.70f
+                                        || _activeNamesList.Count == 2 && ran > 0.75f
+                                        || _activeNamesList.Count == 3 && ran > 0.80f))
         {
             AddNotifyNextSkin();
         } 
         
-        if (MyAds.NoAds == 0 && _activeNamesList.Count < 4 && Random.value > 0.5f)
+        if (MyAds.NoAds == 0 && _activeNamesList.Count < 4 && Random.value > 0.7f && DefsGame.QUEST_GAMEPLAY_Counter > 10)
         {
             _activeNamesList.Add("NotifyNoAds");
         }
         
-        if (_activeNamesList.Count < 4 && Random.value > 0.5f)
+        if (_activeNamesList.Count < 4 && Random.value > 0.7f && DefsGame.QUEST_GAMEPLAY_Counter > 10)
         {
             _activeNamesList.Add("NotifyTier1");
         }
         
-        if (_activeNamesList.Count < 4 && Random.value > 0.5f)
+        if (_activeNamesList.Count < 4 && Random.value > 0.7f && DefsGame.QUEST_GAMEPLAY_Counter > 10)
         {
             _activeNamesList.Add("NotifyTier2");
         }
@@ -171,9 +175,16 @@ public class ScreenGameOver : MonoBehaviour
 
     private bool AddNotifySkin()
     {
+        int idNotifyOld = _activeNamesList.IndexOf("NotifyNewCharacter");
+        if (idNotifyOld != -1) return false;
+        
         if (!_isSkinsAllGeneralOpened && DefsGame.CoinsCount >= 200)
         {
             _activeNamesList.Add("NotifyNewCharacter");
+            // Удаляем итем ожидания, если он есть
+            idNotifyOld = _activeNamesList.IndexOf("NotifyNextCharacter");
+            if (idNotifyOld != -1) 
+                _activeNamesList.RemoveAt(idNotifyOld); 
             return true;
         }
         return false;
@@ -190,17 +201,31 @@ public class ScreenGameOver : MonoBehaviour
     private void AddNotifyGift()
     {
         _activeNamesList.Add("NotifyGift");
-        if (DefsGame.CoinsCount > 100 && DefsGame.CoinsCount < 155)
-            _giftValue = 190-DefsGame.CoinsCount;
-        else
+        // Один из первых запусков, радуем игрока монетками
+        // Если он еще не открывал персонажей, то дадим ему столько монет, сколько ему нужно для открытия персонажа
+        if (DefsGame.QUEST_CHARACTERS_Counter == 1 && DefsGame.QUEST_GAMEPLAY_Counter > 3)
         {
-            if (Random.value < 0.5f) _giftValue = 40;
-            else _giftValue = 45;
+            if (DefsGame.CoinsCount <= 150)
+            {
+                _giftValue = 200 - DefsGame.CoinsCount;
+                return;
+            }
         }
+        
+        if (DefsGame.CoinsCount > 100 && DefsGame.CoinsCount < 155)
+        {
+            _giftValue = 190 - DefsGame.CoinsCount;
+            return;
+        }
+
+        if (Random.value < 0.5f) _giftValue = 40;
+        else _giftValue = 45;
     }
 
     private void AddNotifyGiftWaiting()
     {
+        // Не добавляем "Ожидание подарка", если игрок только начал играть.
+        // Ждем пока он возьмет свой первый подарок
         _activeNamesList.Add("NotifyGiftWaiting");
     }
     
@@ -324,19 +349,19 @@ public class ScreenGameOver : MonoBehaviour
         _isRewardedAvailable = e.IsAvailable;
     }
 
-    private void IsGiftAvailable(OnGiftAvailable e)
+    private void OnGiftAvailable(OnGiftAvailable e)
     {
         _isGiftAvailable = e.IsAvailable;
         
         int idNotifyOld = _activeNamesList.IndexOf("NotifyGiftWaiting");
         if (!_isGiftAvailable || !_isVisual || idNotifyOld == -1) return;
-
+        
         AddNotifyGift();
             
         var element = GetUIElement(_activeNamesList[idNotifyOld]);
         UIManager.HideUiElement(_activeNamesList[idNotifyOld]);
         var element2 = GetUIElement("NotifyGift");
-        if (element)
+        if (element&&element2)
         {
             element2.customStartAnchoredPosition = element.customStartAnchoredPosition;
             element2.useCustomStartAnchoredPosition = true;
@@ -388,6 +413,10 @@ public class ScreenGameOver : MonoBehaviour
     {
         if (_giftCollectedType == GiftCollectedType.Gift)
         {
+            if (DefsGame.CoinsCount >= 200)
+            {
+                AddNotifySkin();
+            } else
             _activeNamesList.Add("NotifyGiftWaiting");
         } else if (_giftCollectedType == GiftCollectedType.Skin)
         {

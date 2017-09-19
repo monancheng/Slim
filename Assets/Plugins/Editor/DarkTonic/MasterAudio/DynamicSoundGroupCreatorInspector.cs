@@ -80,7 +80,7 @@ public class DynamicSoundGroupCreatorInspector : Editor {
             DTGUIHelper.ShowHeaderTexture(MasterAudioInspectorResources.LogoTexture);
         }
 
-        DTGUIHelper.HelpHeader("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/DynamicSoundGroupCreators.htm", "https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MasterAudio_API/class_dark_tonic_1_1_master_audio_1_1_dynamic_sound_group_creator.html");
+        DTGUIHelper.HelpHeader("http://www.dtdevtools.com/docs/masteraudio/DynamicSoundGroupCreators.htm", "http://www.dtdevtools.com/API/masteraudio/class_dark_tonic_1_1_master_audio_1_1_dynamic_sound_group_creator.html");
 
         MasterAudio.Instance = null;
         var ma = MasterAudio.SafeInstance;
@@ -299,7 +299,7 @@ public class DynamicSoundGroupCreatorInspector : Editor {
             _creator.showMusicDucking = state;
         }
 
-        DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/DynamicSoundGroupCreators.htm#Ducking");
+        DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/DynamicSoundGroupCreators.htm#Ducking");
 
         EditorGUILayout.EndHorizontal();
         GUI.color = Color.white;
@@ -454,7 +454,7 @@ public class DynamicSoundGroupCreatorInspector : Editor {
         }
 
         var applyTemplateToAll = false;
-        DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/DynamicSoundGroupCreators.htm#Mixer");
+        DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/DynamicSoundGroupCreators.htm#Mixer");
 
         EditorGUILayout.EndHorizontal();
         GUI.color = Color.white;
@@ -574,7 +574,7 @@ public class DynamicSoundGroupCreatorInspector : Editor {
                 GUI.color = DTGUIHelper.DragAreaColor;
 
                 var dragAreaGroup = GUILayoutUtility.GetRect(0f, 35f, GUILayout.ExpandWidth(true));
-                GUI.Box(dragAreaGroup, "Drag Audio clips here to create groups!");
+                GUI.Box(dragAreaGroup, MasterAudio.DragAudioTip + " to create groups!");
 
                 GUI.color = Color.white;
 
@@ -595,6 +595,22 @@ public class DynamicSoundGroupCreatorInspector : Editor {
                             var clips = new List<AudioClip>();
 
                             foreach (var dragged in DragAndDrop.objectReferences) {
+#if UNITY_5_2 || UNITY_5_3 || UNITY_5_4 || UNITY_5_5 || UNITY_5_6 || UNITY_2017
+                                if (dragged is DefaultAsset) {
+                                    var assetPaths = AssetDatabase.FindAssets("t:AudioClip", DragAndDrop.paths);
+                                    foreach (var assetPath in assetPaths) {
+                                        var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(AssetDatabase.GUIDToAssetPath(assetPath));
+                                        if (clip == null) {
+                                            continue;
+                                        }
+
+                                        clips.Add(clip);
+                                    }
+
+                                    continue;
+                                }
+#endif
+
                                 var aClip = dragged as AudioClip;
                                 if (aClip == null) {
                                     continue;
@@ -962,7 +978,7 @@ public class DynamicSoundGroupCreatorInspector : Editor {
             _creator.playListExpanded = state;
         }
 
-        DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/DynamicSoundGroupCreators.htm#Playlists");
+        DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/DynamicSoundGroupCreators.htm#Playlists");
 
         EditorGUILayout.EndHorizontal();
         GUI.color = Color.white;
@@ -1137,7 +1153,7 @@ public class DynamicSoundGroupCreatorInspector : Editor {
                         GUI.color = DTGUIHelper.DragAreaColor;
 
                         var dragArea = GUILayoutUtility.GetRect(0f, 35f, GUILayout.ExpandWidth(true));
-                        GUI.Box(dragArea, "Drag Audio clips here to add to playlist!");
+						GUI.Box(dragArea, MasterAudio.DragAudioTip + " to add to playlist!");
 
                         GUI.color = Color.white;
 
@@ -1154,6 +1170,22 @@ public class DynamicSoundGroupCreatorInspector : Editor {
                                     DragAndDrop.AcceptDrag();
 
                                     foreach (var dragged in DragAndDrop.objectReferences) {
+#if UNITY_5_2 || UNITY_5_3 || UNITY_5_4 || UNITY_5_5 || UNITY_5_6 || UNITY_2017
+                                        if (dragged is DefaultAsset) {
+                                            var assetPaths = AssetDatabase.FindAssets("t:AudioClip", DragAndDrop.paths);
+                                            foreach (var assetPath in assetPaths) {
+                                                var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(AssetDatabase.GUIDToAssetPath(assetPath));
+                                                if (clip == null) {
+                                                    continue;
+                                                }
+
+                                                AddSongToPlaylist(aList, clip);
+                                            }
+
+                                            continue;
+                                        }
+#endif
+
                                         var aClip = dragged as AudioClip;
                                         if (aClip == null) {
                                             continue;
@@ -1549,11 +1581,7 @@ public class DynamicSoundGroupCreatorInspector : Editor {
                                     }
                                     break;
                                 case DTGUIHelper.DTFunctionButtons.Stop:
-                                    previewer = MasterAudioInspector.GetPreviewer();
-                                    if (previewer != null) {
-                                        previewer.clip = null;
-                                        MasterAudioInspector.StopPreviewer();
-                                    }
+                                    MasterAudioInspector.StopPreviewer();
                                     break;
                             }
 
@@ -1681,7 +1709,7 @@ public class DynamicSoundGroupCreatorInspector : Editor {
             _creator.showCustomEvents = state;
         }
 
-        DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/DynamicSoundGroupCreators.htm#CustomEvents");
+        DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/DynamicSoundGroupCreators.htm#CustomEvents");
         EditorGUILayout.EndHorizontal();
         GUI.color = Color.white;
 
@@ -2386,9 +2414,20 @@ public class DynamicSoundGroupCreatorInspector : Editor {
 
         var previewer = MasterAudioInspector.GetPreviewer();
 
+        var randPitch = SoundGroupVariationInspector.GetRandomPreviewPitch(rndVar);
+        var varVol = SoundGroupVariationInspector.GetRandomPreviewVolume(rndVar);
+
+        if (rndVar.audLocation != MasterAudio.AudioLocation.FileOnInternet) {
+            if (previewer != null) {
+                MasterAudioInspector.StopPreviewer();
+                previewer.pitch = randPitch;
+            }
+        }
+
+        var calcVolume = varVol * rndVar.ParentGroup.groupMasterVolume;
+
         switch (rndVar.audLocation) {
             case MasterAudio.AudioLocation.ResourceFile:
-                MasterAudioInspector.StopPreviewer();
                 var fileName = AudioResourceOptimizer.GetLocalizedDynamicSoundGroupFileName(_creator.previewLanguage, rndVar.useLocalization, rndVar.resourceFileName);
 
                 var clip = Resources.Load(fileName) as AudioClip;
@@ -2402,7 +2441,7 @@ public class DynamicSoundGroupCreatorInspector : Editor {
                 break;
             case MasterAudio.AudioLocation.Clip:
                 if (previewer != null) {
-                    previewer.PlayOneShot(rndVar.VarAudio.clip, rndVar.VarAudio.volume * aGroup.groupMasterVolume);
+                    previewer.PlayOneShot(rndVar.VarAudio.clip, calcVolume);
                 }
                 break;
             case MasterAudio.AudioLocation.FileOnInternet:

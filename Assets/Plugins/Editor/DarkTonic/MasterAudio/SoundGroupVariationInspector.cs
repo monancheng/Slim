@@ -89,29 +89,36 @@ public class SoundGroupVariationInspector : Editor {
 
             switch (buttonPressed) {
                 case DTGUIHelper.DTFunctionButtons.Play:
+                    previewer = MasterAudioInspector.GetPreviewer();
+
                     if (Application.isPlaying) {
-                        MasterAudio.PlaySoundAndForget(_variation.transform.parent.name, 1f, null, 0f, _variation.name);
+                        MasterAudio.PlaySound3DAtVector3AndForget(_variation.ParentGroup.name, previewer.transform.position, 1f, null, 0f, _variation.name);
                     } else {
                         isDirty = true;
 
-                        previewer = MasterAudioInspector.GetPreviewer();
+                        var randPitch = GetRandomPreviewPitch(_variation);
+                        var varVol = GetRandomPreviewVolume(_variation);
 
-                        var calcVolume = _variation.VarAudio.volume * parentGroup.groupMasterVolume;
+						if (_variation.audLocation != MasterAudio.AudioLocation.FileOnInternet) {
+							if (previewer != null) {
+								MasterAudioInspector.StopPreviewer();
+								previewer.pitch = randPitch;	
+							}
+						}
+
+						var calcVolume = varVol * parentGroup.groupMasterVolume;
 
                         switch (_variation.audLocation) {
                             case MasterAudio.AudioLocation.ResourceFile:
                                 if (previewer != null) {
-                                    MasterAudioInspector.StopPreviewer();
                                     var fileName = AudioResourceOptimizer.GetLocalizedFileName(_variation.useLocalization, _variation.resourceFileName);
-                                    previewer.PlayOneShot(Resources.Load(fileName) as AudioClip, calcVolume);
+									previewer.PlayOneShot(Resources.Load(fileName) as AudioClip, calcVolume);
                                 }
                                 break;
                             case MasterAudio.AudioLocation.Clip:
                                 if (previewer != null) {
-                                    _variation.Trans.position = previewer.transform.position;
-                                }
-
-                                _variation.VarAudio.PlayOneShot(_variation.VarAudio.clip, calcVolume);
+									previewer.PlayOneShot(_variation.VarAudio.clip, calcVolume);
+								}
                                 break;
                             case MasterAudio.AudioLocation.FileOnInternet:
                                 if (!string.IsNullOrEmpty(_variation.internetFileUrl)) {
@@ -125,11 +132,9 @@ public class SoundGroupVariationInspector : Editor {
                     if (Application.isPlaying) {
                         MasterAudio.StopAllOfSound(_variation.transform.parent.name);
                     } else {
-                        if (_variation.audLocation == MasterAudio.AudioLocation.ResourceFile) {
+                        if (_variation.audLocation != MasterAudio.AudioLocation.FileOnInternet) {
                             MasterAudioInspector.StopPreviewer();
-                        } else {
-                            _variation.VarAudio.Stop();
-                        }
+                        } 
                     }
                     break;
             }
@@ -137,7 +142,7 @@ public class SoundGroupVariationInspector : Editor {
 
         EditorGUILayout.EndHorizontal();
 
-		DTGUIHelper.HelpHeader("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/SoundGroupVariations.htm", "https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MasterAudio_API/class_dark_tonic_1_1_master_audio_1_1_sound_group_variation.html");
+		DTGUIHelper.HelpHeader("http://www.dtdevtools.com/docs/masteraudio/SoundGroupVariations.htm", "http://www.dtdevtools.com/API/masteraudio/class_dark_tonic_1_1_master_audio_1_1_sound_group_variation.html");
 
         if (maInScene && !Application.isPlaying) {
             DTGUIHelper.ShowColorWarning(MasterAudio.PreviewText);
@@ -156,7 +161,7 @@ public class SoundGroupVariationInspector : Editor {
         } else {
             EditorGUILayout.LabelField("Audio Origin", _variation.audLocation.ToString());
         }
-        DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/SoundGroupVariations.htm#AudioOrigin");
+        DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/SoundGroupVariations.htm#AudioOrigin");
         EditorGUILayout.EndHorizontal();
 
         switch (_variation.audLocation) {
@@ -311,7 +316,7 @@ public class SoundGroupVariationInspector : Editor {
 
         EditorGUILayout.BeginHorizontal();
         var newWeight = EditorGUILayout.IntSlider("Voices (Weight)", _variation.weight, 0, 100);
-        DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/SoundGroupVariations.htm#Voices");
+        DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/SoundGroupVariations.htm#Voices");
         EditorGUILayout.EndHorizontal();
         if (newWeight != _variation.weight) {
             AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, _variation, "change Voices (Weight)");
@@ -337,7 +342,7 @@ public class SoundGroupVariationInspector : Editor {
         EditorGUILayout.BeginHorizontal();
 
         var newFilterIndex = EditorGUILayout.Popup("Add Filter Effect", 0, filterList.ToArray());
-        DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/FilterFX.htm");
+        DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/FilterFX.htm");
         EditorGUILayout.EndHorizontal();
 
         switch (newFilterIndex) {
@@ -540,6 +545,100 @@ public class SoundGroupVariationInspector : Editor {
         }
 
         //DrawDefaultInspector();
+    }
+
+    public static float GetRandomPreviewPitch(SoundGroupVariation var) {
+        var randPitch = var.VarAudio.pitch;
+
+        if (var.audLocation == MasterAudio.AudioLocation.FileOnInternet) {
+            return randPitch;
+        }
+
+        if (!var.useRandomPitch) {
+            return randPitch;
+        }
+
+        randPitch = UnityEngine.Random.Range(var.randomPitchMin, var.randomPitchMax);
+
+        switch (var.randomPitchMode) {
+            case SoundGroupVariation.RandomPitchMode.AddToClipPitch:
+                randPitch += var.VarAudio.pitch;
+                break;
+        }
+
+        return randPitch;
+    }
+
+    public static float GetRandomPreviewPitch(DynamicGroupVariation var) {
+        var randPitch = var.VarAudio.pitch;
+
+        if (var.audLocation == MasterAudio.AudioLocation.FileOnInternet) {
+            return randPitch;
+        }
+
+        if (!var.useRandomPitch) {
+            return randPitch;
+        }
+
+        randPitch = UnityEngine.Random.Range(var.randomPitchMin, var.randomPitchMax);
+
+        switch (var.randomPitchMode) {
+            case SoundGroupVariation.RandomPitchMode.AddToClipPitch:
+                randPitch += var.VarAudio.pitch;
+                break;
+        }
+
+        return randPitch;
+    }
+
+    public static float GetRandomPreviewVolume(SoundGroupVariation var) {
+        var varVol = var.VarAudio.volume;
+
+        if (var.audLocation == MasterAudio.AudioLocation.FileOnInternet) {
+            return varVol;
+        }
+
+        if (!var.useRandomPitch) {
+            return varVol;
+        }
+
+        var randomVol = UnityEngine.Random.Range(var.randomVolumeMin, var.randomVolumeMax);
+
+        switch (var.randomVolumeMode) {
+            case SoundGroupVariation.RandomVolumeMode.AddToClipVolume:
+                varVol += randomVol;
+                break;
+            case SoundGroupVariation.RandomVolumeMode.IgnoreClipVolume:
+                varVol = randomVol;
+                break;
+        }
+
+        return varVol;
+    }
+
+    public static float GetRandomPreviewVolume(DynamicGroupVariation var) {
+        var varVol = var.VarAudio.volume;
+
+        if (var.audLocation == MasterAudio.AudioLocation.FileOnInternet) {
+            return varVol;
+        }
+
+        if (!var.useRandomPitch) {
+            return varVol;
+        }
+
+        var randomVol = UnityEngine.Random.Range(var.randomVolumeMin, var.randomVolumeMax);
+
+        switch (var.randomVolumeMode) {
+            case SoundGroupVariation.RandomVolumeMode.AddToClipVolume:
+                varVol += randomVol;
+                break;
+            case SoundGroupVariation.RandomVolumeMode.IgnoreClipVolume:
+                varVol = randomVol;
+                break;
+        }
+
+        return varVol;
     }
 
     private void AddFilterComponent(Type filterType) {

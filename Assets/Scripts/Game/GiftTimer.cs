@@ -1,4 +1,5 @@
 ﻿using System;
+using PrefsEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,19 +12,14 @@ public class GiftTimer : MonoBehaviour
     private void Start()
     {
         //Grab the old time from the player prefs as a long
-        string strTime = PlayerPrefs.GetString("dateGiftClicked");
+        SecurePlayerPrefs.SetString("dateGiftClicked","");
+        string strTime = SecurePlayerPrefs.GetString("dateGiftClicked");
 
         DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER = 0;
         if (strTime == "")
         {
             _giftNextDate = DateTime.UtcNow;
-            DefsGame.BTN_GIFT_HIDE_DELAY = DefsGame.BTN_GIFT_HIDE_DELAY_ARR[DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER];
-            _giftNextDate = _giftNextDate.AddMinutes(DefsGame.BTN_GIFT_HIDE_DELAY);
-            if (DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER < DefsGame.BTN_GIFT_HIDE_DELAY_ARR.Length - 1)
-            {
-                ++DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER;
-                PlayerPrefs.SetInt("BTN_GIFT_HIDE_DELAY_COUNTER", DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER);
-            }
+            _giftNextDate = _giftNextDate.AddSeconds(30);
         }
         else
         {
@@ -111,10 +107,10 @@ public class GiftTimer : MonoBehaviour
         if (DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER < DefsGame.BTN_GIFT_HIDE_DELAY_ARR.Length - 1)
         {
             ++DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER;
-            PlayerPrefs.SetInt("BTN_GIFT_HIDE_DELAY_COUNTER", DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER);
+            SecurePlayerPrefs.SetInt("BTN_GIFT_HIDE_DELAY_COUNTER", DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER);
         }
         _giftNextDate = _giftNextDate.AddMinutes(DefsGame.BTN_GIFT_HIDE_DELAY);
-        PlayerPrefs.SetString("dateGiftClicked", _giftNextDate.ToBinary().ToString());
+        SecurePlayerPrefs.SetString("dateGiftClicked", _giftNextDate.ToBinary().ToString());
         _isWaitGiftTime = true;
 
         GlobalEvents<OnGiftAvailable>.Call(new OnGiftAvailable {IsAvailable = false});

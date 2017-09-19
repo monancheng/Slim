@@ -28,7 +28,7 @@ public class SoundGroupOrganizerInspector : Editor {
             return;
         }
 
-        DTGUIHelper.HelpHeader("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/SoundGroupOrganizer.htm");
+        DTGUIHelper.HelpHeader("http://www.dtdevtools.com/docs/masteraudio/SoundGroupOrganizer.htm");
 
         _groups = ScanForGroups();
 
@@ -524,7 +524,7 @@ public class SoundGroupOrganizerInspector : Editor {
                 GUI.color = DTGUIHelper.DragAreaColor;
 
                 var dragAreaGroup = GUILayoutUtility.GetRect(0f, 35f, GUILayout.ExpandWidth(true));
-                GUI.Box(dragAreaGroup, "Drag Audio clips here to create groups!");
+				GUI.Box(dragAreaGroup, MasterAudio.DragAudioTip + " to create groups!");
 
                 switch (aEvent.type) {
                     case EventType.DragUpdated:
@@ -543,6 +543,22 @@ public class SoundGroupOrganizerInspector : Editor {
                             var clips = new List<AudioClip>();
 
                             foreach (var dragged in DragAndDrop.objectReferences) {
+#if UNITY_5_2 || UNITY_5_3 || UNITY_5_4 || UNITY_5_5 || UNITY_5_6 || UNITY_2017
+                                if (dragged is DefaultAsset) {
+                                    var assetPaths = AssetDatabase.FindAssets("t:AudioClip", DragAndDrop.paths);
+                                    foreach (var assetPath in assetPaths) {
+                                        var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(AssetDatabase.GUIDToAssetPath(assetPath));
+                                        if (clip == null) {
+                                            continue;
+                                        }
+
+                                        clips.Add(clip);
+                                    }
+
+                                    continue;
+                                }
+#endif
+
                                 var aClip = dragged as AudioClip;
                                 if (aClip == null) {
                                     continue;
@@ -1432,27 +1448,39 @@ public class SoundGroupOrganizerInspector : Editor {
     }
 
     private void PreviewGroup(DynamicSoundGroup aGroup) {
+        previewer = MasterAudioInspector.GetPreviewer();
+
         var rndIndex = Random.Range(0, aGroup.groupVariations.Count);
         var rndVar = aGroup.groupVariations[rndIndex];
-        previewer = MasterAudioInspector.GetPreviewer();
+
+        var randPitch = SoundGroupVariationInspector.GetRandomPreviewPitch(rndVar);
+        var varVol = SoundGroupVariationInspector.GetRandomPreviewVolume(rndVar);
+
+        if (rndVar.audLocation != MasterAudio.AudioLocation.FileOnInternet) {
+            if (previewer != null) {
+                MasterAudioInspector.StopPreviewer();
+                previewer.pitch = randPitch;
+            }
+        }
+
+        var calcVolume = varVol * aGroup.groupMasterVolume;
 
         switch (rndVar.audLocation) {
             case MasterAudio.AudioLocation.ResourceFile:
-                MasterAudioInspector.StopPreviewer();
-                var fileName = AudioResourceOptimizer.GetLocalizedDynamicSoundGroupFileName(_organizer.previewLanguage, rndVar.useLocalization, rndVar.resourceFileName);
+                if (previewer != null) {
+                    var fileName = AudioResourceOptimizer.GetLocalizedDynamicSoundGroupFileName(_organizer.previewLanguage, rndVar.useLocalization, rndVar.resourceFileName);
 
-                var clip = Resources.Load(fileName) as AudioClip;
-                if (clip != null) {
-                    if (previewer != null) {
+                    var clip = Resources.Load(fileName) as AudioClip;
+                    if (clip != null) {
                         previewer.PlayOneShot(clip, rndVar.VarAudio.volume);
+                    } else {
+                        DTGUIHelper.ShowAlert("Could not find Resource file: " + fileName);
                     }
-                } else {
-                    DTGUIHelper.ShowAlert("Could not find Resource file: " + fileName);
                 }
                 break;
             case MasterAudio.AudioLocation.Clip:
                 if (previewer != null) {
-                    previewer.PlayOneShot(rndVar.VarAudio.clip, rndVar.VarAudio.volume);
+                    previewer.PlayOneShot(rndVar.VarAudio.clip, calcVolume);
                 }
                 break;
             case MasterAudio.AudioLocation.FileOnInternet:

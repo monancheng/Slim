@@ -14,19 +14,19 @@ public class ScreenSkins : MonoBehaviour
     {
         AreThereSkins();
         AreThereSkinsGeneral();
-        CheckAvailableSkin();
+//        CheckAvailableSkin();
     }
 
     private void OnEnable()
     {
         GlobalEvents<OnBuySkin>.Happened += OnBuySkin;
-        GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
+//        GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
     }
 
-    private void OnCoinsAdded(OnCoinsAdded obj)
-    {
-        CheckAvailableSkin();
-    }
+//    private void OnCoinsAdded(OnCoinsAdded obj)
+//    {
+//        CheckAvailableSkin();
+//    }
 
     private void OnBuySkin(OnBuySkin obj)
     {
@@ -189,18 +189,18 @@ public class ScreenSkins : MonoBehaviour
         _choosedSkin.transform.position = _skinBtns[DefsGame.CurrentFaceId].transform.position;
     }
 
-    private void CheckAvailableSkin()
-    {
-        for (var i = DefsGame.FacesGeneralMin; i < DefsGame.FacesGeneralMax; i++)
-            if (DefsGame.FaceAvailable[i] == 0 && DefsGame.CoinsCount >= 200)
-            {
-                _isNewSkinAvailable = true;
-                UIManager.ShowUiElement("LabelNewSkin");
-                return;
-            }
-        _isNewSkinAvailable = false;
-        UIManager.HideUiElement("LabelNewSkin");
-    }
+//    private void CheckAvailableSkin()
+//    {
+//        for (var i = DefsGame.FacesGeneralMin; i < DefsGame.FacesGeneralMax; i++)
+//            if (DefsGame.FaceAvailable[i] == 0 && DefsGame.CoinsCount >= 200)
+//            {
+//                _isNewSkinAvailable = true;
+//                UIManager.ShowUiElement("LabelNewSkin");
+//                return;
+//            }
+//        _isNewSkinAvailable = false;
+//        UIManager.HideUiElement("LabelNewSkin");
+//    }
     
     private void AreThereSkins()
     {

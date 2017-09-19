@@ -361,6 +361,7 @@ namespace DarkTonic.MasterAudio {
 #if UNITY_4_6 || UNITY_4_7 || UNITY_5 || UNITY_2017
             if (_slider != null) {
                 _slider.onValueChanged.AddListener(SliderChanged);
+                RestorePersistentSliders();
             }
             if (_button != null) {
                 _button.onClick.AddListener(ButtonClicked);
@@ -390,6 +391,64 @@ namespace DarkTonic.MasterAudio {
                 PlaySounds(enableSound, EventType.OnEnable);
             }
         }
+
+#if UNITY_4_6 || UNITY_4_7 || UNITY_5 || UNITY_2017
+		private void RestorePersistentSliders() {
+            // restore sliders if they are used for "Persistent" settings.
+            if (!useUnitySliderChangedSound) {
+                return;
+            }
+
+            foreach (var action in unitySliderChangedSound.SoundEvents) {
+                if (action.currentSoundFunctionType != MasterAudio.EventSoundFunctionType.PersistentSettingsControl) {
+                    continue;
+                }
+
+                if (action.targetVolMode != AudioEvent.TargetVolumeMode.UseSliderValue) {
+                    continue;
+                }
+
+                switch (action.currentPersistentSettingsCommand) {
+                    case MasterAudio.PersistentSettingsCommand.SetMusicVolume:
+                        var musicVol = PersistentAudioSettings.MusicVolume;
+                        if (musicVol.HasValue) {
+                            _slider.value = musicVol.Value;
+                        }
+
+                        break;
+                    case MasterAudio.PersistentSettingsCommand.SetBusVolume:
+                        if (action.allSoundTypesForBusCmd) {
+                            continue;
+                        }
+
+                        var busVol = PersistentAudioSettings.GetBusVolume(action.busName);
+                        if (busVol.HasValue) {
+                            _slider.value = busVol.Value;
+                        }
+
+                        break;
+                    case MasterAudio.PersistentSettingsCommand.SetMixerVolume:
+                        var mixerVol = PersistentAudioSettings.MixerVolume;
+                        if (mixerVol.HasValue) {
+                            _slider.value = mixerVol.Value;
+                        }
+
+                        break;
+                    case MasterAudio.PersistentSettingsCommand.SetGroupVolume:
+                        if (action.allSoundTypesForGroupCmd) {
+                            continue;
+                        }
+
+                        var grpVol = PersistentAudioSettings.GetGroupVolume(action.soundType);
+                        if (grpVol.HasValue) {
+                            _slider.value = grpVol.Value;
+                        }
+
+                        break;
+                }
+            }
+        }
+#endif
 
         // ReSharper disable once UnusedMember.Local
         private void OnDisable() {

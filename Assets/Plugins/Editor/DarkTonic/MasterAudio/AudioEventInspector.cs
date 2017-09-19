@@ -31,6 +31,34 @@ public class AudioEventInspector : Editor {
     private readonly List<bool> _changedList = new List<bool>();
     private bool _isDirty;
 
+	public static List<string> GetSoundGroupList() {
+		var groups = new List<string>();
+		
+		var ma = MasterAudio.Instance;
+		var maInScene = ma != null;
+		
+		if (maInScene) {
+			// ReSharper disable once PossibleNullReferenceException
+			groups = ma.GroupNames;
+		}
+		
+		var creators = FindObjectsOfType(typeof(DynamicSoundGroupCreator)) as DynamicSoundGroupCreator[];
+		// ReSharper disable once PossibleNullReferenceException
+		foreach (var dsgc in creators) {
+			var trans = dsgc.transform;
+			for (var i = 0; i < trans.childCount; ++i) {
+				var group = trans.GetChild(i).GetComponent<DynamicSoundGroup>();
+				if (group == null) {
+					continue;
+				}
+				
+				groups.Add(group.name);
+			}
+		}
+		
+		return groups;
+	} 
+
     protected virtual void PopulateItemNames(List<string> groups, List<string> buses, List<string> playlists, List<string> events) {
         if (groups == null) {
             groups = new List<string>();
@@ -102,7 +130,7 @@ public class AudioEventInspector : Editor {
 
         _isDirty = false;
 
-        DTGUIHelper.HelpHeader("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/EventSounds.htm");
+        DTGUIHelper.HelpHeader("http://www.dtdevtools.com/docs/masteraudio/EventSounds.htm");
 
         _sounds = (EventSounds)target;
 
@@ -357,7 +385,7 @@ public class AudioEventInspector : Editor {
 
             EditorGUILayout.BeginHorizontal();
             var newEventIndex = EditorGUILayout.Popup("Event To Activate", -1, unusedEventTypes.ToArray());
-            DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/EventSounds.htm#SupportedEvents");
+            DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/EventSounds.htm#SupportedEvents");
 
             EditorGUILayout.EndHorizontal();
 
@@ -1117,7 +1145,7 @@ public class AudioEventInspector : Editor {
         }
 
         GUILayout.Space(4f);
-        DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/EventSounds.htm#EventSettings");
+        DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/EventSounds.htm#EventSettings");
 
         GUILayout.EndHorizontal();
         GUI.backgroundColor = Color.white;
@@ -1642,7 +1670,7 @@ public class AudioEventInspector : Editor {
                 eventGrp.retriggerLimitMode = newRetrigger;
             }
 
-            DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/EventSounds.htm#Retrigger");
+            DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/EventSounds.htm#Retrigger");
 
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical();
@@ -1695,7 +1723,7 @@ public class AudioEventInspector : Editor {
                 var buttonPressed = DTGUIHelper.AddFoldOutListItemButtonItems(j, eventGrp.SoundEvents.Count, "Action", true, false, true);
 
                 GUILayout.Space(4);
-                DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/EventSounds.htm#Actions");
+                DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/EventSounds.htm#Actions");
 
                 EditorGUILayout.EndHorizontal();
                 EditorGUILayout.EndVertical();

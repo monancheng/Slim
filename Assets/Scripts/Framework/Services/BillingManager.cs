@@ -197,7 +197,7 @@ public class BillingManager : MonoBehaviour
                 if (_currentTransaction.TransactionState == eBillingTransactionState.RESTORED) {
                     //if (_currentTransaction.ProductIdentifier == NPSettings.Billing.Products [0].ProductIdentifier) {
                         MyAds.noAds = 1;
-                        PlayerPrefs.SetInt ("noAds", MyAds.noAds);
+                        SecurePlayerPrefs.SetInt ("noAds", MyAds.noAds);
                         PublishingService.Instance.DisableAdsPermanently ();
                     //} 
                 }

@@ -28,7 +28,7 @@ public class PlaylistControllerInspector : Editor {
             _customEventNames = ma.CustomEventNames;
         }
 
-        DTGUIHelper.HelpHeader("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/PlaylistControllers.htm", "https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MasterAudio_API/class_dark_tonic_1_1_master_audio_1_1_playlist_controller.html");
+        DTGUIHelper.HelpHeader("http://www.dtdevtools.com/docs/masteraudio/PlaylistControllers.htm", "http://www.dtdevtools.com/API/masteraudio/class_dark_tonic_1_1_master_audio_1_1_playlist_controller.html");
 
         var isDirty = false;
 
@@ -276,6 +276,228 @@ public class PlaylistControllerInspector : Editor {
         EditorGUILayout.EndToggleGroup();
         DTGUIHelper.AddSpaceForNonU5(2);
 
+		DTGUIHelper.StartGroupHeader();
+		
+		newUse = EditorGUILayout.BeginToggleGroup(" Crossfade Started Event", controller.crossfadeStartedExpanded);
+		if (newUse != controller.crossfadeStartedExpanded) {
+			AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, controller, "toggle expand Crossfade Started Event");
+			controller.crossfadeStartedExpanded = newUse;
+		}
+		DTGUIHelper.EndGroupHeader();
+		
+		GUI.color = Color.white;
+		
+		if (controller.crossfadeStartedExpanded) {
+			DTGUIHelper.ShowColorWarning("When this Playlist Controller starts a crossfade, fire Custom Event below.");
+			
+			if (maInScene) {
+				var existingIndex = _customEventNames.IndexOf(controller.crossfadeStartedCustomEvent);
+				
+				int? customEventIndex = null;
+				
+				EditorGUI.indentLevel = 0;
+				
+				var noEvent = false;
+				var noMatch = false;
+				
+				if (existingIndex >= 1) {
+					customEventIndex = EditorGUILayout.Popup("Custom Event Name", existingIndex, _customEventNames.ToArray());
+					if (existingIndex == 1) {
+						noEvent = true;
+					}
+				} else if (existingIndex == -1 && controller.crossfadeStartedCustomEvent == MasterAudio.NoGroupName) {
+					customEventIndex = EditorGUILayout.Popup("Custom Event Name", existingIndex, _customEventNames.ToArray());
+				} else { // non-match
+					noMatch = true;
+					var newEventName = EditorGUILayout.TextField("Custom Event Name", controller.crossfadeStartedCustomEvent);
+					if (newEventName != controller.crossfadeStartedCustomEvent) {
+						AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, controller, "change Custom Event Name");
+						controller.crossfadeStartedCustomEvent = newEventName;
+					}
+					
+					var newIndex = EditorGUILayout.Popup("All Custom Events", -1, _customEventNames.ToArray());
+					if (newIndex >= 0) {
+						customEventIndex = newIndex;
+					}
+				}
+				
+				if (noEvent) {
+					DTGUIHelper.ShowRedError("No Custom Event specified. This section will do nothing.");
+				} else if (noMatch) {
+					DTGUIHelper.ShowRedError("Custom Event found no match. Type in or choose one.");
+				}
+				
+				if (customEventIndex.HasValue) {
+					if (existingIndex != customEventIndex.Value) {
+						AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, controller, "change Custom Event");
+					}
+					// ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
+					if (customEventIndex.Value == -1) {
+						controller.crossfadeStartedCustomEvent = MasterAudio.NoGroupName;
+					} else {
+						controller.crossfadeStartedCustomEvent = _customEventNames[customEventIndex.Value];
+					}
+				}
+			} else {
+				var newCustomEvent = EditorGUILayout.TextField("Custom Event Name", controller.crossfadeStartedCustomEvent);
+				if (newCustomEvent != controller.crossfadeStartedCustomEvent) {
+					AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, controller, "Custom Event Name");
+					controller.crossfadeStartedCustomEvent = newCustomEvent;
+				}
+			}
+		}
+		
+		EditorGUILayout.EndToggleGroup();
+		DTGUIHelper.AddSpaceForNonU5(2);
+
+		DTGUIHelper.StartGroupHeader();
+		
+		newUse = EditorGUILayout.BeginToggleGroup(" Playlist Started Event", controller.playlistStartedEventExpanded);
+		if (newUse != controller.playlistStartedEventExpanded) {
+			AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, controller, "toggle expand Playlist Started Event");
+			controller.playlistStartedEventExpanded = newUse;
+		}
+		DTGUIHelper.EndGroupHeader();
+		
+		GUI.color = Color.white;
+		
+		if (controller.playlistStartedEventExpanded) {
+			DTGUIHelper.ShowColorWarning("When this Playlist Controller starts a Playlist, fire Custom Event below.");
+
+			if (maInScene) {
+				var existingIndex = _customEventNames.IndexOf(controller.playlistStartedCustomEvent);
+				
+				int? customEventIndex = null;
+				
+				EditorGUI.indentLevel = 0;
+				
+				var noEvent = false;
+				var noMatch = false;
+				
+				if (existingIndex >= 1) {
+					customEventIndex = EditorGUILayout.Popup("Custom Event Name", existingIndex, _customEventNames.ToArray());
+					if (existingIndex == 1) {
+						noEvent = true;
+					}
+				} else if (existingIndex == -1 && controller.playlistStartedCustomEvent == MasterAudio.NoGroupName) {
+					customEventIndex = EditorGUILayout.Popup("Custom Event Name", existingIndex, _customEventNames.ToArray());
+				} else { // non-match
+					noMatch = true;
+					var newEventName = EditorGUILayout.TextField("Custom Event Name", controller.playlistStartedCustomEvent);
+					if (newEventName != controller.playlistStartedCustomEvent) {
+						AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, controller, "change Custom Event Name");
+						controller.playlistStartedCustomEvent = newEventName;
+					}
+					
+					var newIndex = EditorGUILayout.Popup("All Custom Events", -1, _customEventNames.ToArray());
+					if (newIndex >= 0) {
+						customEventIndex = newIndex;
+					}
+				}
+				
+				if (noEvent) {
+					DTGUIHelper.ShowRedError("No Custom Event specified. This section will do nothing.");
+				} else if (noMatch) {
+					DTGUIHelper.ShowRedError("Custom Event found no match. Type in or choose one.");
+				}
+				
+				if (customEventIndex.HasValue) {
+					if (existingIndex != customEventIndex.Value) {
+						AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, controller, "change Custom Event");
+					}
+					// ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
+					if (customEventIndex.Value == -1) {
+						controller.playlistStartedCustomEvent = MasterAudio.NoGroupName;
+					} else {
+						controller.playlistStartedCustomEvent = _customEventNames[customEventIndex.Value];
+					}
+				}
+			} else {
+				var newCustomEvent = EditorGUILayout.TextField("Custom Event Name", controller.playlistStartedCustomEvent);
+				if (newCustomEvent != controller.playlistStartedCustomEvent) {
+					AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, controller, "Custom Event Name");
+					controller.playlistStartedCustomEvent = newCustomEvent;
+				}
+			}
+		}
+		
+		EditorGUILayout.EndToggleGroup();
+		DTGUIHelper.AddSpaceForNonU5(2);
+
+		DTGUIHelper.StartGroupHeader();
+		
+		newUse = EditorGUILayout.BeginToggleGroup(" Playlist Ended Event", controller.playlistEndedEventExpanded);
+		if (newUse != controller.playlistEndedEventExpanded) {
+			AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, controller, "toggle expand Playlist Ended Event");
+			controller.playlistEndedEventExpanded = newUse;
+		}
+		DTGUIHelper.EndGroupHeader();
+		
+		GUI.color = Color.white;
+		
+		if (controller.playlistEndedEventExpanded) {
+			DTGUIHelper.ShowColorWarning("When this Playlist Controller ends a Playlist (last song ends), fire Custom Event below.");
+			
+			if (maInScene) {
+				var existingIndex = _customEventNames.IndexOf(controller.playlistEndedCustomEvent);
+				
+				int? customEventIndex = null;
+				
+				EditorGUI.indentLevel = 0;
+				
+				var noEvent = false;
+				var noMatch = false;
+				
+				if (existingIndex >= 1) {
+					customEventIndex = EditorGUILayout.Popup("Custom Event Name", existingIndex, _customEventNames.ToArray());
+					if (existingIndex == 1) {
+						noEvent = true;
+					}
+				} else if (existingIndex == -1 && controller.playlistEndedCustomEvent == MasterAudio.NoGroupName) {
+					customEventIndex = EditorGUILayout.Popup("Custom Event Name", existingIndex, _customEventNames.ToArray());
+				} else { // non-match
+					noMatch = true;
+					var newEventName = EditorGUILayout.TextField("Custom Event Name", controller.playlistEndedCustomEvent);
+					if (newEventName != controller.playlistEndedCustomEvent) {
+						AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, controller, "change Custom Event Name");
+						controller.playlistEndedCustomEvent = newEventName;
+					}
+					
+					var newIndex = EditorGUILayout.Popup("All Custom Events", -1, _customEventNames.ToArray());
+					if (newIndex >= 0) {
+						customEventIndex = newIndex;
+					}
+				}
+				
+				if (noEvent) {
+					DTGUIHelper.ShowRedError("No Custom Event specified. This section will do nothing.");
+				} else if (noMatch) {
+					DTGUIHelper.ShowRedError("Custom Event found no match. Type in or choose one.");
+				}
+				
+				if (customEventIndex.HasValue) {
+					if (existingIndex != customEventIndex.Value) {
+						AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, controller, "change Custom Event");
+					}
+					// ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
+					if (customEventIndex.Value == -1) {
+						controller.playlistEndedCustomEvent = MasterAudio.NoGroupName;
+					} else {
+						controller.playlistEndedCustomEvent = _customEventNames[customEventIndex.Value];
+					}
+				}
+			} else {
+				var newCustomEvent = EditorGUILayout.TextField("Custom Event Name", controller.playlistEndedCustomEvent);
+				if (newCustomEvent != controller.playlistEndedCustomEvent) {
+					AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, controller, "Custom Event Name");
+					controller.playlistEndedCustomEvent = newCustomEvent;
+				}
+			}
+		}
+		
+		EditorGUILayout.EndToggleGroup();
+		DTGUIHelper.AddSpaceForNonU5(2);
+
         DTGUIHelper.StartGroupHeader();
 
         newUse = EditorGUILayout.BeginToggleGroup(" Song Changed Event", controller.songChangedEventExpanded);
@@ -362,7 +584,7 @@ public class PlaylistControllerInspector : Editor {
         GUI.color = Color.white;
 
         if (controller.songEndedEventExpanded) {
-            DTGUIHelper.ShowColorWarning("When song ends, fire Custom Event below.");
+            DTGUIHelper.ShowColorWarning("When a song ends, fire Custom Event below.");
 
             if (maInScene) {
                 var existingIndex = _customEventNames.IndexOf(controller.songEndedCustomEvent);
@@ -421,6 +643,81 @@ public class PlaylistControllerInspector : Editor {
             }
         }
         EditorGUILayout.EndToggleGroup();
+		DTGUIHelper.AddSpaceForNonU5(2);
+
+		DTGUIHelper.StartGroupHeader();
+		
+		newUse = EditorGUILayout.BeginToggleGroup(" Song Looped Event", controller.songLoopedEventExpanded);
+		if (newUse != controller.songLoopedEventExpanded) {
+			AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, controller, "toggle expand Song Looped Event");
+			controller.songLoopedEventExpanded = newUse;
+		}
+		DTGUIHelper.EndGroupHeader();
+		
+		GUI.color = Color.white;
+		
+		if (controller.songLoopedEventExpanded) {
+			DTGUIHelper.ShowColorWarning("When this Playlist Controller loops a song, fire Custom Event below.");
+			
+			if (maInScene) {
+				var existingIndex = _customEventNames.IndexOf(controller.songLoopedCustomEvent);
+				
+				int? customEventIndex = null;
+				
+				EditorGUI.indentLevel = 0;
+				
+				var noEvent = false;
+				var noMatch = false;
+				
+				if (existingIndex >= 1) {
+					customEventIndex = EditorGUILayout.Popup("Custom Event Name", existingIndex, _customEventNames.ToArray());
+					if (existingIndex == 1) {
+						noEvent = true;
+					}
+				} else if (existingIndex == -1 && controller.songLoopedCustomEvent == MasterAudio.NoGroupName) {
+					customEventIndex = EditorGUILayout.Popup("Custom Event Name", existingIndex, _customEventNames.ToArray());
+				} else { // non-match
+					noMatch = true;
+					var newEventName = EditorGUILayout.TextField("Custom Event Name", controller.songLoopedCustomEvent);
+					if (newEventName != controller.songLoopedCustomEvent) {
+						AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, controller, "change Custom Event Name");
+						controller.songLoopedCustomEvent = newEventName;
+					}
+					
+					var newIndex = EditorGUILayout.Popup("All Custom Events", -1, _customEventNames.ToArray());
+					if (newIndex >= 0) {
+						customEventIndex = newIndex;
+					}
+				}
+				
+				if (noEvent) {
+					DTGUIHelper.ShowRedError("No Custom Event specified. This section will do nothing.");
+				} else if (noMatch) {
+					DTGUIHelper.ShowRedError("Custom Event found no match. Type in or choose one.");
+				}
+				
+				if (customEventIndex.HasValue) {
+					if (existingIndex != customEventIndex.Value) {
+						AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, controller, "change Custom Event");
+					}
+					// ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
+					if (customEventIndex.Value == -1) {
+						controller.songLoopedCustomEvent = MasterAudio.NoGroupName;
+					} else {
+						controller.songLoopedCustomEvent = _customEventNames[customEventIndex.Value];
+					}
+				}
+			} else {
+				var newCustomEvent = EditorGUILayout.TextField("Custom Event Name", controller.songLoopedCustomEvent);
+				if (newCustomEvent != controller.songLoopedCustomEvent) {
+					AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, controller, "Custom Event Name");
+					controller.songLoopedCustomEvent = newCustomEvent;
+				}
+			}
+		}
+		
+		EditorGUILayout.EndToggleGroup();
+		//DTGUIHelper.AddSpaceForNonU5(2);
 
         if (GUI.changed || isDirty) {
             EditorUtility.SetDirty(target);

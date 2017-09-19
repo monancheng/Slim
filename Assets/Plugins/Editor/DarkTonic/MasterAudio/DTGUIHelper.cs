@@ -246,7 +246,7 @@ public static class DTGUIHelper {
         }
     }
 
-    public static void HelpHeader(string helpUrl, string apiUrl = "https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MasterAudio_API/annotated.html") {
+    public static void HelpHeader(string helpUrl, string apiUrl = "http://www.dtdevtools.com/API/masteraudio/annotated.html") {
         EditorGUILayout.BeginHorizontal(CornerGUIStyle);
         AddHelpIcon(helpUrl, true);
         GUILayout.Label("Click button for online help!");
@@ -981,25 +981,44 @@ public static class DTGUIHelper {
             if (grp == null) {
                 return;
             }
+
             var aGroup = grp.GetComponent<MasterAudioGroup>();
+
             if (aGroup != null) {
                 var rndIndex = UnityEngine.Random.Range(0, aGroup.groupVariations.Count);
                 var rndVar = aGroup.groupVariations[rndIndex];
 
-                var calcVolume = aGroup.groupMasterVolume * rndVar.VarAudio.volume;
+                var randPitch = SoundGroupVariationInspector.GetRandomPreviewPitch(rndVar);
+                var varVol = SoundGroupVariationInspector.GetRandomPreviewVolume(rndVar);
 
-                if (rndVar.audLocation == MasterAudio.AudioLocation.ResourceFile) {
-                    MasterAudioInspector.StopPreviewer();
-                    var fileName = AudioResourceOptimizer.GetLocalizedFileName(rndVar.useLocalization, rndVar.resourceFileName);
+                if (rndVar.audLocation != MasterAudio.AudioLocation.FileOnInternet) {
                     if (previewer != null) {
-                        previewer.PlayOneShot(Resources.Load(fileName) as AudioClip, calcVolume);
+                        MasterAudioInspector.StopPreviewer();
+                        previewer.pitch = randPitch;
                     }
-                } else {
-                    if (previewer != null) {
-                        rndVar.Trans.position = previewer.transform.position;
-                    }
-                    rndVar.VarAudio.PlayOneShot(rndVar.VarAudio.clip, calcVolume);
                 }
+
+                var calcVolume = aGroup.groupMasterVolume * varVol;
+
+                switch (rndVar.audLocation) {
+                    case MasterAudio.AudioLocation.ResourceFile:
+                        if (previewer != null) {
+                            var fileName = AudioResourceOptimizer.GetLocalizedFileName(rndVar.useLocalization, rndVar.resourceFileName);
+                            previewer.PlayOneShot(Resources.Load(fileName) as AudioClip, calcVolume);
+                        }
+                        break;
+                    case MasterAudio.AudioLocation.Clip:
+                        if (previewer != null) {
+                            previewer.PlayOneShot(rndVar.VarAudio.clip, calcVolume);
+                        }
+                        break;
+                    case MasterAudio.AudioLocation.FileOnInternet:
+                        if (!string.IsNullOrEmpty(rndVar.internetFileUrl)) {
+                            Application.OpenURL(rndVar.internetFileUrl);
+                        }
+                        break;
+                }
+
                 return;
             }
 
@@ -1008,19 +1027,35 @@ public static class DTGUIHelper {
                 var rndIndex = UnityEngine.Random.Range(0, dynGroup.groupVariations.Count);
                 var rndVar = dynGroup.groupVariations[rndIndex];
 
-                var calcVolume = dynGroup.groupMasterVolume * rndVar.VarAudio.volume;
+                var randPitch = SoundGroupVariationInspector.GetRandomPreviewPitch(rndVar);
+                var varVol = SoundGroupVariationInspector.GetRandomPreviewVolume(rndVar);
 
-                if (rndVar.audLocation == MasterAudio.AudioLocation.ResourceFile) {
-                    MasterAudioInspector.StopPreviewer();
-                    var fileName = AudioResourceOptimizer.GetLocalizedFileName(rndVar.useLocalization, rndVar.resourceFileName);
+                if (rndVar.audLocation != MasterAudio.AudioLocation.FileOnInternet) {
                     if (previewer != null) {
-                        previewer.PlayOneShot(Resources.Load(fileName) as AudioClip, calcVolume);
+                        MasterAudioInspector.StopPreviewer();
+                        previewer.pitch = randPitch;
                     }
-                } else {
-                    if (previewer != null) {
-                        rndVar.Trans.position = previewer.transform.position;
-                    }
-                    rndVar.VarAudio.PlayOneShot(rndVar.VarAudio.clip, calcVolume);
+                }
+
+                var calcVolume = dynGroup.groupMasterVolume * varVol;
+
+                switch (rndVar.audLocation) {
+                    case MasterAudio.AudioLocation.ResourceFile:
+                        if (previewer != null) {
+                            var fileName = AudioResourceOptimizer.GetLocalizedFileName(rndVar.useLocalization, rndVar.resourceFileName);
+                            previewer.PlayOneShot(Resources.Load(fileName) as AudioClip, calcVolume);
+                        }
+                        break;
+                    case MasterAudio.AudioLocation.Clip:
+                        if (previewer != null) {
+                            previewer.PlayOneShot(rndVar.VarAudio.clip, calcVolume);
+                        }
+                        break;
+                    case MasterAudio.AudioLocation.FileOnInternet:
+                        if (!string.IsNullOrEmpty(rndVar.internetFileUrl)) {
+                            Application.OpenURL(rndVar.internetFileUrl);
+                        }
+                        break;
                 }
             }
         }
@@ -1030,42 +1065,7 @@ public static class DTGUIHelper {
         if (Application.isPlaying) {
             MasterAudio.StopAllOfSound(sType);
         } else {
-            var grp = MasterAudio.FindGroupTransform(sType);
-            if (grp == null) {
-                return;
-            }
-
-            var aGroup = grp.GetComponent<MasterAudioGroup>();
-            if (aGroup != null) {
-                var hasResourceFile = false;
-                foreach (var t in aGroup.groupVariations) {
-                    t.VarAudio.Stop();
-                    if (t.audLocation == MasterAudio.AudioLocation.ResourceFile) {
-                        hasResourceFile = true;
-                    }
-                }
-
-                if (hasResourceFile) {
-                    MasterAudioInspector.StopPreviewer();
-                }
-
-                return;
-            }
-
-            var dynGroup = grp.GetComponent<DynamicSoundGroup>();
-            if (dynGroup != null) {
-                var hasResourceFile = false;
-                foreach (var t in dynGroup.groupVariations) {
-                    t.VarAudio.Stop();
-                    if (t.audLocation == MasterAudio.AudioLocation.ResourceFile) {
-                        hasResourceFile = true;
-                    }
-                }
-
-                if (hasResourceFile) {
-                    MasterAudioInspector.StopPreviewer();
-                }
-            }
+            MasterAudioInspector.StopPreviewer();
         }
     }
 

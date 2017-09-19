@@ -10,7 +10,7 @@ public class BonusCoin : BonusItem
 
     private void OnEnable()
     {
-        TubeManager.OnCreateCoin += OnCreate;
+        TubeManager.OnCreateCoin += OnCreateChar;
         
         MyTube.OnCanSpawnBonus += OnCanSpawn;
         GlobalEvents<OnGameOver>.Happened += GameOver;

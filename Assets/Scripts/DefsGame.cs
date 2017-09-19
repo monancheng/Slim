@@ -26,7 +26,7 @@ public struct DefsGame
     public static int BTN_GIFT_HIDE_DELAY_COUNTER;
 
 //    public static readonly int[] BTN_GIFT_HIDE_DELAY_ARR = {1, 2, 5, 10, 15, 20, 25, 30, 60};
-    public static readonly int[] BTN_GIFT_HIDE_DELAY_ARR = {1, 1};
+    public static readonly int[] BTN_GIFT_HIDE_DELAY_ARR = {1, 1, 2, 5, 10, 20, 30, 60, 120, 180};
 
     public static int CurrentScreen = 0;
     public static int SCREEN_MENU = 0;
@@ -68,11 +68,11 @@ public struct DefsGame
         GameBestScore = SecurePlayerPrefs.GetInt("BestScore", 0);
 //      gameBestScore = 0;
         CoinsCount = SecurePlayerPrefs.GetInt("coinsCount", 0);
-        CoinsCount = 1000;
+        CoinsCount = 1600;
         RateCounter = PlayerPrefs.GetInt("rateCounter", 0);
 
-//        for (var i = 0; i < FaceAvailable.Length; i++)
-//            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 0);
+        for (var i = 0; i < FaceAvailable.Length; i++)
+            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 1);
         
         for (var i = 0; i < FaceAvailable.Length; i++)
             if (i == 0)
@@ -99,9 +99,10 @@ public struct DefsGame
         IS_ACHIEVEMENT_COLLECTION = PlayerPrefs.GetInt("IS_ACHIEVEMENT_COLLECTION", 0);
 
         QUEST_GAMEPLAY_Counter = PlayerPrefs.GetInt("QUEST_GAMEPLAY_Counter", 0);
+        // TEMP
+        QUEST_GAMEPLAY_Counter = 0;
         QUEST_THROW_Counter = PlayerPrefs.GetInt("QUEST_THROW_Counter", 0);
         
-//        QUEST_CHARACTERS_Counter = 0;
         QUEST_BOMBS_Counter = PlayerPrefs.GetInt("QUEST_BOMBS_Counter", 0);
         QUEST_MISS_Counter = PlayerPrefs.GetInt("QUEST_MISS_Counter", 0);
     }

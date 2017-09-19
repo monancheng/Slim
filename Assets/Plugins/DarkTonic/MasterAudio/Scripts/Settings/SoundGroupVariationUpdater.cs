@@ -523,9 +523,7 @@ namespace DarkTonic.MasterAudio {
 
                     if (_fadeOutEarlyFrameNumber >= _fadeOutEarlyTotalFrames) {
                         GrpVariation.curFadeMode = SoundGroupVariation.FadeMode.None;
-                        if (_maThisFrame.stopZeroVolumeVariations) {
-                            GrpVariation.Stop();
-                        }
+	                    GrpVariation.Stop();
                     }
 
                     break;

@@ -99,7 +99,7 @@ public class DynamicSoundGroupInspector : Editor {
         GUILayout.FlexibleSpace();
         EditorGUILayout.EndHorizontal();
 
-        DTGUIHelper.HelpHeader("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/SoundGroups.htm");
+        DTGUIHelper.HelpHeader("http://www.dtdevtools.com/docs/masteraudio/SoundGroups.htm");
 
         var newVol = DTGUIHelper.DisplayVolumeField(_group.groupMasterVolume, DTGUIHelper.VolumeFieldType.None, MasterAudio.MixerWidthMode.Normal, 0f, true, "Group Master Volume");
         if (newVol != _group.groupMasterVolume) {
@@ -132,7 +132,7 @@ public class DynamicSoundGroupInspector : Editor {
         EditorGUI.indentLevel = 0;
         EditorGUILayout.BeginHorizontal();
         var newTargetGone = (MasterAudioGroup.TargetDespawnedBehavior)EditorGUILayout.EnumPopup("Caller Despawned Mode", _group.targetDespawnedBehavior);
-        DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/SoundGroups.htm#CallerDespawned");
+        DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/SoundGroups.htm#CallerDespawned");
         EditorGUILayout.EndHorizontal();
         if (newTargetGone != _group.targetDespawnedBehavior) {
             AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, _group, "Change Caller Despawned Mode");
@@ -327,7 +327,7 @@ public class DynamicSoundGroupInspector : Editor {
         DTGUIHelper.StartGroupHeader();
         EditorGUILayout.BeginHorizontal();
         var newVarMode = (MasterAudioGroup.VariationMode)EditorGUILayout.EnumPopup("Variation Mode", _group.curVariationMode);
-        DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/SoundGroups.htm#VarMode");
+        DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/SoundGroups.htm#VarMode");
         EditorGUILayout.EndHorizontal();
         if (newVarMode != _group.curVariationMode) {
             AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, _group, "change Variation Mode");
@@ -375,7 +375,7 @@ public class DynamicSoundGroupInspector : Editor {
             case MasterAudioGroup.VariationMode.Normal:
                 EditorGUILayout.BeginHorizontal();
                 var newRetrigger = EditorGUILayout.IntSlider("Retrigger Percentage", _group.retriggerPercentage, 0, 100);
-                DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/SoundGroups.htm#Retrigger");
+                DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/SoundGroups.htm#Retrigger");
                 EditorGUILayout.EndHorizontal();
                 if (newRetrigger != _group.retriggerPercentage) {
                     AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, _group, "change Retrigger Percentage");
@@ -770,7 +770,7 @@ public class DynamicSoundGroupInspector : Editor {
             EditorGUI.indentLevel = 1;
             EditorGUILayout.BeginHorizontal();
             var newBulk = DTGUIHelper.Foldout(_group.copySettingsExpanded, "Copy Settings");
-            DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/SoundGroups.htm#CopySettings");
+            DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/SoundGroups.htm#CopySettings");
             EditorGUILayout.EndHorizontal();
             if (newBulk != _group.copySettingsExpanded) {
                 AudioUndoHelper.RecordObjectPropertyForUndo(ref isDirty, _group, "toggle Copy Settings");
@@ -997,7 +997,7 @@ public class DynamicSoundGroupInspector : Editor {
                 GUI.color = DTGUIHelper.DragAreaColor;
 
                 var dragArea = GUILayoutUtility.GetRect(0f, 35f, GUILayout.ExpandWidth(true));
-                GUI.Box(dragArea, "Drag Audio clips here to create Variations!");
+				GUI.Box(dragArea, MasterAudio.DragAudioTip + " to create Variations!");
 
                 GUI.color = Color.white;
 
@@ -1014,6 +1014,22 @@ public class DynamicSoundGroupInspector : Editor {
                             DragAndDrop.AcceptDrag();
 
                             foreach (var dragged in DragAndDrop.objectReferences) {
+#if UNITY_5_2 || UNITY_5_3 || UNITY_5_4 || UNITY_5_5 || UNITY_5_6 || UNITY_2017
+                                if (dragged is DefaultAsset) {
+                                    var assetPaths = AssetDatabase.FindAssets("t:AudioClip", DragAndDrop.paths);
+                                    foreach (var assetPath in assetPaths) {
+                                        var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(AssetDatabase.GUIDToAssetPath(assetPath));
+                                        if (clip == null) {
+                                            continue;
+                                        }
+
+                                        CreateVariation(_group, clip);
+                                    }
+
+                                    continue;
+                                }
+#endif
+
                                 var aClip = dragged as AudioClip;
                                 if (aClip == null) {
                                     continue;
@@ -1111,48 +1127,57 @@ public class DynamicSoundGroupInspector : Editor {
                 }
 
                 GUILayout.Space(4);
-                DTGUIHelper.AddHelpIcon("https://dl.dropboxusercontent.com/u/40293802/DarkTonic/MA_OnlineDocs/SoundGroups.htm#Variations");
+                DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/SoundGroups.htm#Variations");
 
                 switch (buttonPressed) {
                     case DTGUIHelper.DTFunctionButtons.Play:
-                        var calcVolume = variation.VarAudio.volume * _group.groupMasterVolume;
+                        isDirty = true;
+
                         previewer = MasterAudioInspector.GetPreviewer();
+
+                        var randPitch = SoundGroupVariationInspector.GetRandomPreviewPitch(variation);
+                        var varVol = SoundGroupVariationInspector.GetRandomPreviewVolume(variation);
+
+                        if (variation.audLocation != MasterAudio.AudioLocation.FileOnInternet) {
+                            if (previewer != null) {
+                                MasterAudioInspector.StopPreviewer();
+                                previewer.pitch = randPitch;
+                            }
+                        }
+
+                        var calcVolume = varVol * variation.ParentGroup.groupMasterVolume;
 
                         switch (variation.audLocation) {
                             case MasterAudio.AudioLocation.ResourceFile:
-                                MasterAudioInspector.StopPreviewer();
-                                var fileName = AudioResourceOptimizer.GetLocalizedDynamicSoundGroupFileName(previewLang, variation.useLocalization, variation.resourceFileName);
-                                var clip = Resources.Load(fileName) as AudioClip;
-                                if (clip != null) {
-                                    if (previewer != null) {
-                                        previewer.PlayOneShot(clip, calcVolume);
+                                if (previewer != null) {
+                                    var fileName = AudioResourceOptimizer.GetLocalizedDynamicSoundGroupFileName(previewLang, variation.useLocalization, variation.resourceFileName);
+                                    var clip = Resources.Load(fileName) as AudioClip;
+                                    if (clip != null) {
+                                        if (previewer != null) {
+                                            previewer.PlayOneShot(clip, calcVolume);
+                                        }
+                                    } else {
+                                        DTGUIHelper.ShowAlert("Could not find Resource file: " + fileName);
                                     }
-                                } else {
-                                    DTGUIHelper.ShowAlert("Could not find Resource file: " + fileName);
                                 }
                                 break;
                             case MasterAudio.AudioLocation.Clip:
                                 if (previewer != null) {
-                                    variation.Trans.position = previewer.transform.position;
+                                    previewer.PlayOneShot(variation.VarAudio.clip, calcVolume);
                                 }
-
-                                variation.VarAudio.PlayOneShot(variation.VarAudio.clip, calcVolume);
                                 break;
                             case MasterAudio.AudioLocation.FileOnInternet:
                                 if (!string.IsNullOrEmpty(variation.internetFileUrl)) {
                                     Application.OpenURL(variation.internetFileUrl);
                                 }
-
                                 break;
                         }
-                        isDirty = true;
+
                         break;
                     case DTGUIHelper.DTFunctionButtons.Stop:
-                        if (variation.audLocation == MasterAudio.AudioLocation.ResourceFile) {
+                        if (variation.audLocation != MasterAudio.AudioLocation.FileOnInternet) {
                             MasterAudioInspector.StopPreviewer();
-                        } else {
-                            variation.VarAudio.Stop();
-                        }
+                        } 
                         isDirty = true;
                         break;
                 }

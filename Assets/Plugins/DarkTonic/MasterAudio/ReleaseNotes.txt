@@ -2,6 +2,19 @@ MASTER AUDIO PLUGIN - By DarkTonic, Inc. (c) 2012-2017
 
 - Code by Brian Hunsaker
 
+-V 4.1.3    - Fixed bug: with Loop Playlist off, last Resource file doesn't get unloaded at end. No code to detect this.
+			- You now can drag a folder containing 1 or more Audio Clips into the "Drag Audio Clips here" boxes. It can contain other things too - only the Audio Clips will be processed in bulk.
+		    - Added code to restore a slider's value during Awake if it has been used in Event Sounds to set Persistent volumes (music / mixer / group / bus). Now you don't have to write that code.
+			- Added new Log field of "Log Out Of Voices" in Advanced Settings. This is on by default. Will tell you when you run out of voices for the Bus / Sound Group / polyphony limits and other limits if turned on.
+			- Made "Disable Logging" shut off the non-important (info) logging as well.
+			- Removed "Variation Fading" option in Advanced Settings. Always does a stop if you "Fade Early" a Variation.
+			- Added a configurable fade time when stopping Variations from Stop Oldest option on the Bus. Default is 0.3 seconds. Settable from 0 - 1 second under Advanced Settings / Fading.
+			- Random volume and pitch settings are now heard through preview in edit mode.
+			- Added UFPS integration package.
+			- Added SongLooped event to PlaylistController.
+			- Added ability to play a Custom Event from Crossfade Start, Playlist Started, Playlist Ended & Song Looped on Playlist Controller.
+			- Updated all Inspector links to new domain (Dropbox is gone).
+
 -V 4.1.2	- Fixed compile errors for Unity 2017 beta.
 			- Fixed compile error in Unity 4.7.
 			- Fixed bug: Silent Variations would stop a Chained Loop when "played". No longer.

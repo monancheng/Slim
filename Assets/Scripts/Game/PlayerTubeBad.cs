@@ -10,8 +10,9 @@ public class PlayerTubeBad : MonoBehaviour
         var color = gameObject.GetComponent<MeshRenderer>().material.color;
         if (color.a > 0f)
         {
-            color.a -= 0.05f;
-            gameObject.GetComponent<MeshRenderer>().material.color = color;
+            color.a -= 0.07f;
+            gameObject.GetComponent<MeshRenderer>().material.SetColor("_Color", color);
+//            gameObject.GetComponent<MeshRenderer>().material.color = color;
         }
         else
         {

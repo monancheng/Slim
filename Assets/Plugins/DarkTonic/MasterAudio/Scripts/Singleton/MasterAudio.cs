@@ -26,8 +26,15 @@ namespace DarkTonic.MasterAudio {
 
 #pragma warning disable 1591
         public const string MasterAudioDefaultFolder = "Assets/Plugins/DarkTonic/MasterAudio";
-        public const string PreviewText = "Fading & random settings are ignored by preview in edit mode.";
-        public const string NoCategory = "[Uncategorized]";
+        public const string PreviewText = "Fading & random settings besides pitch and volume are ignored by preview in edit mode.";
+
+		#if UNITY_5_2 || UNITY_5_3 || UNITY_5_4 || UNITY_5_5 || UNITY_5_6 || UNITY_2017
+			public const string DragAudioTip = "Drag Audio clips or a folder containing some here";
+		#else
+			public const string DragAudioTip = "Drag Audio clips here";
+		#endif
+
+		public const string NoCategory = "[Uncategorized]";
         public const float SemiTonePitchFactor = 1.05946f;
         public const float SpatialBlend_2DValue = 0f;
         public const float SpatialBlend_3DValue = 1f;
@@ -144,14 +151,15 @@ namespace DarkTonic.MasterAudio {
         public bool logAdvancedExpanded = true;
 
         public bool showFadingSettings = false;
-        public bool stopZeroVolumeVariations = false;
         public bool stopZeroVolumeGroups = false;
         public bool stopZeroVolumeBuses = false;
         public bool stopZeroVolumePlaylists = false;
+		public float stopOldestBusFadeTime = 0.3f;
 
         public bool resourceAdvancedExpanded = true;
         public bool useClipAgePriority = false;
-        public bool LogSounds;
+		public bool logOutOfVoices = true;
+		public bool LogSounds;
         public bool logCustomEvents = false;
         public bool disableLogging = false;
         public bool showMusicDucking = false;
@@ -1574,7 +1582,7 @@ namespace DarkTonic.MasterAudio {
                             continue;
                         }
 
-                        if (loggingEnabledForGrp) {
+						if (loggingEnabledForGrp || LogOutOfVoices) {
                             LogMessage("Polyphony limit of group: " + @group.Group.GameObjectName +
                                        " exceeded. Will not play this sound for this instance.");
                         }
@@ -1587,7 +1595,7 @@ namespace DarkTonic.MasterAudio {
             if (groupBus != null) {
                 if (groupBus.BusVoiceLimitReached) {
                     if (!groupBus.stopOldest) {
-                        if (loggingEnabledForGrp) {
+                        if (loggingEnabledForGrp || LogOutOfVoices) {
                             LogMessage("Bus voice limit has been reached. Cannot play the sound: " +
                                        group.Group.GameObjectName +
                                        " until one voice has stopped playing. You can turn on the 'Stop Oldest' option for the bus to change ");
@@ -1670,7 +1678,7 @@ namespace DarkTonic.MasterAudio {
                                 LogMessage("Can't find variation {" + variationName + "} of " + sType);
                             }
                         } else {
-                            if (loggingEnabledForGrp) {
+							if (loggingEnabledForGrp || LogOutOfVoices) {
                                 LogMessage("Can't find non-busy variation {" + variationName + "} of " + sType);
                             }
                         }
@@ -1822,8 +1830,8 @@ namespace DarkTonic.MasterAudio {
             // repeat until you've either played the sound or exhausted all possibilities.
 
             if (!soundSuccess) {
-                if (loggingEnabledForGrp) {
-                    LogMessage("All children of " + sType + " were busy. Will not play this sound for this instance.");
+                if (loggingEnabledForGrp || LogOutOfVoices) {
+					LogMessage("All children of " + sType + " were busy. Will not play this sound for this instance.");
                 }
             } else {
                 // ReSharper disable once InvertIf
@@ -2360,6 +2368,44 @@ namespace DarkTonic.MasterAudio {
 
             return playingVars;
         }
+
+		/// <summary>
+		/// This will return a list of all playing Variations of a list of Transforms
+		/// </summary>
+		/// <param name="sourceTransList">Source transform list</param>
+		/// <returns>List of SoundGroupVariation</returns>
+		public static List<SoundGroupVariation> GetAllPlayingVariationsOfTransformList(List<Transform> sourceTransList) {
+			var playingVars = new List<SoundGroupVariation>(32);
+			
+			if (!SceneHasMasterAudio) {
+				// No MA
+				return playingVars;
+			}
+			
+			var transMap = new HashSet<Transform>();
+			// ReSharper disable once ForCanBeConvertedToForeach
+			for (var i = 0; i < sourceTransList.Count; i++) {
+				transMap.Add(sourceTransList[i]);
+			}
+			
+			
+			foreach (var key in AudioSourcesBySoundType.Keys) {
+				var varList = AudioSourcesBySoundType[key].Sources;
+				
+				// ReSharper disable once ForCanBeConvertedToForeach
+				for (var v = 0; v < varList.Count; v++) {
+					var variation = varList[v].Variation;
+					if (!variation.WasTriggeredFromAnyOfTransformMap(transMap)) {
+						continue;
+					}
+					
+					playingVars.Add(variation);
+				}
+				
+			}
+			
+			return playingVars;
+		}
 
         /// <summary>
         /// Returns a list of all Variation scripts that are currently playing through a bus.
@@ -4320,6 +4366,11 @@ namespace DarkTonic.MasterAudio {
                         continue;
                     }
 
+					if (aVar.curFadeMode == SoundGroupVariation.FadeMode.FadeOutEarly) {
+						aVar.Stop();
+						continue;
+					}
+
                     if (oldestVar == null) {
                         oldestVar = aVar;
                         oldestVarPlayTime = aVar.LastTimePlayed;
@@ -4331,7 +4382,7 @@ namespace DarkTonic.MasterAudio {
             }
 
             if (oldestVar != null) {
-                oldestVar.Stop();
+				oldestVar.FadeOutNow(Instance.stopOldestBusFadeTime);
             }
         }
 
@@ -6349,7 +6400,11 @@ namespace DarkTonic.MasterAudio {
         }
 
         private static void LogMessage(string message) {
-            Debug.Log("T: " + Time.time + " - MasterAudio " + message);
+            if (Instance.disableLogging) {
+				return;
+			}
+
+			Debug.Log("T: " + Time.time + " - MasterAudio " + message);
         }
 
         /// <summary>
@@ -6359,6 +6414,14 @@ namespace DarkTonic.MasterAudio {
             get { return Instance.LogSounds; }
             set { Instance.LogSounds = value; }
         }
+
+		/// <summary>
+		/// This gets or sets whether Logging Out Of Voices scenarios are enabled in Master Audio
+		/// </summary>
+		public static bool LogOutOfVoices {
+			get { return Instance.logOutOfVoices; }
+			set { Instance.logOutOfVoices = value; }
+		}
 
         /*! \cond PRIVATE */
         public static void LogWarning(string msg) {
