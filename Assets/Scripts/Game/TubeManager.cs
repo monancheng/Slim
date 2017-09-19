@@ -127,7 +127,10 @@ public class TubeManager : MonoBehaviour
 
     private void CreateTubeStart()
     {
-        ColorTheme.SetFirstColor();
+        if (DefsGame.QUEST_GAMEPLAY_Counter < 3)
+            ColorTheme.SetFirstColor();
+        else
+            ColorTheme.GetNextRandomId();
         
         var newRadius = InitRadius + _radiusAddCoeff;
         for (int i = 0; i < 3; i++)

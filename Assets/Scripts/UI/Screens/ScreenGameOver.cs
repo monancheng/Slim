@@ -154,7 +154,6 @@ public class ScreenGameOver : MonoBehaviour
 
         // Перемешиваем элементы списка, чтобы они располагались рандомно по оси У
         ShuffleItems();
-        SetItemsPositions();
         ShowActiveItems();
     }
 
@@ -279,8 +278,21 @@ public class ScreenGameOver : MonoBehaviour
         }
     }
 
+    private void VerifyActiveItems()
+    {
+        // Удаляем панельку "Доступен новый скин", если скины закончились или не хватает денег        
+        if (_isSkinsAllGeneralOpened || DefsGame.CoinsCount < 200)
+        {
+            int idNotifyOld = _activeNamesList.IndexOf("NotifyNewCharacter");
+            if (idNotifyOld != -1) _activeNamesList.RemoveAt(idNotifyOld);
+        }
+    }
+
     public void ShowActiveItems()
     {
+        VerifyActiveItems();
+        SetItemsPositions();
+        
         if (_activeNamesList.Count == 0)
         {
             GlobalEvents<OnNoGameOverButtons>.Call(new OnNoGameOverButtons());
@@ -431,8 +443,7 @@ public class ScreenGameOver : MonoBehaviour
         {
             ShuffleItems();
         }
-        
-        SetItemsPositions();
+
         ShowActiveItems();
         DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
     }

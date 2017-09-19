@@ -28,7 +28,7 @@ public class GiftRandomSkin : MonoBehaviour
 			GlobalEvents<OnBuySkin>.Call(new OnBuySkin {Id = id});
 		}
 		
-		Invoke("ShowBtnClose", 1.5f);
+		GlobalEvents<OnHideGiftScreen>.Call(new OnHideGiftScreen());
 	}
 
 	private int GetRandomAvailableSkin()
@@ -56,18 +56,5 @@ public class GiftRandomSkin : MonoBehaviour
 
 		Debug.Log("GetRandomAvailableSkin RETURN id = " + -1);
 		return -1;
-	}
-
-	public void BtnClose()
-	{
-		UIManager.HideUiElement("ScreenGiftBtnPlay");
-		
-		GlobalEvents<OnHideGiftScreen>.Call(new OnHideGiftScreen());
-		GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
-	}
-
-	private void ShowBtnClose()
-	{
-		UIManager.ShowUiElement("ScreenGiftBtnPlay");
 	}
 }

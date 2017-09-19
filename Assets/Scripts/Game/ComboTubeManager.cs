@@ -15,7 +15,7 @@ public class ComboTubeManager : MonoBehaviour
 
     private void Start()
     {
-        _color = new Color(50f / 255.0f, 50f / 255f, 50f / 255f);
+        _color = new Color(255f / 255.0f, 255f / 255f, 255f / 255f);
     }
 
     private void OnEnable()
@@ -55,7 +55,7 @@ public class ComboTubeManager : MonoBehaviour
 
     private void ResetSettings()
     {
-        _color = new Color(50f / 255.0f, 50f / 255f, 50f / 255f);
+        _color = new Color(255f / 255.0f, 255f / 255f, 255f / 255f);
     }
 
     private void CreateGoodTube(float radius)

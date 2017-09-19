@@ -160,6 +160,7 @@ public class ScreenGift : MonoBehaviour
 		UIManager.HideUiElement("NotifyGiftExtra");
 		UIManager.HideUiElement("NotifySkinExtra");
 		UIManager.HideUiElement("NotifyWordExtra");
+		GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
 		GlobalEvents<OnHideGiftScreen>.Call(new OnHideGiftScreen());
 	}
 
