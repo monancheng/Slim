@@ -63,21 +63,21 @@ public struct DefsGame
         SecurePlayerPrefs.UseSecurePrefs = true;
         SecurePlayerPrefs.AutoConvertUnsecurePrefs = true;
         
-        CurrentFaceId = SecurePlayerPrefs.GetInt("currentFaceID", 0);
+        CurrentFaceId = SecurePlayerPrefs.GetInt("currentFaceID");
 //      CurrentFaceId = 0;
-        GameBestScore = SecurePlayerPrefs.GetInt("BestScore", 0);
+        GameBestScore = SecurePlayerPrefs.GetInt("BestScore");
 //      gameBestScore = 0;
-        CoinsCount = SecurePlayerPrefs.GetInt("coinsCount", 0);
+        CoinsCount = SecurePlayerPrefs.GetInt("coinsCount");
         CoinsCount = 2000;
         RateCounter = PlayerPrefs.GetInt("rateCounter", 0);
 
-//        for (var i = 0; i < FaceAvailable.Length; i++)
-//            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 0);
+        for (var i = 0; i < FaceAvailable.Length; i++)
+            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 1);
         
         for (var i = 0; i < FaceAvailable.Length; i++)
             if (i == 0)
                 FaceAvailable[0] = 1;
-            else FaceAvailable[i] = SecurePlayerPrefs.GetInt("faceAvailable_" + i, 0);
+            else FaceAvailable[i] = SecurePlayerPrefs.GetInt("faceAvailable_" + i);
 
         for (var i = 0; i < FaceAvailable.Length; i++)
         {
