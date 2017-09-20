@@ -26,7 +26,7 @@ public class TubeManager : MonoBehaviour
     private const float MaxSpeed = 210f;
     private float _acceleration = 2.9f;
     
-    private const float StartSpeed = 133f;
+    private const float StartSpeed = 137f;
     private const float StartRadiusMinus = 1.25f;
     
     private int _counter;
@@ -243,10 +243,10 @@ public class TubeManager : MonoBehaviour
 
     private void IncreaseSpeed()
     {
-        if (CurrentSpeed < 140f) _acceleration = 2.9f; else
-        if (CurrentSpeed < 145f) _acceleration = 2.5f; else
-        if (CurrentSpeed < 150f) _acceleration = 2.0f; else
-        if (CurrentSpeed < 155f) _acceleration = 1.5f; else
+        if (CurrentSpeed < 143f) _acceleration = 2.9f; else
+        if (CurrentSpeed < 150f) _acceleration = 2.5f; else
+        if (CurrentSpeed < 155f) _acceleration = 2.0f; else
+        if (CurrentSpeed < 160f) _acceleration = 1.5f; else
         if (CurrentSpeed < 165f) _acceleration = 1.25f; else
         if (CurrentSpeed < 170f) _acceleration = 1.1f; else
         if (CurrentSpeed < 175f) _acceleration = 0.95f; else

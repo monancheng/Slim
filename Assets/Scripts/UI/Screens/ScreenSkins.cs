@@ -9,9 +9,11 @@ public class ScreenSkins : MonoBehaviour
     [SerializeField] private GameObject[] _skinBtns;
     [SerializeField] private GameObject _choosedSkin;
     private bool _isNewSkinAvailable;
+    private UIElement[] elements;
 
     private void Start()
     {
+        elements = GetComponentsInChildren<UIElement>();
         AreThereSkins();
         AreThereSkinsGeneral();
 //        CheckAvailableSkin();
@@ -36,47 +38,59 @@ public class ScreenSkins : MonoBehaviour
 
     public void SetSkin(int id)
     {
-        if (id == DefsGame.CurrentFaceId)
-        {
-            Hide();
-            GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
-            GlobalEvents<OnGameOverScreenShowActiveItems>.Call(new OnGameOverScreenShowActiveItems());
-            return;
-        }
+//        if (id == DefsGame.CurrentFaceId)
+//        {
+//            Hide();
+//            GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
+//            GlobalEvents<OnGameOverScreenShowActiveItems>.Call(new OnGameOverScreenShowActiveItems());
+//            return;
+//        }
 
+        bool isAvailable = false;
         if (DefsGame.FaceAvailable[id] == 1)
         {
             DefsGame.CurrentFaceId = id;
             GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = id});
             SecurePlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
             ChooseColorForButtons();
+            isAvailable = true;
         } else
         // Social
         if (id == DefsGame.SKIN_FACEBOOK)
         {
             Application.OpenURL("http://facebook.com");
             OpenSkin(id);
+            isAvailable = true;
         } else 
         if (id == DefsGame.SKIN_TWITTER)
         {
             Application.OpenURL("http://twitter.com");
             OpenSkin(id);
+            isAvailable = true;
         } else 
         if (id == DefsGame.SKIN_INSTAGRAM)
         {
             Application.OpenURL("http://instagram.com");
             OpenSkin(id);
+            isAvailable = true;
         } else 
         if (id == DefsGame.SKIN_SPONSOR)
         {
             Application.OpenURL("http://squaredino.com");
             OpenSkin(id);
+            isAvailable = true;
         } 
         else if (DefsGame.CoinsCount >= 200/*DefsGame.FacePrice[_id - 1]*/)
         {
             BuySkin(id);
         }
-        else
+
+        if (isAvailable)
+        {
+            Hide();
+            GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
+            GlobalEvents<OnGameOverScreenShowActiveItems>.Call(new OnGameOverScreenShowActiveItems());
+        } else
         {
             GlobalEvents<OnShowScreenCoins>.Call(new OnShowScreenCoins());
         }
@@ -111,33 +125,8 @@ public class ScreenSkins : MonoBehaviour
         
         GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
         
-        UIManager.ShowUiElement("ScreenSkins");
-        UIManager.ShowUiElement("ScreenSkinsTopBar");
-//        UIManager.ShowUiElement("ScreenSkinsBackground");
-        UIManager.ShowUiElement("ScreenSkinsBtnBack");
-        UIManager.ShowUiElement("PreviewSkin");
-        UIManager.ShowUiElement("ScreenSkinsContainerBackground");
-        
-        
-        UIManager.ShowUiElement("BtnSkinRandom");
-        UIManager.ShowUiElement("BtnSkin1");
-        UIManager.ShowUiElement("BtnSkin2");
-        UIManager.ShowUiElement("BtnSkin3");
-        UIManager.ShowUiElement("BtnSkin4");
-        UIManager.ShowUiElement("BtnSkin5");
-        UIManager.ShowUiElement("BtnSkin6");
-        UIManager.ShowUiElement("BtnSkin7");
-        UIManager.ShowUiElement("BtnSkin8");
-        UIManager.ShowUiElement("BtnSkin9");
-        UIManager.ShowUiElement("BtnSkin10");
-        UIManager.ShowUiElement("BtnSkin11");
-        
-        UIManager.ShowUiElement("ChoosedSkin");
-       
-        if (_isNewSkinAvailable)
-        {
-            UIManager.ShowUiElement("LabelNewSkin");
-        }
+        foreach (UIElement element in elements)
+            UIManager.ShowUiElement(element.elementName);
         
         // Other screens
         UIManager.ShowUiElement("LabelCoins");
@@ -148,27 +137,8 @@ public class ScreenSkins : MonoBehaviour
 
     public void Hide()
     {
-        UIManager.HideUiElement("ScreenSkins");
-        UIManager.HideUiElement("ScreenSkinsTopBar");
-//        UIManager.ShowUiElement("ScreenSkinsBackground");
-        UIManager.HideUiElement("ScreenSkinsBtnBack");
-        UIManager.HideUiElement("PreviewSkin");
-        UIManager.HideUiElement("ScreenSkinsContainerBackground");
-        
-        UIManager.HideUiElement("ChoosedSkin");
-        UIManager.HideUiElement("BtnSkinRandom");
-        UIManager.HideUiElement("BtnSkin1");
-        UIManager.HideUiElement("BtnSkin2");
-        UIManager.HideUiElement("BtnSkin3");
-        UIManager.HideUiElement("BtnSkin4");
-        UIManager.HideUiElement("BtnSkin5");
-        UIManager.HideUiElement("BtnSkin6");
-        UIManager.HideUiElement("BtnSkin7");
-        UIManager.HideUiElement("BtnSkin8");
-        UIManager.HideUiElement("BtnSkin9");
-        UIManager.HideUiElement("BtnSkin10");
-        UIManager.HideUiElement("BtnSkin11");
-        UIManager.HideUiElement("LabelNewSkin");
+        foreach (UIElement element in elements)
+            UIManager.HideUiElement(element.elementName);
         // Other screens
         UIManager.HideUiElement("LabelCoins");
         UIManager.HideUiElement("ScreenMenuBtnPlus");
@@ -195,11 +165,9 @@ public class ScreenSkins : MonoBehaviour
 //            if (DefsGame.FaceAvailable[i] == 0 && DefsGame.CoinsCount >= 200)
 //            {
 //                _isNewSkinAvailable = true;
-//                UIManager.ShowUiElement("LabelNewSkin");
 //                return;
 //            }
 //        _isNewSkinAvailable = false;
-//        UIManager.HideUiElement("LabelNewSkin");
 //    }
     
     private void AreThereSkins()

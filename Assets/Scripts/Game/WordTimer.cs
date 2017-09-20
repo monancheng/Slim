@@ -7,14 +7,13 @@ public class WordTimer : MonoBehaviour {
 	[SerializeField] private  Text timeText;
 	private DateTime _nextDate;
 	private bool _isWaitTime;
-	private const float DelayTime = 60;
 	
 	// Use this for initialization
 	void Start () {
 		//Grab the old time from the player prefs as a long
-		SecurePlayerPrefs.SetInt("isNeedToWaitWord", 1);
-		SecurePlayerPrefs.SetString("WaitNewWordDate", "");
-		int isNeedToWait = SecurePlayerPrefs.GetInt("isNeedToWaitWord", 0);
+//		SecurePlayerPrefs.SetInt("isNeedToWaitWord", 1);
+//		SecurePlayerPrefs.SetString("WaitNewWordDate", "");
+		int isNeedToWait = SecurePlayerPrefs.GetInt("isNeedToWaitWord");
 		if (isNeedToWait == 1)
 		{
 			string strTime = SecurePlayerPrefs.GetString("WaitNewWordDate");
@@ -22,7 +21,6 @@ public class WordTimer : MonoBehaviour {
 			if (strTime == "")
 			{
 				_nextDate = DateTime.UtcNow;
-				_nextDate = _nextDate.AddMinutes(0);
 			}
 			else
 			{

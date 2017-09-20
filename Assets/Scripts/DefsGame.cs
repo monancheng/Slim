@@ -68,11 +68,11 @@ public struct DefsGame
         GameBestScore = SecurePlayerPrefs.GetInt("BestScore");
 //      gameBestScore = 0;
         CoinsCount = SecurePlayerPrefs.GetInt("coinsCount");
-        CoinsCount = 2000;
+//        CoinsCount = 0;
         RateCounter = PlayerPrefs.GetInt("rateCounter", 0);
 
-        for (var i = 0; i < FaceAvailable.Length; i++)
-            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 1);
+//        for (var i = 0; i < FaceAvailable.Length; i++)
+//            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 0);
         
         for (var i = 0; i < FaceAvailable.Length; i++)
             if (i == 0)

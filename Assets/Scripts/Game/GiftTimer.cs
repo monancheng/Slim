@@ -12,7 +12,6 @@ public class GiftTimer : MonoBehaviour
     private void Start()
     {
         //Grab the old time from the player prefs as a long
-        SecurePlayerPrefs.SetString("dateGiftClicked","");
         string strTime = SecurePlayerPrefs.GetString("dateGiftClicked");
 
         DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER = 0;

@@ -257,6 +257,10 @@ public class MyPlayer : MonoBehaviour
 //                CirclePositionY - yCoeff,
                 transform.position.z);
             
+            
+            if (transform.position.x < -25) transform.position = new Vector3(-25, transform.position.y, transform.position.z); else
+            if (transform.position.x > 25) transform.position = new Vector3(25, transform.position.y, transform.position.z);
+            
             Camera.main.transform.position = new Vector3(_cameraStartPosition.x + xCoeff*0.05f, _cameraStartPosition.y, _cameraStartPosition.z);
             _startCursorPoint = cursorPosition;
         }
