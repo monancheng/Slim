@@ -144,7 +144,7 @@ public class TubeManager : MonoBehaviour
                 color = ColorTheme.GetTubeColor();
             }
             
-            CreateTube(newRadius, color, 630f - i*210f);
+            CreateTube(newRadius, color, 660f - i*220f);
         }
         _increaseCounter = 1;
     }
@@ -174,7 +174,7 @@ public class TubeManager : MonoBehaviour
             color = ColorTheme.GetTubeColor();
         }
 
-        CreateTube(newRadius, color, 630);
+        CreateTube(newRadius, color, 660);
         IncreaseSpeed();
         bool isBonusCreated = false;
         
