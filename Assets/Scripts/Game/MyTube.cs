@@ -2,6 +2,7 @@
 using PrimitivesPro.GameObjects;
 using PrimitivesPro.Primitives;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class MyTube : MonoBehaviour
 {
@@ -80,6 +81,9 @@ public class MyTube : MonoBehaviour
     public void ChangeRadius(float scale)
     {
         Scale = scale;
+        Light light = GetComponent<Light>();
+        if (light)
+        light.range = 30*scale;
     }
 
     private void OnTubeMove()

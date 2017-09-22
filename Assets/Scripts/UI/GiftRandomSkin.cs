@@ -39,7 +39,7 @@ public class GiftRandomSkin : MonoBehaviour
 		
 		// Создаем список со всеми доступными скинами
 		List<int> availableSkins = new List<int>();
-		for (int j = 0; j < DefsGame.FaceAvailable.Length; j++)
+		for (int j = DefsGame.FacesGeneralMin; j < DefsGame.FacesGeneralMax; j++)
 		{
 			if (DefsGame.FaceAvailable[j] == 0)
 			{

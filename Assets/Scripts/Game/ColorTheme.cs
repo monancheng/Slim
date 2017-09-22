@@ -1,13 +1,10 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class ColorTheme : MonoBehaviour
 {
     private static int _currentTubeId;
-
-//    public static Color GetPlayerStartColor()
-//    {
-//        return new Color(69f/255f, 69f / 255f, 69f / 255f);
-//    }
+    private static List<Color> _colorsCurrList = new List<Color>();
     
 
 //    public static Color GetPlayerRandomColor()
@@ -43,31 +40,45 @@ public class ColorTheme : MonoBehaviour
 //        return new Color(107f / 252.0f, 253f / 255f, 185f / 255f);
 //    }
     
-    public static Color GetTubeColor()
-    {
-        switch (_currentTubeId)
-        {
-            case 0:return new Color(227f / 255.0f, 199f / 255f, 35f / 255f);
-            case 1:return new Color(142f / 255.0f, 224f / 255f, 69f / 255f);
-            case 2:return new Color(73f/255f, 76f / 255f, 84f / 255f);
-            case 3:return new Color(81f / 255f, 185f / 255f, 240f / 255f);
-            case 4:return new Color(199f / 255.0f, 222f / 255f, 255f / 255f);
-            case 5:return new Color(191f / 255.0f, 58f / 255f, 53f / 255f);
-            case 6:return new Color(68f / 255.0f, 218f / 255f, 251f / 255f);
-            case 7:return new Color(88f / 255.0f, 109f / 255f, 238f / 255f);
-            case 8:return new Color(37f / 252.0f, 221f / 255f, 203f / 255f);
-        }
-        
-        return new Color(142f / 255.0f, 224f / 255f, 69f / 255f);
-    }
-
     public static void SetFirstColor()
     {
         _currentTubeId = 0;
     }
+    
+    public static Color GetTubeColor()
+    {
+        if (_colorsCurrList.Count == 0)
+        {
+            InitColors();
+        }
+        return _colorsCurrList[_currentTubeId];
+    }
 
     public static void GetNextRandomId()
     {
-        _currentTubeId = Mathf.RoundToInt(Random.Range(0, 8));
+        if (_currentTubeId < _colorsCurrList.Count)
+        _colorsCurrList.RemoveAt(_currentTubeId);
+        // Если закончились элементы, обновляем массив
+        if (_colorsCurrList.Count == 0)
+        {
+            InitColors();
+        }
+        _currentTubeId = Mathf.RoundToInt(Random.Range(0, _colorsCurrList.Count));
+    }
+
+    private static void InitColors()
+    {
+        _colorsCurrList = new List<Color>
+        {
+            new Color(227f / 255.0f, 199f / 255f, 35f / 255f),
+            new Color(142f / 255.0f, 224f / 255f, 69f / 255f),
+            new Color(73f / 255f, 76f / 255f, 84f / 255f),
+            new Color(81f / 255f, 185f / 255f, 240f / 255f),
+            new Color(199f / 255.0f, 222f / 255f, 255f / 255f),
+            new Color(191f / 255.0f, 58f / 255f, 53f / 255f),
+            new Color(68f / 255.0f, 218f / 255f, 251f / 255f),
+            new Color(88f / 255.0f, 109f / 255f, 238f / 255f),
+            new Color(37f / 252.0f, 221f / 255f, 203f / 255f)
+        };
     }
 }

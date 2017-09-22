@@ -76,13 +76,14 @@ public class ScreenSkins : MonoBehaviour
         } else 
         if (id == DefsGame.SKIN_SPONSOR)
         {
-            Application.OpenURL("http://squaredino.com");
+            Application.OpenURL("http://www.ketchappstudio.com");
             OpenSkin(id);
             isAvailable = true;
         } 
         else if (DefsGame.CoinsCount >= 200/*DefsGame.FacePrice[_id - 1]*/)
         {
             BuySkin(id);
+            isAvailable = true;
         }
 
         if (isAvailable)

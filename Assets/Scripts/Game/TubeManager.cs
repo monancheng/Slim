@@ -4,10 +4,12 @@ using PrimitivesPro.GameObjects;
 using PrimitivesPro.Primitives;
 using UnityEngine;
 using UnityEngine.Rendering;
+using VoxelBusters.Utility;
 using Random = UnityEngine.Random;
 
 public class TubeManager : MonoBehaviour
 {
+    [SerializeField] private GameObject _pointLight;
     [SerializeField] private GameObject[] _tubes;
     [SerializeField] private Color[] _colors;
     
@@ -23,10 +25,10 @@ public class TubeManager : MonoBehaviour
     private const float OuterRadius = 14f;
     public static readonly float InitRadius = 7f;
     
-    private const float MaxSpeed = 210f;
+    private const float MaxSpeed = 225f;
     private float _acceleration = 2.9f;
     
-    private const float StartSpeed = 137f;
+    private const float StartSpeed = 145f;
     private const float StartRadiusMinus = 1.25f;
     
     private int _counter;
@@ -38,12 +40,16 @@ public class TubeManager : MonoBehaviour
     private bool _isFingerStart;
     private bool _isWordWait;
     private bool _isWordActive;
+    private Color _playerColor;
+    private bool isTubeAngleRight;
+    private float _tubeAngle;
 
     private void Start()
     {
         _radiusAddCoeff = 5f;
         _counter = 0;
         
+        ColorTheme.SetFirstColor();
         CreateTubeStart();
 //        GameEvents.Send(OnSendCurrentColorToPlayer, _colors[DefsGame.CurrentFaceId]);
     }
@@ -52,6 +58,7 @@ public class TubeManager : MonoBehaviour
     {
         MyTube.OnDestroy += RemoveItem;
         MyPlayer.OnTubeCreate += OnTubeCreate;
+        MyPlayer.OnChangeColor += OnChangeColor;
         GlobalEvents<OnStartGame>.Happened += StartGame;
         GlobalEvents<OnGameOver>.Happened += OnGameOver;
         GlobalEvents<OnShowMenu>.Happened += OnShowMenu;
@@ -62,7 +69,12 @@ public class TubeManager : MonoBehaviour
         GlobalEvents<OnTubeCreateExample>.Happened += OnTubeCreateExample;
 //        GlobalEvents<OnChangeSkin>.Happened += OnChangeSkin;
     }
-    
+
+    private void OnChangeColor(Color obj)
+    {
+        _playerColor = obj;
+    }
+
 //    private void OnChangeSkin(OnChangeSkin obj)
 //    {
 //        GameEvents.Send(OnSendCurrentColorToPlayer, _colors[DefsGame.CurrentFaceId]);
@@ -127,10 +139,10 @@ public class TubeManager : MonoBehaviour
 
     private void CreateTubeStart()
     {
-        if (DefsGame.QUEST_GAMEPLAY_Counter < 3)
-            ColorTheme.SetFirstColor();
-        else
+        if (DefsGame.QUEST_GAMEPLAY_Counter >= 1)
             ColorTheme.GetNextRandomId();
+
+        _tubeAngle = 0;
         
         var newRadius = InitRadius + _radiusAddCoeff;
         for (int i = 0; i < 3; i++)
@@ -239,18 +251,53 @@ public class TubeManager : MonoBehaviour
         script.ChangeRadius(radius/InitRadius);
         _itemList.Add(script);
         currentTube.GetComponent<Collider>().isTrigger = true;
+        
+        currentTube.layer = LayerMask.NameToLayer("Rings");
+        Light light = currentTube.AddComponent<Light>();
+        light.color = new Color(_playerColor.r,_playerColor.g, _playerColor.b, 1f);
+        light.range = 30*radius/InitRadius;
+        light.intensity = 5;
+        light.cullingMask = 1 << currentTube.layer;
+
+        currentTube.transform.Rotate(Vector3.up, _tubeAngle);
+        
+        if (isTubeAngleRight)
+        {
+            _tubeAngle += 2f;
+            if (_tubeAngle >= 10f)
+            {
+                isTubeAngleRight = false;
+            }
+        }
+        else
+        {
+            _tubeAngle -= 2f;
+            if (_tubeAngle <= -10f)
+            {
+                isTubeAngleRight = true;
+            }
+        }
+
+//        GameObject pointLightGo = Instantiate(_pointLight);
+//        Light light = pointLightGo.GetComponent<Light>();
+//        light.color = _playerColor;
+//        pointLightGo.transform.SetParent(transform, false);
+//        pointLightGo.transform.localPosition = Vector3.zero;
     }
 
     private void IncreaseSpeed()
     {
-        if (CurrentSpeed < 143f) _acceleration = 2.9f; else
-        if (CurrentSpeed < 150f) _acceleration = 2.5f; else
-        if (CurrentSpeed < 155f) _acceleration = 2.0f; else
-        if (CurrentSpeed < 160f) _acceleration = 1.5f; else
-        if (CurrentSpeed < 165f) _acceleration = 1.25f; else
-        if (CurrentSpeed < 170f) _acceleration = 1.1f; else
-        if (CurrentSpeed < 175f) _acceleration = 0.95f; else
-        if (CurrentSpeed < 180f) _acceleration = 0.90f; else
+        if (CurrentSpeed < 150f) _acceleration = 3.0f; else
+        if (CurrentSpeed < 155f) _acceleration = 2.7f; else
+        if (CurrentSpeed < 160f) _acceleration = 2.3f; else
+        if (CurrentSpeed < 165f) _acceleration = 1.8f; else
+        if (CurrentSpeed < 170f) _acceleration = 1.4f; else
+        if (CurrentSpeed < 175f) _acceleration = 1.2f; else
+        if (CurrentSpeed < 180f) _acceleration = 1.1f; else
+        if (CurrentSpeed < 185f) _acceleration = 1.0f; else
+        if (CurrentSpeed < 190f) _acceleration = 0.90f; else
+        if (CurrentSpeed < 195f) _acceleration = 0.85f; else
+        if (CurrentSpeed < 200f) _acceleration = 0.80f; else
             _acceleration = 0.5f;
         CurrentSpeed += _acceleration;
         if (CurrentSpeed > MaxSpeed) CurrentSpeed = MaxSpeed;

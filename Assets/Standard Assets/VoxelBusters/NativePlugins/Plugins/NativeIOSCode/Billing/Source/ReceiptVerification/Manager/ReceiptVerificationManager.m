@@ -12,8 +12,8 @@
 #import "RMStoreTransactionReceiptVerificator.h"
 
 // Constants
-const NSString *bundleIdentifier	= @"com.yohoho.slim";
-const NSString *bundleVersion		= @"0";
+const NSString *bundleIdentifier	= @"com.squaredino.slimring";
+const NSString *bundleVersion		= @"1";
 
 @interface ReceiptVerificationManager ()
 

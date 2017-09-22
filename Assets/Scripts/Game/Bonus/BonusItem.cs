@@ -76,7 +76,7 @@ public class BonusItem : MonoBehaviour {
 		SetColorAlpha();
 		float posX = 22f;
 		if (Random.value > 0.5f) posX *= -1;
-		transform.position = new Vector3(posX, 700f, 0f);
+		transform.position = new Vector3(posX, 680f, 0f);
 		transform.localScale = new Vector3(0f, 0f, 0f);
 		_isShowAnimation = true;
 	}

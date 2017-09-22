@@ -12,6 +12,7 @@ public class MyPlayer : MonoBehaviour
     public static event Action OnTubeMove;
     public static event Action<int, float, Vector3, float> OnCombo;
     public static event Action<float> OnIncreaseTubeRadius;
+    public static event Action<Color> OnChangeColor;
 
     private const float MinSize = 1.0f;
     private const float ErrorCoeff = 0.63f;
@@ -51,7 +52,7 @@ public class MyPlayer : MonoBehaviour
 //        _renderer = GetComponent<MeshRenderer>();
 
         RespownAndWait();
-
+        GameEvents.Send(OnChangeColor, _colors[DefsGame.CurrentFaceId]);
         transform.DORotate(new Vector3(0, 0, 20f), 1, RotateMode.LocalAxisAdd).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
 
         _startDistance = Vector3.Distance(new Vector3(0f, CirclePositionY, transform.position.z), transform.position);
@@ -76,6 +77,7 @@ public class MyPlayer : MonoBehaviour
     private void OnChangeSkin(OnChangeSkin obj)
     {
         GetComponent<Renderer>().material.SetColor("_Color", _colors[obj.Id]);
+        GameEvents.Send(OnChangeColor, _colors[obj.Id]);
 //        GetComponent<Renderer>().material = _materials[obj.Id];
 //        GetComponent<Renderer>().mesh = _meshes[obj.Id];
     }
