@@ -59,7 +59,7 @@ public class ScreenGift : MonoBehaviour
 			return;
 		} 
 		
-		UIManager.HideUiElement("ScreenGift");
+//		UIManager.HideUiElement("ScreenGift");
 		GlobalEvents<OnGiftCollected>.Call(new OnGiftCollected());
 		GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
 	}
@@ -123,7 +123,7 @@ public class ScreenGift : MonoBehaviour
 	private void OnGiftAnimationDone(OnGiftAnimationDone obj)
 	{
 		Debug.Log("OnGiftAnimationDone(OnGiftAnimationDone obj)");
-		UIManager.ShowUiElement("ScreenGift");
+//		UIManager.ShowUiElement("ScreenGift");
 		if (_giftType == 1) MakeAGift();
 		else if (_giftType == 2) MakeAGiftRandomSkin();
 		else if (_giftType == 3) MakeAGiftWord();

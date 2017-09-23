@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DarkTonic.MasterAudio;
 using DoozyUI;
 using PrefsEditor;
 using UnityEngine;
@@ -88,6 +89,7 @@ public class ScreenSkins : MonoBehaviour
 
         if (isAvailable)
         {
+            MasterAudio.PlaySoundAndForget("GUI_Grab");
             Hide();
             GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
             GlobalEvents<OnGameOverScreenShowActiveItems>.Call(new OnGameOverScreenShowActiveItems());

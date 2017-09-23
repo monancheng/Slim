@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DG.Tweening;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class BtnPlus : MonoBehaviour
@@ -8,10 +9,15 @@ public class BtnPlus : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		FitText();
+//		FitText();
 	}
 
-	private void FitText()
+	public void FitText()
+	{
+		Invoke("Fit", 1f);
+	}
+
+	private void Fit()
 	{
 		TextGenerator textGen = new TextGenerator();
 		Text text = _textItem.GetComponent<Text>();
@@ -19,10 +25,11 @@ public class BtnPlus : MonoBehaviour
 		float width = textGen.GetPreferredWidth(text.text, generationSettings);
 //		float height = textGen.GetPreferredHeight(text.text, generationSettings);
 		transform.position = new Vector3(_textItem.transform.position.x + 55 - width, transform.position.y, transform.position.z);
+		transform.DOScale(new Vector3(1, 1, 1), 0.4f).SetEase(Ease.InOutElastic);
 	}
 
 	// Update is called once per frame
-	void Update () {
-		FitText();
-	}
+//	void Update () {
+//		FitText();
+//	}
 }
