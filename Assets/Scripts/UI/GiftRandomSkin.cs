@@ -50,8 +50,8 @@ public class GiftRandomSkin : MonoBehaviour
 		if (availableSkins.Count > 0)
 		{
 			int id = Random.Range(0, availableSkins.Count + 1);
-			Debug.Log("GetRandomAvailableSkin RETURN id = " + id);
-			return id;
+			Debug.Log("GetRandomAvailableSkin RETURN id = " + availableSkins[id]);
+			return availableSkins[id];
 		}
 
 		Debug.Log("GetRandomAvailableSkin RETURN id = " + -1);

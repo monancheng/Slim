@@ -14,7 +14,7 @@ public struct DefsGame
     public static int CurrentFaceId;
     public static int FacesGeneralMin = 0;
     public static int FacesGeneralMax = 14;
-    public static int[] FaceAvailable = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    public static int[] FaceAvailable = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     
     public static int SKIN_FACEBOOK = 15;
     public static int SKIN_TWITTER = 16;
@@ -74,10 +74,8 @@ public struct DefsGame
 //        for (var i = 0; i < FaceAvailable.Length; i++)
 //            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 0);
         
-        for (var i = 0; i < FaceAvailable.Length; i++)
-            if (i == 0)
-                FaceAvailable[0] = 1;
-            else FaceAvailable[i] = SecurePlayerPrefs.GetInt("faceAvailable_" + i);
+        for (var i = 1; i < FaceAvailable.Length; i++)
+            FaceAvailable[i] = SecurePlayerPrefs.GetInt("faceAvailable_" + i);
 
         for (var i = 0; i < FaceAvailable.Length; i++)
         {
