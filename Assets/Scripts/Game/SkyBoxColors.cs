@@ -14,7 +14,7 @@ public class SkyBoxColors : MonoBehaviour
     public Color[] ColorsTop;
     public Color[] ColorsDown;
     
-    public Light Light;
+//    public Light Light;
 
     private float startTime;
 
@@ -26,8 +26,6 @@ public class SkyBoxColors : MonoBehaviour
         GetComponent<Skybox>().material.SetColor("_Color2", _currColorTop);
         _currColorDown = ColorsDown[_nextColorId];
         GetComponent<Skybox>().material.SetColor("_Color1", _currColorDown);
-        
-        
     }
 
     private void ChooseNextColor()

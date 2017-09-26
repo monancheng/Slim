@@ -80,6 +80,7 @@ public class ScreenGame : MonoBehaviour
 //        Record.DOSave();
         MasterAudio.PlaySoundAndForget("GameOver");
 
+        
         if (DefsGame.IS_ACHIEVEMENT_MISS_CLICK == 0)
         {
             ++DefsGame.QUEST_MISS_Counter;
@@ -106,10 +107,10 @@ public class ScreenGame : MonoBehaviour
 
         ++DefsGame.QUEST_THROW_Counter;
 
-        if (DefsGame.GameplayCounter == 1) GlobalEvents<OnPointsShow>.Call(new OnPointsShow());
+        GlobalEvents<OnPointsReset>.Call(new OnPointsReset());
+//        if (DefsGame.GameplayCounter == 1) GlobalEvents<OnPointsShow>.Call(new OnPointsShow());
             
         DefsGame.CurrentScreen = DefsGame.SCREEN_GAME;
-        GlobalEvents<OnPointsReset>.Call(new OnPointsReset());
     }
 
     public void EndCurrentGame()

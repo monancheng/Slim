@@ -202,7 +202,7 @@ public class TubeManager : MonoBehaviour
 
 		if (!isBonusCreated) {
 			if (_coinCounter % 6 == 0) {			
-			    if (Random.value > 0.5f) {
+			    if (Random.value > 0.3f) {
 					GameEvents.Send (OnCreateCoin);
 					isBonusCreated = true;
 			    }
@@ -211,10 +211,10 @@ public class TubeManager : MonoBehaviour
 			
 		if (!isBonusCreated && !_isWordWait && _isWordActive) {
 			if (_coinCounter % 15 == 0) {
-				if (Random.value > 0.5f) {
+//				if (Random.value > 0.5f) {
 					GameEvents.Send (OnCreateChar);
 					isBonusCreated = true;
-				}
+//				}
 			}
 		}
     }

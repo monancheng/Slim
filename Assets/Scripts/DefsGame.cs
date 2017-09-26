@@ -71,8 +71,8 @@ public struct DefsGame
         CoinsCount = 2000;
         RateCounter = PlayerPrefs.GetInt("rateCounter", 0);
 
-//        for (var i = 0; i < FaceAvailable.Length; i++)
-//            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 0);
+        for (var i = 0; i < FaceAvailable.Length; i++)
+            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 0);
         
         for (var i = 1; i < FaceAvailable.Length; i++)
             FaceAvailable[i] = SecurePlayerPrefs.GetInt("faceAvailable_" + i);

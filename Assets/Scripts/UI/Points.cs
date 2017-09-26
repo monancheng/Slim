@@ -1,74 +1,54 @@
-﻿using UnityEngine;
+﻿using DoozyUI;
+using PrefsEditor;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class Points : MonoBehaviour
 {
     private const float Delay = 0.0f;
     private bool _isPointAdded;
-    private bool _isShowAnimation;
     private float _startScale;
     private float _time;
     [SerializeField] private Text textField;
+    private bool _isVisual;
 
     private void Start()
     {
         textField.text = "0";
-        var color = textField.color;
-        color.a = 0f;
-        textField.color = color;
         _startScale = textField.transform.localScale.x;
     }
 
     private void OnEnable()
     {
-        GlobalEvents<OnPointsShow>.Happened += OnPointsShow;
+//        GlobalEvents<OnPointsShow>.Happened += OnPointsShow;
         GlobalEvents<OnPointsAdd>.Happened += OnPointsAdd;
         GlobalEvents<OnPointsReset>.Happened += OnPointsReset;
     }
 
     private void OnPointsReset(OnPointsReset obj)
     {
-        ResetCounter();
+        DefsGame.CurrentPointsCount = 0;
+        textField.text = "0";
+        _isVisual = false;
     }
 
-    private void OnPointsShow(OnPointsShow obj)
-    {
-        ShowAnimation();
-    }
+//    private void OnPointsShow(OnPointsShow obj)
+//    {
+//        _isShowAnimation = true;
+//    }
 
     private void OnPointsAdd(OnPointsAdd e)
     {
         AddPoint(e.PointsCount);
-    }
-
-    private void ShowAnimation()
-    {
-        _isShowAnimation = true;
-    }
-
-    private void ResetCounter()
-    {
-        DefsGame.CurrentPointsCount = 0;
-        textField.text = "0";
+        if (!_isVisual)
+        {
+            _isVisual = true;
+            UIManager.ShowUiElement("LabelPoints");
+        }
     }
 
     private void Update()
     {
-        if (_isShowAnimation)
-        {
-            var color = textField.color;
-            if (textField.color.a < 1f)
-            {
-                color.a += 0.1f;
-            }
-            else
-            {
-                _isShowAnimation = false;
-                color.a = 1f;
-            }
-            textField.color = color;
-        }
-
         if (_isPointAdded)
         {
             _time += Time.deltaTime;
@@ -88,7 +68,11 @@ public class Points : MonoBehaviour
     private void AddPoint(int count)
     {
         DefsGame.CurrentPointsCount += count;
-        if (DefsGame.GameBestScore < DefsGame.CurrentPointsCount) DefsGame.GameBestScore = DefsGame.CurrentPointsCount;
+        if (DefsGame.GameBestScore < DefsGame.CurrentPointsCount)
+        {
+            DefsGame.GameBestScore = DefsGame.CurrentPointsCount;
+            SecurePlayerPrefs.SetInt("BestScore",DefsGame.GameBestScore);
+        }
         _isPointAdded = true;
     }
 

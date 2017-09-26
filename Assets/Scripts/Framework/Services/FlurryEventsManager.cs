@@ -2,17 +2,17 @@
 
 public class FlurryEventsManager : MonoBehaviour
 {
-    private static float realTimeOnEnterBackground;
-    private static readonly float realTimeOnExitBackground = 0f;
-
-    public static bool dontSendLengthtEvent = false;
-
-    private static bool startScreenLengthOpened = false;
-    private static bool attemptLength = false;
-    private static bool iapShopLengthOpened = false;
-    private static bool candyShopOpened = false;
-
-    private readonly bool coldSessionStarted = false;
+//    private static float realTimeOnEnterBackground;
+//    private static readonly float realTimeOnExitBackground = 0f;
+//
+//    public static bool dontSendLengthtEvent = false;
+//
+//    private static bool startScreenLengthOpened = false;
+//    private static bool attemptLength = false;
+//    private static bool iapShopLengthOpened = false;
+//    private static bool candyShopOpened = false;
+//
+//    private readonly bool coldSessionStarted = false;
 
 
     private void Awake()
@@ -87,13 +87,13 @@ public class FlurryEventsManager : MonoBehaviour
         }*/
     }
 
-    private void OnEnterBackground()
-    {
-        Debug.Log("OnEnterBackground");
-        realTimeOnEnterBackground = Time.realtimeSinceStartup;
-        var realSessionTime = realTimeOnEnterBackground - realTimeOnExitBackground;
-        SetRealSessionTime(realSessionTime);
-    }
+//    private void OnEnterBackground()
+//    {
+//        Debug.Log("OnEnterBackground");
+//        realTimeOnEnterBackground = Time.realtimeSinceStartup;
+//        var realSessionTime = realTimeOnEnterBackground - realTimeOnExitBackground;
+//        SetRealSessionTime(realSessionTime);
+//    }
 
     private void OnExitBackground()
     {
@@ -110,22 +110,22 @@ public class FlurryEventsManager : MonoBehaviour
         }*/
     }
 
-    private void Update()
-    {
-        if (!coldSessionStarted)
-        {
-            /*if (FlurryEvents.Analytics != null)
-            {
-                if (GetRealSessionTime() > 0f){
-                    SendEndSessionEvent ();
-                }
-                ResetRealSessionTime();
-
-                SendStartSesionEvent ();
-                coldSessionStarted = true;
-            }*/
-        }
-    }
+//    private void Update()
+//    {
+//        if (!coldSessionStarted)
+//        {
+//            if (FlurryEvents.Analytics != null)
+//            {
+//                if (GetRealSessionTime() > 0f){
+//                    SendEndSessionEvent ();
+//                }
+//                ResetRealSessionTime();
+//
+//                SendStartSesionEvent ();
+//                coldSessionStarted = true;
+//            }
+//        }
+//    }
 
     // Real session time
 

@@ -18,6 +18,13 @@ public class ScreenSkins : MonoBehaviour
         AreThereSkins();
         AreThereSkinsGeneral();
 //        CheckAvailableSkin();
+        
+        if (DefsGame.GameBestScore > 0) UIManager.ShowUiElement("LabelBestScore");
+        if (DefsGame.CoinsCount > 0)
+        {
+            UIManager.ShowUiElement("LabelCoins");
+//            UIManager.ShowUiElement("ScreenMenuBtnPlus");
+        }
     }
 
     private void OnEnable()
@@ -133,7 +140,7 @@ public class ScreenSkins : MonoBehaviour
         
         // Other screens
         UIManager.ShowUiElement("LabelCoins");
-        UIManager.ShowUiElement("ScreenMenuBtnPlus");
+//        UIManager.ShowUiElement("ScreenMenuBtnPlus");
         
         Invoke("ChooseColorForButtons", 1f);
     }
@@ -142,9 +149,6 @@ public class ScreenSkins : MonoBehaviour
     {
         foreach (UIElement element in elements)
             UIManager.HideUiElement(element.elementName);
-        // Other screens
-        UIManager.HideUiElement("LabelCoins");
-        UIManager.HideUiElement("ScreenMenuBtnPlus");
     }
     
     private void ChooseColorForButtons()

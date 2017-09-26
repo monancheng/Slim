@@ -14,6 +14,8 @@ public class MyPlayer : MonoBehaviour
     public static event Action<float> OnIncreaseTubeRadius;
     public static event Action<Color> OnChangeColor;
 
+//    [SerializeField] private ParticleSystem _psSlide;
+
     private const float MinSize = 1.0f;
     private const float ErrorCoeff = 0.63f;
     private const float BonusRadiusCoeff = 2.0f;
@@ -155,6 +157,8 @@ public class MyPlayer : MonoBehaviour
                 ChangeSize();
                 CreateCutTube(cutSize);
                 MasterAudio.PlaySoundAndForget("Slice");
+//                _psSlide.transform.position = new Vector3(transform.position.x, _psSlide.transform.position.y, _psSlide.transform.position.z);
+//                _psSlide.Play();
             }
             else
             {

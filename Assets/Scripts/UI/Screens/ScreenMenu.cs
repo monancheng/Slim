@@ -37,7 +37,6 @@ public class ScreenMenu : MonoBehaviour
     private void OnStartGame(OnStartGame obj)
     {
         Hide();
-        UIManager.ShowUiElement("LabelPoints");
     }
     
     private void OnHideMenuButtons(OnHideMenuButtons obj)
@@ -48,8 +47,6 @@ public class ScreenMenu : MonoBehaviour
         _isButtonHiden = true;
         //UIManager.HideUiElement ("MainMenu");
         UIManager.HideUiElement("LabelBestScore");
-        UIManager.HideUiElement("elementBestScore");
-        //UIManager.HideUiElement ("elementCoins");
         UIManager.HideUiElement("BtnSkins");
         UIManager.HideUiElement("ScreenMainBtnPlay");
         UIManager.HideUiElement("BtnAchievements");
@@ -57,7 +54,7 @@ public class ScreenMenu : MonoBehaviour
         UIManager.HideUiElement("BtnGameServices");
         UIManager.HideUiElement("ScreenMainBtnSettings");
         UIManager.HideUiElement("BtnHaveNewSkin");
-        UIManager.HideUiElement("ScreenMenuBtnPlus");
+//        UIManager.HideUiElement("ScreenMenuBtnPlus");
     }
 
     private void OnShowMenuButtons(OnShowMenuButtons obj)
@@ -65,16 +62,28 @@ public class ScreenMenu : MonoBehaviour
         _isButtonHiden = false;
 
         //UIManager.ShowUiElement ("MainMenu");
-        UIManager.ShowUiElement("LabelBestScore");
-        UIManager.ShowUiElement("elementBestScore");
-        UIManager.ShowUiElement("LabelCoins");
+        if (DefsGame.GameBestScore > 0)
+        {
+            UIManager.ShowUiElement("LabelBestScore");
+        }
+
+        if (DefsGame.CoinsCount > 0)
+        {
+            UIManager.ShowUiElement("LabelCoins");
+//            UIManager.ShowUiElement("ScreenMenuBtnPlus");
+        }
+        else
+        {
+            UIManager.HideUiElement("LabelCoins");
+//            UIManager.HideUiElement("ScreenMenuBtnPlus");
+        }
         
         UIManager.ShowUiElement("BtnSkins");
         UIManager.ShowUiElement("ScreenMainBtnPlay");
         UIManager.ShowUiElement("BtnLeaderboard");
         UIManager.ShowUiElement("BtnAchievements");
         UIManager.ShowUiElement("ScreenMainBtnSettings");
-        UIManager.ShowUiElement("ScreenMenuBtnPlus");
+        
 #if UNITY_ANDROID || UNITY_EDITOR
         UIManager.ShowUiElement("BtnGameServices");
 #endif

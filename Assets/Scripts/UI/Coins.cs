@@ -1,4 +1,5 @@
 ﻿using DarkTonic.MasterAudio;
+using DoozyUI;
 using PrefsEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,6 +29,7 @@ public class Coins : MonoBehaviour
         GlobalEvents<OnCoinsAdded>.Call(new OnCoinsAdded{Total = DefsGame.CoinsCount});
         textField.text = DefsGame.CoinsCount.ToString();
         img.transform.localScale = new Vector3(_startScale * 1.4f, _startScale * 1.4f, 1f);
+        UIManager.ShowUiElement("LabelCoins");
     }
 
     // Update is called once per frame
