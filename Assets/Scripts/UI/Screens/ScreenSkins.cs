@@ -23,7 +23,7 @@ public class ScreenSkins : MonoBehaviour
         if (DefsGame.CoinsCount > 0)
         {
             UIManager.ShowUiElement("LabelCoins");
-//            UIManager.ShowUiElement("ScreenMenuBtnPlus");
+            UIManager.ShowUiElement("ScreenMenuBtnPlus");
         }
     }
 
@@ -140,7 +140,7 @@ public class ScreenSkins : MonoBehaviour
         
         // Other screens
         UIManager.ShowUiElement("LabelCoins");
-//        UIManager.ShowUiElement("ScreenMenuBtnPlus");
+        UIManager.ShowUiElement("ScreenMenuBtnPlus");
         
         Invoke("ChooseColorForButtons", 1f);
     }

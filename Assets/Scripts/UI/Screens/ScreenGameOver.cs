@@ -553,6 +553,7 @@ public class ScreenGameOver : MonoBehaviour
     
     public void BtnGiftClick()
     {
+        UIManager.ShowUiElement("LabelCoins");
         _giftCollectedType = GiftCollectedType.Gift;
         HideActiveItems();
         int id = _activeNamesList.IndexOf("NotifyGift"); 

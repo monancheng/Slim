@@ -54,7 +54,7 @@ public class ScreenMenu : MonoBehaviour
         UIManager.HideUiElement("BtnGameServices");
         UIManager.HideUiElement("ScreenMainBtnSettings");
         UIManager.HideUiElement("BtnHaveNewSkin");
-//        UIManager.HideUiElement("ScreenMenuBtnPlus");
+        UIManager.HideUiElement("ScreenMenuBtnPlus");
     }
 
     private void OnShowMenuButtons(OnShowMenuButtons obj)
@@ -70,12 +70,12 @@ public class ScreenMenu : MonoBehaviour
         if (DefsGame.CoinsCount > 0)
         {
             UIManager.ShowUiElement("LabelCoins");
-//            UIManager.ShowUiElement("ScreenMenuBtnPlus");
+            UIManager.ShowUiElement("ScreenMenuBtnPlus");
         }
         else
         {
             UIManager.HideUiElement("LabelCoins");
-//            UIManager.HideUiElement("ScreenMenuBtnPlus");
+            UIManager.HideUiElement("ScreenMenuBtnPlus");
         }
         
         UIManager.ShowUiElement("BtnSkins");

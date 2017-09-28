@@ -1,10 +1,12 @@
 ﻿using DG.Tweening;
+using QuickEngine.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class BtnPlus : MonoBehaviour
 {
 	[SerializeField] private GameObject _textItem;
+	[SerializeField] private Image _diamondImage;
 	
 	// Use this for initialization
 	void Start ()
@@ -24,7 +26,9 @@ public class BtnPlus : MonoBehaviour
 		TextGenerationSettings generationSettings = text.GetGenerationSettings(text.rectTransform.rect.size); 
 		float width = textGen.GetPreferredWidth(text.text, generationSettings);
 //		float height = textGen.GetPreferredHeight(text.text, generationSettings);
-		transform.position = new Vector3(_textItem.transform.position.x + 55 - width, transform.position.y, transform.position.z);
+		float imageWidth = GetComponentInChildren<Image>().rectTransform.rect.width * 0.5f;
+		float diamondWidth = _diamondImage.rectTransform.rect.width * 0.5f;
+		transform.position = new Vector3(_diamondImage.gameObject.transform.position.x - diamondWidth - 1.12f*width  - imageWidth, transform.position.y, transform.position.z);
 		transform.localScale = Vector3.zero;
 		transform.DOScale(new Vector3(1, 1, 1), 0.4f).SetEase(Ease.InOutElastic);
 	}
