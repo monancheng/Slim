@@ -2,7 +2,7 @@
 using DoozyUI;
 using UnityEngine;
 
-public class ScreenGift : MonoBehaviour
+public class ScreenGift : ScreenItem
 {
 	private int _coinsCount;
 	private bool _isResetTimer;
@@ -13,6 +13,11 @@ public class ScreenGift : MonoBehaviour
 	[SerializeField] private GameObject _gift;
 	[SerializeField] private ParticleSystem _firework;
 
+	private void Start()
+	{
+		InitUi();
+	}
+	
 	private void OnEnable()
 	{
 		GlobalEvents<OnBtnGiftClick>.Happened += OnBtnGiftClick;
@@ -61,7 +66,6 @@ public class ScreenGift : MonoBehaviour
 		
 //		UIManager.HideUiElement("ScreenGift");
 		GlobalEvents<OnGiftCollected>.Call(new OnGiftCollected());
-		GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
 	}
 	
 	private UIElement GetUIElement(string elementName)
@@ -156,10 +160,7 @@ public class ScreenGift : MonoBehaviour
 
 	public void BtnClose()
 	{
-		UIManager.HideUiElement("ScreenGameOverBtnBack");
-		UIManager.HideUiElement("NotifyGiftExtra");
-		UIManager.HideUiElement("NotifySkinExtra");
-		UIManager.HideUiElement("NotifyWordExtra");
+		Hide();
 		GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
 		GlobalEvents<OnHideGiftScreen>.Call(new OnHideGiftScreen());
 	}

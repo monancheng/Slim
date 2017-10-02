@@ -1,14 +1,13 @@
 ﻿using DoozyUI;
 using UnityEngine;
 
-public class ScreenMenu : MonoBehaviour
+public class ScreenMenu : ScreenItem
 {
     private bool _isButtonHiden;
-    private UIButton[] buttons;
 
     private void Start()
     {
-        buttons = GetComponentsInChildren<UIButton>();
+        InitUi();
         ShowButtons();
     }
 
@@ -84,9 +83,9 @@ public class ScreenMenu : MonoBehaviour
         UIManager.ShowUiElement("BtnAchievements");
         UIManager.ShowUiElement("ScreenMainBtnSettings");
         
-#if UNITY_ANDROID || UNITY_EDITOR
+    #if UNITY_ANDROID || UNITY_EDITOR
         UIManager.ShowUiElement("BtnGameServices");
-#endif
+    #endif
     }
 
     public void ShowButtons()
@@ -105,22 +104,9 @@ public class ScreenMenu : MonoBehaviour
         GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
     }
     
-    public void Hide()
+    public override void Hide()
     {
         GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
     }
 
-    // ENABLE / DISABLE BUTTONS ***************************************************************************************
-
-    public void EnableButtons()
-    {
-        foreach (UIButton button in buttons)
-        button.EnableButton();
-    }
-
-    public void DisableButtons()
-    {
-        foreach (UIButton button in buttons)
-        button.DisableButton();
-    }
 }

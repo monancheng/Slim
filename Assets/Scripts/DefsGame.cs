@@ -3,6 +3,7 @@ using UnityEngine;
 
 public struct DefsGame
 {
+    public static readonly int GameVersion = 0;
     public static readonly string AndroidAppID = "com.crazylabs.monsteryumm";
     public static readonly string iOSApp_ID = "id1192223024";
     public static BillingManager IAPs;
@@ -14,12 +15,25 @@ public struct DefsGame
     public static int CurrentFaceId;
     public static int FacesGeneralMin = 0;
     public static int FacesGeneralMax = 14;
-    public static int[] FaceAvailable = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    public static int FacesSocialStartID = FacesGeneralMax+1;
+    public static int FacesPaybleStartID = FacesSocialStartID + 4;
+    public static int[] FaceAvailable = {
+        // General
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // Social
+        0, 0, 0, 0,
+        // Money
+        0, 0, 0, 0};
+
+    public static readonly int SKIN_FACEBOOK = FacesSocialStartID;
+    public static readonly int SKIN_TWITTER = FacesSocialStartID + 1;
+    public static readonly int SKIN_INSTAGRAM = FacesSocialStartID + 2;
+    public static readonly int SKIN_SPONSOR = FacesSocialStartID + 3;
     
-    public static int SKIN_FACEBOOK = 15;
-    public static int SKIN_TWITTER = 16;
-    public static int SKIN_INSTAGRAM = 17;
-    public static int SKIN_SPONSOR = 18;
+    public static readonly int IAP_SKIN_1 = FacesPaybleStartID;
+    public static readonly int IAP_SKIN_2 = FacesPaybleStartID + 1;
+    public static readonly int IAP_SKIN_3 = FacesPaybleStartID + 2;
+    public static readonly int IAP_SKIN_4 = FacesPaybleStartID + 3; 
       
 //    public static readonly int[] FacePrice = {200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200};
     public static int BTN_GIFT_HIDE_DELAY = 0;
@@ -70,9 +84,14 @@ public struct DefsGame
         CoinsCount = SecurePlayerPrefs.GetInt("coinsCount");
         CoinsCount = 2000;
         RateCounter = PlayerPrefs.GetInt("rateCounter", 0);
+        if (RateCounter != 0 && PlayerPrefs.GetInt("RateForVersion", -1) != GameVersion)
+        {
+            RateCounter = 0;
+            PlayerPrefs.SetInt("rateCounter", 0);
+        }
 
-        for (var i = 0; i < FaceAvailable.Length; i++)
-            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 0);
+//        for (var i = 0; i < FaceAvailable.Length; i++)
+//            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 0);
         
         for (var i = 1; i < FaceAvailable.Length; i++)
             FaceAvailable[i] = SecurePlayerPrefs.GetInt("faceAvailable_" + i);

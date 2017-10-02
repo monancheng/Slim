@@ -1,11 +1,18 @@
 ﻿using System;
 using UnityEngine;
-
 //using VoxelBusters.NativePlugins;
 
 
 public class BillingManager : MonoBehaviour
 {
+    public const int IAP_NO_ADS = 0;
+    public const int IAP_COINS_1 = 1;
+    public const int IAP_COINS_2 = 2;
+    public const int IAP_SKIN_1 = 3;
+    public const int IAP_SKIN_2 = 4;
+    public const int IAP_SKIN_3 = 5;
+    public const int IAP_SKIN_4 = 6;
+    
     // Use this for initialization
     private void Start()
     {
@@ -93,21 +100,19 @@ public class BillingManager : MonoBehaviour
         // Buy the consumable product using its general identifier. Expect a response either 
         // through ProcessPurchase or OnPurchaseFailed asynchronously.
         /*
-        FlurryEventsManager.dontSendLengthtEvent = true;
-        BuyItem(NPSettings.Billing.Products[0]);
-        FlurryEventsManager.SendEvent ("iap_clicked_<" + NPSettings.Billing.Products [0].ProductIdentifier + ">", DefsGame.screenCoins.prevScreenName);
+        BuyItem(NPSettings.Billing.Products[IAP_COINS_1]);
         */
     }
 
     public void BuyTier2()
     {
-        // Buy the consumable product using its general identifier. Expect a response either 
-        // through ProcessPurchase or OnPurchaseFailed asynchronously.
-        /*
-        FlurryEventsManager.dontSendLengthtEvent = true;
-        BuyItem(NPSettings.Billing.Products[1]);
-        FlurryEventsManager.SendEvent ("iap_clicked_<" + NPSettings.Billing.Products[1].ProductIdentifier + ">", DefsGame.screenCoins.prevScreenName);
-        */
+//        BuyItem(NPSettings.Billing.Products[IAP_COINS_2]);
+    }
+
+    public void BuySkin(int id)
+    {
+//        BuyItem(NPSettings.Billing.Products[id]);
+        GlobalEvents<OnBuySkinByIAP>.Call(new OnBuySkinByIAP{Id = id});
     }
 
     public void BuyNoAds()
@@ -115,9 +120,7 @@ public class BillingManager : MonoBehaviour
         // Buy the non-consumable product using its general identifier. Expect a response either 
         // through ProcessPurchase or OnPurchaseFailed asynchronously.
         /*
-        FlurryEventsManager.dontSendLengthtEvent = true;
-        BuyItem(NPSettings.Billing.Products[2]);
-        FlurryEventsManager.SendEvent ("iap_clicked_<" + NPSettings.Billing.Products[2].ProductIdentifier + ">", DefsGame.screenCoins.prevScreenName);
+        BuyItem(NPSettings.Billing.Products[IAP_NO_ADS]);
         */
     }
 
@@ -134,20 +137,27 @@ public class BillingManager : MonoBehaviour
                 if (_transaction.TransactionState == eBillingTransactionState.PURCHASED)
                 {
                     // Your code to handle purchased products
-                    if (_transaction.ProductIdentifier == NPSettings.Billing.Products [0].ProductIdentifier) {
-                        GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 200});
-                        D.Log ("OnDidFinishTransaction() - 200 coins (bought)");
-
-                    } else if (_transaction.ProductIdentifier == NPSettings.Billing.Products [1].ProductIdentifier) {
-                            GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 1000});
-                            D.Log ("OnDidFinishTransaction() - 1000 coins (bought)");
-                    } else if (_transaction.ProductIdentifier == NPSettings.Billing.Products [2].ProductIdentifier) {
+                    if (_transaction.ProductIdentifier == NPSettings.Billing.Products[IAP_NO_ADS].ProductIdentifier) {
                         PublishingService.Instance.DisableAdsPermanently();
 
                         MyAds.noAds = 1;
                         SecurePlayerPrefs.SetInt ("noAds", MyAds.noAds);
                         D.Log ("OnDidFinishTransaction() - NoAds (bought)");
-                    } 
+                    } else if (_transaction.ProductIdentifier == NPSettings.Billing.Products[IAP_COINS_1].ProductIdentifier) {
+                        GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 200});
+                        D.Log ("OnDidFinishTransaction() - 200 coins (bought)");
+                    } else if (_transaction.ProductIdentifier == NPSettings.Billing.Products[IAP_COINS_2].ProductIdentifier) {
+                            GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 1000});
+                            D.Log ("OnDidFinishTransaction() - 1000 coins (bought)");
+                    }else if (_transaction.ProductIdentifier == NPSettings.Billing.Products[IAP_SKIN_1].ProductIdentifier) {
+//                            GlobalEvents<OnBuySkinByIAP>.Call(new OnBuySkinByIAP{Id = IAP_SKIN_1});
+                    }else if (_transaction.ProductIdentifier == NPSettings.Billing.Products[IAP_SKIN_2].ProductIdentifier) {
+//                            GlobalEvents<OnBuySkinByIAP>.Call(new OnBuySkinByIAP{Id = IAP_SKIN_2});
+                    }else if (_transaction.ProductIdentifier == NPSettings.Billing.Products[IAP_SKIN_3].ProductIdentifier) {
+//                            GlobalEvents<OnBuySkinByIAP>.Call(new OnBuySkinByIAP{Id = IAP_SKIN_3});
+                    }else if (_transaction.ProductIdentifier == NPSettings.Billing.Products[IAP_SKIN_4].ProductIdentifier) {
+//                            GlobalEvents<OnBuySkinByIAP>.Call(new OnBuySkinByIAP{Id = IAP_SKIN_4});
+                    }
 
                     FlurryEventsManager.SendEvent ("iap_completed_<" + _transaction.ProductIdentifier + ">", DefsGame.screenCoins.prevScreenName);
 
@@ -195,11 +205,11 @@ public class BillingManager : MonoBehaviour
             {
 
                 if (_currentTransaction.TransactionState == eBillingTransactionState.RESTORED) {
-                    //if (_currentTransaction.ProductIdentifier == NPSettings.Billing.Products [0].ProductIdentifier) {
+                    if (_currentTransaction.ProductIdentifier == NPSettings.Billing.Products[IAP_NO_ADS].ProductIdentifier) {
                         MyAds.noAds = 1;
                         SecurePlayerPrefs.SetInt ("noAds", MyAds.noAds);
                         PublishingService.Instance.DisableAdsPermanently ();
-                    //} 
+                    } 
                 }
                 Debug.Log("Product Identifier = "         + _currentTransaction.ProductIdentifier);
                 Debug.Log("Transaction State = "        + _currentTransaction.TransactionState.ToString());

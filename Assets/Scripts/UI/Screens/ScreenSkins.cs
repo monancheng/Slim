@@ -5,16 +5,15 @@ using PrefsEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class ScreenSkins : MonoBehaviour
+public class ScreenSkins : ScreenItem
 {
     [SerializeField] private GameObject[] _skinBtns;
     [SerializeField] private GameObject _choosedSkin;
     private bool _isNewSkinAvailable;
-    private UIElement[] elements;
-
+    
     private void Start()
     {
-        elements = GetComponentsInChildren<UIElement>();
+        InitUi();
         AreThereSkins();
         AreThereSkinsGeneral();
 //        CheckAvailableSkin();
@@ -30,6 +29,7 @@ public class ScreenSkins : MonoBehaviour
     private void OnEnable()
     {
         GlobalEvents<OnBuySkin>.Happened += OnBuySkin;
+        GlobalEvents<OnBuySkinByIAP>.Happened += OnBuySkinByIAP;
 //        GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
     }
 
@@ -42,6 +42,25 @@ public class ScreenSkins : MonoBehaviour
     {
         GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = -200});
         OpenSkin(obj.Id);
+    }
+    
+    private void OnBuySkinByIAP(OnBuySkinByIAP obj)
+    {
+        switch (obj.Id)
+        {
+            case BillingManager.IAP_SKIN_1: OpenSkin(DefsGame.IAP_SKIN_1);
+                break;
+            case BillingManager.IAP_SKIN_2: OpenSkin(DefsGame.IAP_SKIN_2);
+                break;
+            case BillingManager.IAP_SKIN_3: OpenSkin(DefsGame.IAP_SKIN_3);
+                break;
+            case BillingManager.IAP_SKIN_4: OpenSkin(DefsGame.IAP_SKIN_4);
+                break;
+        }
+        MasterAudio.PlaySoundAndForget("GUI_Grab");
+        Hide();
+        GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
+        GlobalEvents<OnGameOverScreenShowActiveItems>.Call(new OnGameOverScreenShowActiveItems());
     }
 
     public void SetSkin(int id)
@@ -88,11 +107,12 @@ public class ScreenSkins : MonoBehaviour
             OpenSkin(id);
             isAvailable = true;
         } 
-        else if (DefsGame.CoinsCount >= 200/*DefsGame.FacePrice[_id - 1]*/)
-        {
-            BuySkin(id);
-            isAvailable = true;
-        }
+        else 
+            if (DefsGame.CoinsCount >= 200 /*DefsGame.FacePrice[_id - 1]*/)
+            {
+                BuySkin(id);
+                isAvailable = true;
+            }
 
         if (isAvailable)
         {
@@ -104,6 +124,14 @@ public class ScreenSkins : MonoBehaviour
         {
             GlobalEvents<OnShowScreenCoins>.Call(new OnShowScreenCoins());
         }
+    }
+
+    public void BuyPayableSkin(int id)
+    {
+        if (id == 1) DefsGame.IAPs.BuySkin(BillingManager.IAP_SKIN_1); else
+        if (id == 2) DefsGame.IAPs.BuySkin(BillingManager.IAP_SKIN_2); else
+        if (id == 3) DefsGame.IAPs.BuySkin(BillingManager.IAP_SKIN_3); else
+        if (id == 4) DefsGame.IAPs.BuySkin(BillingManager.IAP_SKIN_4); 
     }
 
     private void BuySkin(int id)
@@ -143,12 +171,6 @@ public class ScreenSkins : MonoBehaviour
         UIManager.ShowUiElement("ScreenMenuBtnPlus");
         
         Invoke("ChooseColorForButtons", 1f);
-    }
-
-    public void Hide()
-    {
-        foreach (UIElement element in elements)
-            UIManager.HideUiElement(element.elementName);
     }
     
     private void ChooseColorForButtons()

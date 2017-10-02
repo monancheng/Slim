@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-public class ScreenGameOver : MonoBehaviour
+public class ScreenGameOver : ScreenItem
 {
     [SerializeField] private Text _nextCharacterText;
     [SerializeField] private Text _shareText;
@@ -30,11 +30,16 @@ public class ScreenGameOver : MonoBehaviour
     
     enum GiftCollectedType
     {
-        None, Gift, Skin, Word, Share
+        None, Gift, Skin, Word, Share, Rate
     }
 
     private GiftCollectedType _giftCollectedType = GiftCollectedType.None;
 
+    private void Start()
+    {
+        InitUi();
+    }
+    
     private void OnEnable()
     {
         // Глобальные
@@ -85,11 +90,11 @@ public class ScreenGameOver : MonoBehaviour
         
         // Важность - Средняя
         
-        if (_activeNamesList.Count < 4 && _isGotNewCharacter && DefsGame.RateCounter == 0)
-        {
+//        if (_activeNamesList.Count < 4 && _isGotNewCharacter && DefsGame.RateCounter == 0)
+//        {
             _activeNamesList.Add("NotifyRate");
             _isGotNewCharacter = false;
-        }
+//        }
         
         if (_activeNamesList.Count < 4 && (DefsGame.GameplayCounter == 5 || 
                                            DefsGame.GameplayCounter > 5 && (DefsGame.GameplayCounter-5) % 5 == 0/* && _isRewardedAvailable*/))
@@ -327,7 +332,7 @@ public class ScreenGameOver : MonoBehaviour
         return null;
     }
 
-    public void Hide()
+     public override void Hide()
     {
         HideActiveItems();
         _activeNamesList.Clear();
@@ -439,13 +444,14 @@ public class ScreenGameOver : MonoBehaviour
         {
             AddWordTimerOrProgress();
         } else 
-        if (_giftCollectedType == GiftCollectedType.Share)
+        if (_giftCollectedType == GiftCollectedType.Share||_giftCollectedType == GiftCollectedType.Rate)
         {
             ShuffleItems();
         }
 
         ShowActiveItems();
         DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
+        GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
     }
     
     private void OnWordsAvailable(OnWordsAvailable obj)
@@ -520,8 +526,17 @@ public class ScreenGameOver : MonoBehaviour
     
     public void BtnRateClick()
     {
-        GlobalEvents<OnBtnRateClick>.Call(new OnBtnRateClick());
-        UIManager.HideUiElement("NotifyRate");
+        _giftCollectedType = GiftCollectedType.Rate;
+        HideActiveItems();
+        int id = _activeNamesList.IndexOf("NotifyRate"); 
+        if (id != -1) _activeNamesList.RemoveAt(id);
+        ShuffleItems();
+        GlobalEvents<OnHideMenuButtons>.Call(new OnHideMenuButtons());
+        
+        DefsGame.RateCounter = 1;
+        PlayerPrefs.SetInt("RateCounter", 1);
+        PlayerPrefs.SetInt("RateForVersion", DefsGame.GameVersion);
+        UIManager.ShowUiElement("ScreenRateMe");
     }
     
     public void BtnNewSkinClick()

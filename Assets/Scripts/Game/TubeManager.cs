@@ -13,6 +13,8 @@ public class TubeManager : MonoBehaviour
     [SerializeField] private GameObject[] _tubes;
     [SerializeField] private Color[] _colors;
     
+    private const float StartSpeed = 146f;
+    private const float StartRadiusMinus = 1.5f;
     public static float CurrentSpeed = StartSpeed;
     public static event Action <float> OnTubesSpeedScale;
     public static event Action OnCreateCoin;
@@ -28,12 +30,9 @@ public class TubeManager : MonoBehaviour
     private const float MaxSpeed = 225f;
     private float _acceleration = 2.9f;
     
-    private const float StartSpeed = 145f;
-    private const float StartRadiusMinus = 1.25f;
-    
     private int _counter;
     private bool _isWantBonusTube;
-    private float _radiusAddCoeff = 5.0f;
+    private float _radiusAddCoeff = 4.5f;
     private readonly List<MyTube> _itemList = new List<MyTube>();
     private int _coinCounter;
     private int _increaseCounter;
@@ -144,19 +143,19 @@ public class TubeManager : MonoBehaviour
 
         _tubeAngle = 0;
         
-        var newRadius = InitRadius + _radiusAddCoeff;
         for (int i = 0; i < 3; i++)
         {
-            _radiusAddCoeff -= StartRadiusMinus;
-            if (_radiusAddCoeff < 0f) _radiusAddCoeff = 0f;
-
+            float newRadius = InitRadius + _radiusAddCoeff;
+            
             Color color = _colors[DefsGame.CurrentFaceId];
             if (Math.Abs(_colors[DefsGame.CurrentFaceId].a) < 0.1f)
             {
                 color = ColorTheme.GetTubeColor();
             }
             
-            CreateTube(newRadius, color, 660f - i*220f);
+            CreateTube(newRadius, color, (i+1)*220f);
+            _radiusAddCoeff -= StartRadiusMinus;
+            if (_radiusAddCoeff < 0f) _radiusAddCoeff = 0f;
         }
         _increaseCounter = 1;
     }
@@ -263,16 +262,16 @@ public class TubeManager : MonoBehaviour
         
         if (isTubeAngleRight)
         {
-            _tubeAngle += 2f;
-            if (_tubeAngle >= 10f)
+            _tubeAngle += 3f;
+            if (_tubeAngle >= 9f)
             {
                 isTubeAngleRight = false;
             }
         }
         else
         {
-            _tubeAngle -= 2f;
-            if (_tubeAngle <= -10f)
+            _tubeAngle -= 3f;
+            if (_tubeAngle <= -9f)
             {
                 isTubeAngleRight = true;
             }
@@ -287,17 +286,17 @@ public class TubeManager : MonoBehaviour
 
     private void IncreaseSpeed()
     {
-        if (CurrentSpeed < 150f) _acceleration = 3.0f; else
-        if (CurrentSpeed < 155f) _acceleration = 2.7f; else
-        if (CurrentSpeed < 160f) _acceleration = 2.3f; else
-        if (CurrentSpeed < 165f) _acceleration = 1.8f; else
-        if (CurrentSpeed < 170f) _acceleration = 1.4f; else
-        if (CurrentSpeed < 175f) _acceleration = 1.2f; else
-        if (CurrentSpeed < 180f) _acceleration = 1.1f; else
-        if (CurrentSpeed < 185f) _acceleration = 1.0f; else
-        if (CurrentSpeed < 190f) _acceleration = 0.90f; else
-        if (CurrentSpeed < 195f) _acceleration = 0.85f; else
-        if (CurrentSpeed < 200f) _acceleration = 0.80f; else
+        if (CurrentSpeed < 152f) _acceleration = 3.0f; else
+        if (CurrentSpeed < 157f) _acceleration = 2.7f; else
+        if (CurrentSpeed < 162f) _acceleration = 2.3f; else
+        if (CurrentSpeed < 167f) _acceleration = 1.8f; else
+        if (CurrentSpeed < 172f) _acceleration = 1.4f; else
+        if (CurrentSpeed < 177f) _acceleration = 1.2f; else
+        if (CurrentSpeed < 182f) _acceleration = 1.1f; else
+        if (CurrentSpeed < 187f) _acceleration = 1.0f; else
+        if (CurrentSpeed < 192f) _acceleration = 0.90f; else
+        if (CurrentSpeed < 197f) _acceleration = 0.85f; else
+        if (CurrentSpeed < 202f) _acceleration = 0.80f; else
             _acceleration = 0.5f;
         CurrentSpeed += _acceleration;
         if (CurrentSpeed > MaxSpeed) CurrentSpeed = MaxSpeed;

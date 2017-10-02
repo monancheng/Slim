@@ -1,13 +1,12 @@
 ﻿using DoozyUI;
 using UnityEngine;
 
-public class ScreenSettings : MonoBehaviour
+public class ScreenSettings : ScreenItem
 {
-    private UIElement[] elements;
 
     private void Start()
     {
-        elements = GetComponentsInChildren<UIElement>();
+        InitUi();
     }
 
     public void Show()
@@ -25,11 +24,5 @@ public class ScreenSettings : MonoBehaviour
         #if UNITY_IPHONE
                 UIManager.ShowUiElement("ScreenSettingsBtnRestore");
         #endif
-    }
-
-    public void Hide()
-    {
-        foreach (UIElement element in elements)
-            UIManager.HideUiElement(element.elementName);
     }
 }

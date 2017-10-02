@@ -1,11 +1,16 @@
 ﻿using DoozyUI;
 using UnityEngine;
 
-public class ScreenCoins : MonoBehaviour
+public class ScreenCoins : ScreenItem
 {
     private bool _isWaitReward;
     private bool isShowBtnViveoAds;
 
+    private void Start()
+    {
+        InitUi();
+    }
+    
     private void OnEnable()
     {
         GlobalEvents<OnGiveReward>.Happened += GetReward;
@@ -40,20 +45,6 @@ public class ScreenCoins : MonoBehaviour
 //#endif
         
         UIManager.HideUiElement("ScreenMenuBtnPlus");
-    }
-
-    private void HideButtons()
-    {
-        UIManager.HideUiElement("ScreenCoins");
-        UIManager.HideUiElement("ScreenCoinsBtnBack");
-        UIManager.HideUiElement("BtnTier1");
-        UIManager.HideUiElement("BtnTier2");
-        UIManager.HideUiElement("ScreenCoinsBtnVideo");
-        UIManager.HideUiElement("ScreenCoinsBackground");
-//        UIManager.HideUiElement("ScreenCoinsBtnNoAds");
-//        UIManager.HideUiElement("ScreenCoinsBtnRestore");
-        
-        UIManager.ShowUiElement("ScreenMenuBtnPlus");
     }
 
     private void OnRewardedAvailable(OnRewardedLoaded e)
@@ -92,10 +83,5 @@ public class ScreenCoins : MonoBehaviour
     {
         DefsGame.CurrentScreen = DefsGame.SCREEN_IAPS;
         ShowButtons();
-    }
-
-    public void Hide()
-    {
-        HideButtons();
     }
 }

@@ -44,6 +44,6 @@ public class BestScore : MonoBehaviour
         textField.text = _pointsCount.ToString();
         // Если успели активировать скрытие, то не играем анимацию получения нового рекорда
         img.transform.localScale = new Vector3(_startScale * 1.4f, _startScale * 1.4f, 1f);
-        MasterAudio.PlaySoundAndForget("NewHighScore");
+        MasterAudio.PlaySoundAndForget("BonusIncrease");
     }
 }

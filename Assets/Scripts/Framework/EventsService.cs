@@ -125,11 +125,6 @@ public struct OnGotNewCharacter
 // BUTTONS CLICKS
 //--------------------------------------------------------
 
-// Нажали на кнопку "Оценить игру"
-public struct OnBtnRateClick
-{
-}
-
 // Нажали на кнопку "Поделиться игрой"
 public struct OnBtnShareClick
 {
@@ -162,6 +157,12 @@ public struct OnBtnGetRandomSkinClick
 
 // Показать на экран Скин, который игрок получает после нажатия на ленточку "Получить скин за 200 монет"
 public struct OnBuySkin
+{
+    public int Id;
+}
+
+// Купили скин за реальные деньги
+public struct OnBuySkinByIAP
 {
     public int Id;
 }

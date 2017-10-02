@@ -9,9 +9,9 @@ public class Words : MonoBehaviour {
 	public static event Action <string> OnUpdateText;
 	
 	[SerializeField] private Text _text;
-
-	private string[] _words = {"BONUS", "HELLO", "DINOSAUR"};// 0 - Available, 1 - Active, 2 - Used
-	private int[] _wordsAvailable = new int[3];
+	
+	private string[] _words = {"HELLO", "WORLD", "BEST", "LUCK", "PEACE", "FRIEND", "SURPRISE", "DINOSAUR"};// 0 - Available, 1 - Active, 2 - Used
+	private int[] _wordsAvailable = new int[8];
 	private string _originalWord = "";
 	private String _currentWord = "";
 	private int _wordId;

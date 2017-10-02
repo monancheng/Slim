@@ -2,7 +2,7 @@
 using DoozyUI;
 using UnityEngine;
 
-public class ScreenGame : MonoBehaviour
+public class ScreenGame : ScreenItem
 {
     [SerializeField] private ScreenColorAnimation _screenAnimation;
 
@@ -23,6 +23,7 @@ public class ScreenGame : MonoBehaviour
 
     private void Start()
     {
+        InitUi();
         _gameState = GameState.Init;
     }
 
@@ -249,7 +250,7 @@ public class ScreenGame : MonoBehaviour
         UIManager.HideUiElement("ScreenRateBtnRate");
         UIManager.HideUiElement("ScreenRateBtnBack");
         MasterAudio.PlaySoundAndForget("GUI_Grab");
-        GlobalEvents<OnBtnRateClick>.Call(new OnBtnRateClick());
+//        GlobalEvents<OnBtnRateClick>.Call(new OnBtnRateClick());
         EndCurrentGame();
     }
 
