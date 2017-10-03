@@ -1,71 +1,71 @@
-﻿using System.Collections.Generic;
+﻿using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 using UnityEditor.AnimatedValues;
-using UnityEngine;
 
 public class MasterShaderLocalSpaceEditor : MaterialEditor
 {
-    private static readonly string FRONT_SOLID_ON = "FRONT_SOLID_ON";
-    private static readonly string BACK_SOLID_ON = "BACK_SOLID_ON";
-    private static readonly string LEFT_SOLID_ON = "LEFT_SOLID_ON";
-    private static readonly string RIGHT_SOLID_ON = "RIGHT_SOLID_ON";
+    private static string FRONT_SOLID_ON = "FRONT_SOLID_ON";
+    private static string BACK_SOLID_ON = "BACK_SOLID_ON";
+    private static string LEFT_SOLID_ON = "LEFT_SOLID_ON";
+    private static string RIGHT_SOLID_ON = "RIGHT_SOLID_ON";
 
-    private static readonly string FRONT_GRADIENT_ON = "FRONT_GRADIENT_ON";
-    private static readonly string BACK_GRADIENT_ON = "BACK_GRADIENT_ON";
-    private static readonly string LEFT_GRADIENT_ON = "LEFT_GRADIENT_ON";
-    private static readonly string RIGHT_GRADIENT_ON = "RIGHT_GRADIENT_ON";
+    private static string FRONT_GRADIENT_ON = "FRONT_GRADIENT_ON";
+    private static string BACK_GRADIENT_ON = "BACK_GRADIENT_ON";
+    private static string LEFT_GRADIENT_ON = "LEFT_GRADIENT_ON";
+    private static string RIGHT_GRADIENT_ON = "RIGHT_GRADIENT_ON";
 
-    private static readonly string LIGHTMAP_COLR_ON = "LIGHTMAP_COLR_ON";
+    private static string LIGHTMAP_COLR_ON = "LIGHTMAP_COLR_ON";
 
-    private static readonly string FOG_BOTTOM = "FOG_BOTTOM";
-
-    private static readonly string INDEPENDENT_SIDES = "INDEPENDENT_SIDES";
-    private ColorMode backMode;
-    private bool fogBottom;
-
-    private ColorMode frontMode;
-
-    private bool independentSides;
-    private ColorMode leftMode;
-    private bool lightmapOn;
-    private ColorMode rightMode;
-    private AnimBool showBack;
-
+    private static string FOG_BOTTOM = "FOG_BOTTOM";
+    
+    private static string INDEPENDENT_SIDES = "INDEPENDENT_SIDES";
+    
     private AnimBool showFront;
+    private AnimBool showBack;
     private AnimBool showLeft;
     private AnimBool showRight;
 
+    private ColorMode frontMode;
+    private ColorMode backMode;
+    private ColorMode leftMode;
+    private ColorMode rightMode;
+    
+    private bool independentSides;
+    private bool fogBottom;
+    private bool lightmapOn;
+    
     public override void OnEnable()
     {
         base.OnEnable();
 
-        var targetMat = target as Material;
-        var keywordsCurrent = targetMat.shaderKeywords;
+        Material targetMat = target as Material;
+        string[] keywordsCurrent = targetMat.shaderKeywords;
 
         // ---- FRONT ----
-        var frontSolidOn = ArrayUtility.Contains(keywordsCurrent, FRONT_SOLID_ON);
-        var frontGradientOn = ArrayUtility.Contains(keywordsCurrent, FRONT_GRADIENT_ON);
+        bool frontSolidOn = ArrayUtility.Contains(keywordsCurrent, FRONT_SOLID_ON);
+        bool frontGradientOn = ArrayUtility.Contains(keywordsCurrent, FRONT_GRADIENT_ON);
         showFront = new AnimBool(frontSolidOn || frontGradientOn);
         showFront.valueChanged.AddListener(Repaint);
         frontMode = frontGradientOn ? ColorMode.GRADIENT : (frontSolidOn ? ColorMode.SOLID : ColorMode.OFF);
 
         // ---- BACK ----
-        var backSolidOn = ArrayUtility.Contains(keywordsCurrent, BACK_SOLID_ON);
-        var backGradientOn = ArrayUtility.Contains(keywordsCurrent, BACK_GRADIENT_ON);
+        bool backSolidOn = ArrayUtility.Contains(keywordsCurrent, BACK_SOLID_ON);
+        bool backGradientOn = ArrayUtility.Contains(keywordsCurrent, BACK_GRADIENT_ON);
         showBack = new AnimBool(backSolidOn || backGradientOn);
         showBack.valueChanged.AddListener(Repaint);
         backMode = backGradientOn ? ColorMode.GRADIENT : (backSolidOn ? ColorMode.SOLID : ColorMode.OFF);
 
         // ---- LEFT ----
-        var leftSolidOn = ArrayUtility.Contains(keywordsCurrent, LEFT_SOLID_ON);
-        var leftGradientOn = ArrayUtility.Contains(keywordsCurrent, LEFT_GRADIENT_ON);
+        bool leftSolidOn = ArrayUtility.Contains(keywordsCurrent, LEFT_SOLID_ON);
+        bool leftGradientOn = ArrayUtility.Contains(keywordsCurrent, LEFT_GRADIENT_ON);
         showLeft = new AnimBool(leftSolidOn || leftGradientOn);
         showLeft.valueChanged.AddListener(Repaint);
         leftMode = leftGradientOn ? ColorMode.GRADIENT : (leftSolidOn ? ColorMode.SOLID : ColorMode.OFF);
 
         // ---- RIGHT ----
-        var rightSolidOn = ArrayUtility.Contains(keywordsCurrent, RIGHT_SOLID_ON);
-        var rightGradientOn = ArrayUtility.Contains(keywordsCurrent, RIGHT_GRADIENT_ON);
+        bool rightSolidOn = ArrayUtility.Contains(keywordsCurrent, RIGHT_SOLID_ON);
+        bool rightGradientOn = ArrayUtility.Contains(keywordsCurrent, RIGHT_GRADIENT_ON);
         showRight = new AnimBool(rightSolidOn || rightGradientOn);
         showRight.valueChanged.AddListener(Repaint);
         rightMode = rightGradientOn ? ColorMode.GRADIENT : (rightSolidOn ? ColorMode.SOLID : ColorMode.OFF);
@@ -74,32 +74,32 @@ public class MasterShaderLocalSpaceEditor : MaterialEditor
 
         independentSides = ArrayUtility.Contains(keywordsCurrent, INDEPENDENT_SIDES);
         fogBottom = ArrayUtility.Contains(keywordsCurrent, FOG_BOTTOM);
-
+        
         ApplyProperties();
     }
-
+    
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
 
-        var targetMat = target as Material;
-
+        Material targetMat = target as Material;
+        
         var shdr = serializedObject.FindProperty("m_Shader");
-
+        
         if (isVisible && !shdr.hasMultipleDifferentValues && shdr.objectReferenceValue != null)
         {
-            var keywordsCurrent = targetMat.shaderKeywords;
+            string[] keywordsCurrent = targetMat.shaderKeywords;
             EditorGUI.BeginChangeCheck();
 
             TextureProperty(GetMaterialProperty(targets, "_MainTex"), "Texture");
             EditorGUILayout.Separator();
-
+            
             ColorProperty(GetMaterialProperty(targets, "_TopColor"), "Top Color");
             ColorProperty(GetMaterialProperty(targets, "_BottomColor"), "Bottom Color");
             EditorGUILayout.Separator();
 
             // ---- FRONT ----
-            frontMode = (ColorMode) EditorGUILayout.EnumPopup("Front color override", frontMode);
+            frontMode = (ColorMode)EditorGUILayout.EnumPopup("Front color override", frontMode);
             showFront.target = frontMode != ColorMode.OFF;
             using (var group = new EditorGUILayout.FadeGroupScope(showFront.faded))
             {
@@ -123,7 +123,7 @@ public class MasterShaderLocalSpaceEditor : MaterialEditor
             EditorGUILayout.Separator();
 
             // ---- BACK ----
-            backMode = (ColorMode) EditorGUILayout.EnumPopup("Back color override", backMode);
+            backMode = (ColorMode)EditorGUILayout.EnumPopup("Back color override", backMode);
             showBack.target = backMode != ColorMode.OFF;
             using (var group = new EditorGUILayout.FadeGroupScope(showBack.faded))
             {
@@ -147,7 +147,7 @@ public class MasterShaderLocalSpaceEditor : MaterialEditor
             EditorGUILayout.Separator();
 
             // ---- LEFT ----
-            leftMode = (ColorMode) EditorGUILayout.EnumPopup("Left color override", leftMode);
+            leftMode = (ColorMode)EditorGUILayout.EnumPopup("Left color override", leftMode);
             showLeft.target = leftMode != ColorMode.OFF;
             using (var group = new EditorGUILayout.FadeGroupScope(showLeft.faded))
             {
@@ -171,7 +171,7 @@ public class MasterShaderLocalSpaceEditor : MaterialEditor
             EditorGUILayout.Separator();
 
             // ---- RIGHT ----
-            rightMode = (ColorMode) EditorGUILayout.EnumPopup("Right color override", rightMode);
+            rightMode = (ColorMode)EditorGUILayout.EnumPopup("Right color override", rightMode);
             showRight.target = rightMode != ColorMode.OFF;
             using (var group = new EditorGUILayout.FadeGroupScope(showRight.faded))
             {
@@ -197,7 +197,7 @@ public class MasterShaderLocalSpaceEditor : MaterialEditor
             // ---- FOG ----
             fogBottom = EditorGUILayout.Toggle("Fade bottom to fog", fogBottom);
             EditorGUILayout.Separator();
-
+            
             // ---- ADDITIVE ----
             if (fogBottom)
             {
@@ -208,15 +208,17 @@ public class MasterShaderLocalSpaceEditor : MaterialEditor
                 independentSides = EditorGUILayout.Toggle("Do not mix colors of sides", independentSides);
                 EditorGUILayout.Separator();
             }
-
+            
             // ---- GRADIENT ----
             if (frontMode != ColorMode.SOLID || backMode != ColorMode.SOLID ||
                 leftMode != ColorMode.SOLID || rightMode != ColorMode.SOLID ||
                 fogBottom)
             {
                 FloatProperty(GetMaterialProperty(targets, "_GradientYStartPos"), "Gradient start Y");
-                var h = FloatProperty(GetMaterialProperty(targets, "_GradientHeight"), "Gradient height");
-                if (h < 0) targetMat.SetFloat("_GradientHeight", 0);
+                float h = FloatProperty(GetMaterialProperty(targets, "_GradientHeight"), "Gradient height");
+                if (h < 0) {
+                    targetMat.SetFloat("_GradientHeight", 0);
+                }
                 EditorGUILayout.Separator();
             }
 
@@ -239,21 +241,23 @@ public class MasterShaderLocalSpaceEditor : MaterialEditor
             RangeProperty(GetMaterialProperty(targets, "_Rotation"), "Gradient Angle");
 
             EditorGUILayout.Separator();
-
+            
             EditorGUILayout.HelpBox("Local space shader doesn't support Dynamic Batching and mesh combining. " +
                                     "If you are reusing materials, consider using regular (world-space) MasterShader " +
                                     "instead.", MessageType.Info);
-
+            
             // If a value changed.
             if (EditorGUI.EndChangeCheck())
+            {
                 ApplyProperties();
+            }
         }
     }
 
     private void ApplyProperties()
     {
-        var targetMat = target as Material;
-        var keywordsUpdated = new List<string> {"COLR_1_2"};
+        Material targetMat = target as Material;
+        var keywordsUpdated = new List<string>() {"COLR_1_2"};
 
         switch (frontMode)
         {
@@ -328,18 +332,26 @@ public class MasterShaderLocalSpaceEditor : MaterialEditor
         }
 
         if (lightmapOn)
+        {
             keywordsUpdated.Add(LIGHTMAP_COLR_ON);
-
+        }
+        
         // Turn off independentSides when user turns off fog.
         if (!fogBottom && ArrayUtility.Contains(targetMat.shaderKeywords, FOG_BOTTOM))
+        {
             independentSides = false;
-
+        }
+        
         if (independentSides)
+        {
             keywordsUpdated.Add(INDEPENDENT_SIDES);
+        }
 
         if (fogBottom)
+        {
             keywordsUpdated.Add(FOG_BOTTOM);
-
+        }
+        
         targetMat.shaderKeywords = keywordsUpdated.ToArray();
         EditorUtility.SetDirty(targetMat);
     }

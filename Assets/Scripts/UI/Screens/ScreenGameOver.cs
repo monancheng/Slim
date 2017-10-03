@@ -332,7 +332,7 @@ public class ScreenGameOver : ScreenItem
         return null;
     }
 
-     public override void Hide()
+    public override void Hide()
     {
         HideActiveItems();
         _activeNamesList.Clear();

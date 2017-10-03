@@ -190,7 +190,7 @@ public class TubeManager : MonoBehaviour
         bool isBonusCreated = false;
         
         ++_increaseCounter;
-        if (_increaseCounter >= 12)
+        if (_increaseCounter >= 13)
         {
             GameEvents.Send(OnCreateBonusIncrease);
             isBonusCreated = true;
@@ -199,17 +199,17 @@ public class TubeManager : MonoBehaviour
 
 		++_coinCounter;
 
-		if (!isBonusCreated) {
-			if (_coinCounter % 6 == 0) {			
-			    if (Random.value > 0.3f) {
-					GameEvents.Send (OnCreateCoin);
-					isBonusCreated = true;
-			    }
-			}
-		}
+//		if (!isBonusCreated) {
+//			if (_coinCounter % 6 == 0) {			
+//			    if (Random.value > 0.3f) {
+//					GameEvents.Send (OnCreateCoin);
+//					isBonusCreated = true;
+//			    }
+//			}
+//		}
 			
 		if (!isBonusCreated && !_isWordWait && _isWordActive) {
-			if (_coinCounter % 15 == 0) {
+			if (_coinCounter % 6 == 0) {
 //				if (Random.value > 0.5f) {
 					GameEvents.Send (OnCreateChar);
 					isBonusCreated = true;

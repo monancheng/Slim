@@ -252,8 +252,13 @@ public struct OnWordCollected
     public string Text;
 }
 
-// Высыпать на экран горсть монет
+// Стартуем новый таймер (ждем слово)
 public struct OnWordStartTimer
+{
+}
+
+// Обнулить таймер слов (нужно, чтобы начать собирать новое слово немедленно)
+public struct OnWordResetTimer
 {
 }
 

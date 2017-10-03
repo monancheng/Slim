@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class WordTimer : MonoBehaviour {
-	[SerializeField] private  Text timeText;
+	[SerializeField] private Text _timeText;
+	[SerializeField] private Text _timeTextScreenGift;
 	private DateTime _nextDate;
 	private bool _isWaitTime;
 	
@@ -38,7 +39,8 @@ public class WordTimer : MonoBehaviour {
 			else
 			{
 				_isWaitTime = true;
-				timeText.text = _difference.Hours + ":" + _difference.Minutes;
+				_timeText.text = _difference.Hours + ":" + _difference.Minutes;
+				_timeTextScreenGift.text = _timeText.text;
 			}
 		}
 		GlobalEvents<OnWordNeedToWait>.Call(new OnWordNeedToWait{IsWait = _isWaitTime});
@@ -47,13 +49,20 @@ public class WordTimer : MonoBehaviour {
 	private void OnEnable()
 	{
 		GlobalEvents<OnWordStartTimer>.Happened += StartTimer;
+		GlobalEvents<OnWordResetTimer>.Happened += ResetTimer;
 	}
 
 	private void OnDisable()
 	{
 		GlobalEvents<OnWordStartTimer>.Happened -= StartTimer;
+		GlobalEvents<OnWordResetTimer>.Happened += ResetTimer;
 	}
-	
+
+	private void ResetTimer(OnWordResetTimer obj)
+	{
+		ResetTimer();
+	}
+
 	private void StartTimer(OnWordStartTimer obj)
 	{
 		StartTimer();
@@ -67,12 +76,7 @@ public class WordTimer : MonoBehaviour {
 			var _difference = _nextDate.Subtract(_currentDate);
 			if (_difference.TotalSeconds <= 0f)
 			{
-				_isWaitTime = false;
-				
-				SecurePlayerPrefs.SetInt("isNeedToWaitWord", 0);
-				SecurePlayerPrefs.SetString("WaitNewWordDate", "");
-		
-				GlobalEvents<OnWordNeedToWait>.Call(new OnWordNeedToWait{IsWait = _isWaitTime});
+				ResetTimer();
 			}
 			else {
 				string _minutes = _difference.Minutes.ToString ();
@@ -83,7 +87,8 @@ public class WordTimer : MonoBehaviour {
 				if (_difference.Seconds < 10) {
 					_seconds = "0" + _seconds;
 				}
-				timeText.text = _minutes + ":" + _seconds;
+				_timeText.text = _minutes + ":" + _seconds;
+				_timeTextScreenGift.text = _timeText.text;
 			}
 		}
 	}
@@ -101,6 +106,16 @@ public class WordTimer : MonoBehaviour {
 		
 		SecurePlayerPrefs.SetInt("isNeedToWaitWord", 1);
 		SecurePlayerPrefs.SetString("WaitNewWordDate", _nextDate.ToBinary().ToString());
+		
+		GlobalEvents<OnWordNeedToWait>.Call(new OnWordNeedToWait{IsWait = _isWaitTime});
+	}
+	
+	private void ResetTimer()
+	{
+		_isWaitTime = false;
+				
+		SecurePlayerPrefs.SetInt("isNeedToWaitWord", 0);
+		SecurePlayerPrefs.SetString("WaitNewWordDate", "");
 		
 		GlobalEvents<OnWordNeedToWait>.Call(new OnWordNeedToWait{IsWait = _isWaitTime});
 	}

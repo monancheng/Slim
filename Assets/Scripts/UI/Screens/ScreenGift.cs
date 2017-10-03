@@ -12,6 +12,8 @@ public class ScreenGift : ScreenItem
 	private float _centerPointY = 20f;
 	[SerializeField] private GameObject _gift;
 	[SerializeField] private ParticleSystem _firework;
+	private bool _isWaitRewardWord;
+	private bool _isWaitRewardGift;
 
 	private void Start()
 	{
@@ -26,6 +28,23 @@ public class ScreenGift : ScreenItem
 		GlobalEvents<OnBtnShareGifClick>.Happened += OnBtnShareGifClick;
 		GlobalEvents<OnGiftAnimationDone>.Happened += OnGiftAnimationDone;
 		GlobalEvents<OnHideGiftScreen>.Happened += OnHideGiftScreen;
+		GlobalEvents<OnGiveReward>.Happened += GetReward;
+	}
+
+	private void GetReward(OnGiveReward obj)
+	{
+		if (_isWaitRewardGift)
+		{
+			_isWaitRewardGift = false;
+			GlobalEvents<OnBtnGiftClick>.Call(new OnBtnGiftClick {CoinsCount = 25, IsResetTimer = true});
+			isFirstTime = false;
+		}
+		else if (_isWaitRewardWord)
+		{
+			_isWaitRewardWord = false;
+			GlobalEvents<OnWordResetTimer>.Call(new OnWordResetTimer());
+			GlobalEvents<OnGiftCollected>.Call(new OnGiftCollected());
+		}
 	}
 
 	private void OnHideGiftScreen(OnHideGiftScreen obj)
@@ -45,12 +64,13 @@ public class ScreenGift : ScreenItem
 			else
 			if (_giftType == 2)
 			{
-				UIManager.ShowUiElement("NotifySkinExtra");
-				element = GetUIElement("NotifySkinExtra");
+				UIManager.ShowUiElement("NotifyGiftExtra");
+				element = GetUIElement("NotifyGiftExtra");
 			}
 			else
 			if (_giftType == 3)
 			{
+				UIManager.ShowUiElement("ScreenGiftWordTimer");
 				UIManager.ShowUiElement("NotifyWordExtra");
 				element = GetUIElement("NotifyWordExtra");
 			}
@@ -64,7 +84,6 @@ public class ScreenGift : ScreenItem
 			return;
 		} 
 		
-//		UIManager.HideUiElement("ScreenGift");
 		GlobalEvents<OnGiftCollected>.Call(new OnGiftCollected());
 	}
 	
@@ -127,7 +146,6 @@ public class ScreenGift : ScreenItem
 	private void OnGiftAnimationDone(OnGiftAnimationDone obj)
 	{
 		Debug.Log("OnGiftAnimationDone(OnGiftAnimationDone obj)");
-//		UIManager.ShowUiElement("ScreenGift");
 		if (_giftType == 1) MakeAGift();
 		else if (_giftType == 2) MakeAGiftRandomSkin();
 		else if (_giftType == 3) MakeAGiftWord();
@@ -165,8 +183,30 @@ public class ScreenGift : ScreenItem
 		GlobalEvents<OnHideGiftScreen>.Call(new OnHideGiftScreen());
 	}
 
+	public override void Hide()
+	{
+		base.Hide();
+		UIManager.HideUiElement("NotifyGiftExtra");
+//		UIManager.HideUiElement("NotifySkinExtra");
+		UIManager.HideUiElement("NotifyWordExtra");
+	}
+
 	private void FireworksLaunch()
 	{
 		_firework.Play();
+	}
+
+	public void OnBtnGiftExtra()
+	{
+		Hide();
+		GlobalEvents<OnShowRewarded>.Call(new OnShowRewarded());
+		_isWaitRewardGift = true;
+	}
+
+	public void OnBtnGiftWord()
+	{
+		Hide();
+		GlobalEvents<OnShowRewarded>.Call(new OnShowRewarded());
+		_isWaitRewardWord = true;
 	}
 }
