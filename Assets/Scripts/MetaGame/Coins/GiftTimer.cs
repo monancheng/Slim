@@ -5,7 +5,9 @@ using UnityEngine.UI;
 
 public class GiftTimer : MonoBehaviour
 {
-    [SerializeField] private  Text timeText;
+    private int _hideDelayCounter;
+    private readonly int[] _hideDelayArr = {1, 1, 1, 1, 1, 1, 1, 1, 3, 3};
+    [SerializeField] private  Text _timeText;
     private DateTime _giftNextDate;
     private bool _isWaitGiftTime;
 
@@ -13,8 +15,9 @@ public class GiftTimer : MonoBehaviour
     {
         //Grab the old time from the player prefs as a long
         string strTime = SecurePlayerPrefs.GetString("dateGiftClicked");
-
-        DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER = 0;
+        _hideDelayCounter = SecurePlayerPrefs.GetInt("BTN_GIFT_HIDE_DELAY_COUNTER");
+        
+        _hideDelayCounter = 0;
         if (strTime == "")
         {
             _giftNextDate = DateTime.UtcNow;
@@ -22,14 +25,13 @@ public class GiftTimer : MonoBehaviour
         }
         else
         {
-            var _timeOld = Convert.ToInt64(strTime);
+            var timeOld = Convert.ToInt64(strTime);
             //Convert the old time from binary to a DataTime variable
-            _giftNextDate = DateTime.FromBinary(_timeOld);
+            _giftNextDate = DateTime.FromBinary(timeOld);
         }
 
-        var _currentDate = DateTime.UtcNow;
-        var _difference = _giftNextDate.Subtract(_currentDate);
-        if (_difference.TotalSeconds <= 0f)
+        var difference = _giftNextDate.Subtract(DateTime.UtcNow);
+        if (difference.TotalSeconds <= 0f)
         {
             //timeText.enabled = false;
             _isWaitGiftTime = false;
@@ -39,7 +41,7 @@ public class GiftTimer : MonoBehaviour
         {
             //timeText.enabled = true;
             _isWaitGiftTime = true;
-            timeText.text = _difference.Hours + ":" + _difference.Minutes;
+            _timeText.text = difference.Hours + ":" + difference.Minutes;
         }
     }
 
@@ -64,23 +66,22 @@ public class GiftTimer : MonoBehaviour
     {
         if (_isWaitGiftTime)
         {
-            var _currentDate = DateTime.UtcNow;
-            var _difference = _giftNextDate.Subtract(_currentDate);
-            if (_difference.TotalSeconds <= 0f)
+            var difference = _giftNextDate.Subtract(DateTime.UtcNow);
+            if (difference.TotalSeconds <= 0f)
             {
                 _isWaitGiftTime = false;
                 GlobalEvents<OnGiftAvailable>.Call(new OnGiftAvailable {IsAvailable = true});
             }
             else {
-                string _minutes = _difference.Minutes.ToString ();
-                if (_difference.Minutes < 10) {
-                    _minutes = "0" + _minutes;
+                string minutes = difference.Minutes.ToString ();
+                if (difference.Minutes < 10) {
+                    minutes = "0" + minutes;
                 }
-                string _seconds = _difference.Seconds.ToString ();
-                if (_difference.Seconds < 10) {
-                    _seconds = "0" + _seconds;
+                string seconds = difference.Seconds.ToString ();
+                if (difference.Seconds < 10) {
+                    seconds = "0" + seconds;
                 }
-                timeText.text = _minutes + ":" + _seconds;
+                _timeText.text = minutes + ":" + seconds;
             }
         }
     }
@@ -102,13 +103,13 @@ public class GiftTimer : MonoBehaviour
     {
         //Save the current system time as a string in the player prefs class
         _giftNextDate = DateTime.UtcNow;
-        DefsGame.BTN_GIFT_HIDE_DELAY = DefsGame.BTN_GIFT_HIDE_DELAY_ARR[DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER];
-        if (DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER < DefsGame.BTN_GIFT_HIDE_DELAY_ARR.Length - 1)
+        int hideDelay = _hideDelayArr[_hideDelayCounter];
+        if (_hideDelayCounter < _hideDelayArr.Length - 1)
         {
-            ++DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER;
-            SecurePlayerPrefs.SetInt("BTN_GIFT_HIDE_DELAY_COUNTER", DefsGame.BTN_GIFT_HIDE_DELAY_COUNTER);
+            ++_hideDelayCounter;
+            SecurePlayerPrefs.SetInt("BTN_GIFT_HIDE_DELAY_COUNTER", _hideDelayCounter);
         }
-        _giftNextDate = _giftNextDate.AddMinutes(DefsGame.BTN_GIFT_HIDE_DELAY);
+        _giftNextDate = _giftNextDate.AddMinutes(hideDelay);
         SecurePlayerPrefs.SetString("dateGiftClicked", _giftNextDate.ToBinary().ToString());
         _isWaitGiftTime = true;
 

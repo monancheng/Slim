@@ -128,10 +128,10 @@ public class ScreenSkins : ScreenItem
 
     public void BuyPayableSkin(int id)
     {
-        if (id == 1) DefsGame.IAPs.BuySkin(BillingManager.IAP_SKIN_1); else
-        if (id == 2) DefsGame.IAPs.BuySkin(BillingManager.IAP_SKIN_2); else
-        if (id == 3) DefsGame.IAPs.BuySkin(BillingManager.IAP_SKIN_3); else
-        if (id == 4) DefsGame.IAPs.BuySkin(BillingManager.IAP_SKIN_4); 
+        if (id == 1) GlobalEvents<OnIAPsBuySkin>.Call(new OnIAPsBuySkin{Id = BillingManager.IAP_SKIN_1}); else
+        if (id == 2) GlobalEvents<OnIAPsBuySkin>.Call(new OnIAPsBuySkin{Id = BillingManager.IAP_SKIN_2}); else
+        if (id == 3) GlobalEvents<OnIAPsBuySkin>.Call(new OnIAPsBuySkin{Id = BillingManager.IAP_SKIN_3}); else
+        if (id == 4) GlobalEvents<OnIAPsBuySkin>.Call(new OnIAPsBuySkin{Id = BillingManager.IAP_SKIN_4}); 
     }
 
     private void BuySkin(int id)

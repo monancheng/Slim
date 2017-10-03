@@ -23,14 +23,6 @@ public struct OnHideMenu
 {
 }
 
-public struct OnShowSkins
-{
-}
-
-public struct OnHideSkins
-{
-}
-
 public struct OnShowMenuButtons
 {
 }
@@ -39,15 +31,14 @@ public struct OnHideMenuButtons
 {
 }
 
+public struct OnRateScreenShow
+{
+}
+
 // Игрок заработал очки
 public struct OnPointsAdd
 {
     public int PointsCount;
-}
-
-// Показать индикатор очков (+ Анимация)
-public struct OnPointsShow
-{
 }
 
 // Сросить идикатор очков
@@ -291,6 +282,14 @@ public struct OnGifShared
 // Спрятать все Tube
 public struct OnHideTubes
 {
+}
+
+//--------------------------------------------------------
+//							IAPs
+//--------------------------------------------------------
+public struct OnIAPsBuySkin
+{
+    public int Id;
 }
 
 //--------------------------------------------------------

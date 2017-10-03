@@ -9,7 +9,6 @@ using Random = UnityEngine.Random;
 
 public class TubeManager : MonoBehaviour
 {
-    [SerializeField] private GameObject _pointLight;
     [SerializeField] private GameObject[] _tubes;
     [SerializeField] private Color[] _colors;
     
@@ -40,7 +39,7 @@ public class TubeManager : MonoBehaviour
     private bool _isWordWait;
     private bool _isWordActive;
     private Color _playerColor;
-    private bool isTubeAngleRight;
+    private bool _isTubeAngleRight;
     private float _tubeAngle;
 
     private void Start()
@@ -190,7 +189,7 @@ public class TubeManager : MonoBehaviour
         bool isBonusCreated = false;
         
         ++_increaseCounter;
-        if (_increaseCounter >= 13)
+        if (_increaseCounter >= 12)
         {
             GameEvents.Send(OnCreateBonusIncrease);
             isBonusCreated = true;
@@ -199,21 +198,21 @@ public class TubeManager : MonoBehaviour
 
 		++_coinCounter;
 
-//		if (!isBonusCreated) {
-//			if (_coinCounter % 6 == 0) {			
-//			    if (Random.value > 0.3f) {
-//					GameEvents.Send (OnCreateCoin);
-//					isBonusCreated = true;
-//			    }
-//			}
-//		}
+		if (!isBonusCreated) {
+			if (_coinCounter % 6 == 0) {			
+			    if (Random.value > 0.3f) {
+					GameEvents.Send (OnCreateCoin);
+					isBonusCreated = true;
+			    }
+			}
+		}
 			
 		if (!isBonusCreated && !_isWordWait && _isWordActive) {
-			if (_coinCounter % 6 == 0) {
-//				if (Random.value > 0.5f) {
+			if (_coinCounter % 15 == 0) {
+				if (Random.value > 0.3f) {
 					GameEvents.Send (OnCreateChar);
 					isBonusCreated = true;
-//				}
+				}
 			}
 		}
     }
@@ -236,12 +235,12 @@ public class TubeManager : MonoBehaviour
         currentTube.GetComponent<Renderer>().material = new Material(GetShader());
 //        StandardShaderUtils.ChangeRenderMode(currentTube.GetComponent<Renderer>().material,
 //            StandardShaderUtils.BlendMode.Opaque);
-        Material _material = currentTube.GetComponent<Renderer>().material;
-        _material.SetColor("_Color", color);
+        Material material = currentTube.GetComponent<Renderer>().material;
+        material.SetColor("_Color", color);
         currentTube.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
         currentTube.GetComponent<Renderer>().receiveShadows = false;
-        _material.DisableKeyword("_SPECULARHIGHLIGHTS_OFF");
-        _material.SetFloat("_SpecularHighlights",1f);
+        material.DisableKeyword("_SPECULARHIGHLIGHTS_OFF");
+        material.SetFloat("_SpecularHighlights",1f);
         if (startPos) currentTube.transform.position = new Vector3(0f, posY, 0f); 
         else currentTube.transform.position = new Vector3(Random.Range(-12f, 12f), posY, 0f);
         var script = currentTube.AddComponent<MyTube>();
@@ -252,20 +251,20 @@ public class TubeManager : MonoBehaviour
         currentTube.GetComponent<Collider>().isTrigger = true;
         
         currentTube.layer = LayerMask.NameToLayer("Rings");
-        Light light = currentTube.AddComponent<Light>();
-        light.color = new Color(_playerColor.r,_playerColor.g, _playerColor.b, 1f);
-        light.range = 30*radius/InitRadius;
-        light.intensity = 5;
-        light.cullingMask = 1 << currentTube.layer;
+        Light lightTmp = currentTube.AddComponent<Light>();
+        lightTmp.color = new Color(_playerColor.r,_playerColor.g, _playerColor.b, 1f);
+        lightTmp.range = 30*radius/InitRadius;
+        lightTmp.intensity = 5;
+        lightTmp.cullingMask = 1 << currentTube.layer;
 
         currentTube.transform.Rotate(Vector3.up, _tubeAngle);
         
-        if (isTubeAngleRight)
+        if (_isTubeAngleRight)
         {
             _tubeAngle += 3f;
             if (_tubeAngle >= 9f)
             {
-                isTubeAngleRight = false;
+                _isTubeAngleRight = false;
             }
         }
         else
@@ -273,15 +272,9 @@ public class TubeManager : MonoBehaviour
             _tubeAngle -= 3f;
             if (_tubeAngle <= -9f)
             {
-                isTubeAngleRight = true;
+                _isTubeAngleRight = true;
             }
         }
-
-//        GameObject pointLightGo = Instantiate(_pointLight);
-//        Light light = pointLightGo.GetComponent<Light>();
-//        light.color = _playerColor;
-//        pointLightGo.transform.SetParent(transform, false);
-//        pointLightGo.transform.localPosition = Vector3.zero;
     }
 
     private void IncreaseSpeed()

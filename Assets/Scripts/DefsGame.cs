@@ -4,9 +4,6 @@ using UnityEngine;
 public struct DefsGame
 {
     public static readonly int GameVersion = 0;
-    public static readonly string AndroidAppID = "com.crazylabs.monsteryumm";
-    public static readonly string iOSApp_ID = "id1192223024";
-    public static BillingManager IAPs;
     public static GameServicesManager GameServices;
     public static int GameplayCounter = 0; // Считает количество игр сыгранных в этой игровой сессии
     public static int CurrentPointsCount = 0;
@@ -33,14 +30,7 @@ public struct DefsGame
     public static readonly int IAP_SKIN_1 = FacesPaybleStartID;
     public static readonly int IAP_SKIN_2 = FacesPaybleStartID + 1;
     public static readonly int IAP_SKIN_3 = FacesPaybleStartID + 2;
-    public static readonly int IAP_SKIN_4 = FacesPaybleStartID + 3; 
-      
-//    public static readonly int[] FacePrice = {200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200};
-    public static int BTN_GIFT_HIDE_DELAY = 0;
-    public static int BTN_GIFT_HIDE_DELAY_COUNTER;
-
-//    public static readonly int[] BTN_GIFT_HIDE_DELAY_ARR = {1, 2, 5, 10, 15, 20, 25, 30, 60};
-    public static readonly int[] BTN_GIFT_HIDE_DELAY_ARR = {1, 1, 1, 1, 1, 1, 1, 1, 3, 3};
+    public static readonly int IAP_SKIN_4 = FacesPaybleStartID + 3;  
 
     public static int CurrentScreen = 0;
     public static int SCREEN_MENU = 0;
@@ -101,9 +91,6 @@ public struct DefsGame
             if (FaceAvailable[i] == 1) ++QUEST_CHARACTERS_Counter;
         }
 
-        BTN_GIFT_HIDE_DELAY_COUNTER = PlayerPrefs.GetInt("BTN_GIFT_HIDE_DELAY_COUNTER", 0);
-        //BTN_GIFT_HIDE_DELAY_COUNTER = 0;
-
         IS_ACHIEVEMENT_FIRST_WIN = PlayerPrefs.GetInt("IS_ACHIEVEMENT_FIRST_WIN", 0);
         IS_ACHIEVEMENT_NEW_SKIN = PlayerPrefs.GetInt("IS_ACHIEVEMENT_NEW_SKIN", 0);
         IS_ACHIEVEMENT_MULTI_PULTI = PlayerPrefs.GetInt("IS_ACHIEVEMENT_MULTI_PULTI", 0);
@@ -118,8 +105,8 @@ public struct DefsGame
         QUEST_GAMEPLAY_Counter = PlayerPrefs.GetInt("QUEST_GAMEPLAY_Counter", 0);
         // TEMP
         QUEST_GAMEPLAY_Counter = 0;
-        QUEST_THROW_Counter = PlayerPrefs.GetInt("QUEST_THROW_Counter", 0);
         
+        QUEST_THROW_Counter = PlayerPrefs.GetInt("QUEST_THROW_Counter", 0);
         QUEST_BOMBS_Counter = PlayerPrefs.GetInt("QUEST_BOMBS_Counter", 0);
         QUEST_MISS_Counter = PlayerPrefs.GetInt("QUEST_MISS_Counter", 0);
     }

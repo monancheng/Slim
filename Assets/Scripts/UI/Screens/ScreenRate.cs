@@ -16,6 +16,12 @@ public class ScreenRate : ScreenItem
 	void OnEnable ()
 	{
 		ScreenRateBtnStar.OnRateBtnClick += OnRateBtnClick;
+		GlobalEvents<OnRateScreenShow>.Happened += OnRateScreenShow;
+	}
+
+	private void OnRateScreenShow(OnRateScreenShow obj)
+	{
+		Show();
 	}
 
 	private void OnRateBtnClick(int obj)
@@ -74,5 +80,12 @@ public class ScreenRate : ScreenItem
 
 	void FinishedSharing (eShareResult _result){
 		Debug.Log("Mail Result = " + _result);
+	}
+
+	public void Show()
+	{
+		UIManager.ShowUiElement("ScreenRateBackground");
+		UIManager.ShowUiElement("ScreenRatePanel");
+		UIManager.ShowUiElement("ScreenRateBtnBack");
 	}
 }

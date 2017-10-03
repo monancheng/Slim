@@ -1,5 +1,4 @@
 ﻿using System;
-using DoozyUI;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -10,8 +9,8 @@ public class Words : MonoBehaviour {
 	
 	[SerializeField] private Text _text;
 	
-	private string[] _words = {"HE", "WORLD", "BEST", "LUCK", "PEACE", "FRIEND", "SURPRISE", "DINOSAUR"};// 0 - Available, 1 - Active, 2 - Used
-	private int[] _wordsAvailable = new int[8];
+	private readonly string[] _words = {"HELLO", "WORLD", "BEST", "LUCK", "PEACE", "FRIEND", "SURPRISE", "DINOSAUR"};// 0 - Available, 1 - Active, 2 - Used
+	private readonly int[] _wordsAvailable = new int[8];
 	private string _originalWord = "";
 	private String _currentWord = "";
 	private int _wordId;

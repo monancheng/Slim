@@ -531,12 +531,13 @@ public class ScreenGameOver : ScreenItem
         int id = _activeNamesList.IndexOf("NotifyRate"); 
         if (id != -1) _activeNamesList.RemoveAt(id);
         ShuffleItems();
-        GlobalEvents<OnHideMenuButtons>.Call(new OnHideMenuButtons());
+        Invoke("ShowActiveItems", 0.5f);
+//        GlobalEvents<OnHideMenuButtons>.Call(new OnHideMenuButtons());
         
         DefsGame.RateCounter = 1;
         PlayerPrefs.SetInt("RateCounter", 1);
         PlayerPrefs.SetInt("RateForVersion", DefsGame.GameVersion);
-        UIManager.ShowUiElement("ScreenRateMe");
+        GlobalEvents<OnRateScreenShow>.Call(new OnRateScreenShow ());
     }
     
     public void BtnNewSkinClick()

@@ -16,31 +16,33 @@ public class BillingManager : MonoBehaviour
     // Use this for initialization
     private void Start()
     {
-        DefsGame.IAPs = this;
         //RequestBillingProducts ();
     }
 
     private void OnEnable()
     {
-        /*
-        // Register for callbacks
-        Billing.DidFinishRequestForBillingProductsEvent	+= OnDidFinishProductsRequest;
-        Billing.DidFinishProductPurchaseEvent	        += OnDidFinishTransaction;
-
-        // For receiving restored transactions.
-        Billing.DidFinishRestoringPurchasesEvent		+= OnDidFinishRestoringPurchases;
-        */
+//        // Register for callbacks
+//        Billing.DidFinishRequestForBillingProductsEvent	+= OnDidFinishProductsRequest;
+//        Billing.DidFinishProductPurchaseEvent	        += OnDidFinishTransaction;
+//        // For receiving restored transactions.
+//        Billing.DidFinishRestoringPurchasesEvent		+= OnDidFinishRestoringPurchases;
+        GlobalEvents<OnIAPsBuySkin>.Happened += OnIAPsBuySkin; 
     }
 
     private void OnDisable()
     {
-        // Deregister for callbacks
-        /*
-        Billing.DidFinishRequestForBillingProductsEvent	-= OnDidFinishProductsRequest;
-        Billing.DidFinishProductPurchaseEvent	        -= OnDidFinishTransaction;
-        Billing.DidFinishRestoringPurchasesEvent		-= OnDidFinishRestoringPurchases;	
-        */
+//        // Deregister for callbacks
+//        Billing.DidFinishRequestForBillingProductsEvent	-= OnDidFinishProductsRequest;
+//        Billing.DidFinishProductPurchaseEvent	        -= OnDidFinishTransaction;
+//        Billing.DidFinishRestoringPurchasesEvent		-= OnDidFinishRestoringPurchases;	
+        GlobalEvents<OnIAPsBuySkin>.Happened += OnIAPsBuySkin; 
     }
+
+    private void OnIAPsBuySkin(OnIAPsBuySkin obj)
+    {
+        BuySkin(obj.Id);
+    }
+
     /*
     private bool IsAvailable ()
     {
