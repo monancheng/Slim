@@ -69,9 +69,6 @@ public class ScreenGameOver : ScreenItem
 
     private void OnShowGameOverScreen(OnGameOverScreenShow e)
     {
-
-        DefsGame.CurrentScreen = DefsGame.SCREEN_NOTIFICATIONS;
-
         float ran = Random.value;
         
         // Важность - Высокая
@@ -428,6 +425,7 @@ public class ScreenGameOver : ScreenItem
     
     private void OnGiftCollected(OnGiftCollected obj)
     {
+        GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = true});
         if (_giftCollectedType == GiftCollectedType.Gift)
         {
             if (DefsGame.CoinsCount >= 200)
@@ -450,7 +448,6 @@ public class ScreenGameOver : ScreenItem
         }
 
         ShowActiveItems();
-        DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
         GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
     }
     

@@ -1,5 +1,4 @@
 ﻿using DoozyUI;
-using UnityEngine;
 
 public class ScreenSettings : ScreenItem
 {
@@ -11,9 +10,6 @@ public class ScreenSettings : ScreenItem
 
     public void Show()
     {
-        
-        DefsGame.CurrentScreen = DefsGame.SCREEN_SETTINGS;
-        
         UIManager.ShowUiElement("ScreenSettingsBtnBack");
         UIManager.ShowUiElement("BtnSound");
         UIManager.ShowUiElement("BtnPlus");
@@ -24,5 +20,13 @@ public class ScreenSettings : ScreenItem
         #if UNITY_IPHONE
                 UIManager.ShowUiElement("ScreenSettingsBtnRestore");
         #endif
+        
+        GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = false});
+    }
+
+    public override void Hide()
+    {
+        base.Hide();
+        GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = true});
     }
 }

@@ -159,8 +159,6 @@ public class ScreenSkins : ScreenItem
     
     public void Show()
     {
-        DefsGame.CurrentScreen = DefsGame.SCREEN_SKINS;
-        
         GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
         
         foreach (UIElement element in elements)
@@ -171,8 +169,15 @@ public class ScreenSkins : ScreenItem
         UIManager.ShowUiElement("ScreenMenuBtnPlus");
         
         Invoke("ChooseColorForButtons", 1f);
+        GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = false});
     }
-    
+
+    public override void Hide()
+    {
+        base.Hide();
+        GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = true});
+    }
+
     private void ChooseColorForButtons()
     {
         for (var i = 0; i < DefsGame.FaceAvailable.Length; i++)

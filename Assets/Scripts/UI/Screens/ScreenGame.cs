@@ -10,7 +10,8 @@ public class ScreenGame : ScreenItem
     private bool _isScreenReviveDone;
     private bool _isScreenShareDone;
 
-    enum GameState {Init, Gameplay, GameOver, RedScreen, RedScreenWait, BackToMenu}
+    private enum GameState {Init = 0, WaitToStart = 1, Gameplay = 2, GameOver = 3, RedScreen = 4, RedScreenWait = 5, BackToMenu = 6
+    }
     private GameState _gameState;
 
     private bool _isRewardedVideoReadyToShow;
@@ -69,6 +70,14 @@ public class ScreenGame : ScreenItem
         GlobalEvents<OnGifSaved>.Happened += OnGifSaved;
     }
 
+    public void StartGameByTouch()
+    {
+        if (_gameState == GameState.WaitToStart)
+        {
+            GlobalEvents<OnStartGame>.Call(new OnStartGame());
+        }
+    }
+
     private void OnGifSaved(OnGifSaved obj)
     {
     }
@@ -110,8 +119,7 @@ public class ScreenGame : ScreenItem
 
         GlobalEvents<OnPointsReset>.Call(new OnPointsReset());
 //        if (DefsGame.GameplayCounter == 1) GlobalEvents<OnPointsShow>.Call(new OnPointsShow());
-            
-        DefsGame.CurrentScreen = DefsGame.SCREEN_GAME;
+        _gameState = GameState.Gameplay;
     }
 
     public void EndCurrentGame()
@@ -166,8 +174,11 @@ public class ScreenGame : ScreenItem
         {
             case GameState.Init:
                 Init();
-                _gameState = GameState.Gameplay;
+                _gameState = GameState.WaitToStart;
                 return;
+            case GameState.WaitToStart:
+                
+                break;
             case GameState.Gameplay:
                 // Gameplay
                 break;
@@ -280,26 +291,9 @@ public class ScreenGame : ScreenItem
 
     private void BtnEscapeUpdate()
     {
-        /*if (InputController.IsTouchOnScreen(TouchPhase.Began)) {
-            DefsGame.QUEST_BOMBS_Counter += 50;
-            DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_EXPLOSIVE, DefsGame.QUEST_BOMBS_Counter);
-
-            //if (DefsGame.QUEST_BOMBS_Counter % 100 == 0) {
-                DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_FiFIELD_OF_CANDIES, DefsGame.QUEST_BOMBS_Counter);
-            //}
-        }*/
-
         //if (Input.GetKeyDown (KeyCode.A))
-        if (InputController.IsEscapeClicked())
-//            if (DefsGame.CurrentScreen == DefsGame.SCREEN_EXIT)
-//            {
-//                HideExitPanel();
-//            }            else 
-            if (DefsGame.CurrentScreen == DefsGame.SCREEN_MENU)
-            {
-                ShowExitPanel();
-            }
-            else if (DefsGame.CurrentScreen == DefsGame.SCREEN_GAME)
+        if (InputController.IsEscapeClicked())   
+        if (_gameState == GameState.Gameplay)
             {
                 if (_isScreenReviveDone)
                     ReviveClose();
@@ -316,26 +310,5 @@ public class ScreenGame : ScreenItem
     private void GameOver()
     {
         _gameState = GameState.GameOver;
-    }
-
-    public void HideExitPanel()
-    {
-        DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
-        UIManager.HideUiElement("PanelExit");
-        UIManager.HideUiElement("PanelExitBtnYes");
-        UIManager.HideUiElement("PanelExitBtnNo");
-    }
-
-    private void ShowExitPanel()
-    {
-        DefsGame.CurrentScreen = DefsGame.SCREEN_EXIT;
-        UIManager.ShowUiElement("PanelExit");
-        UIManager.ShowUiElement("PanelExitBtnYes");
-        UIManager.ShowUiElement("PanelExitBtnNo");
-    }
-
-    public void Quit()
-    {
-        Application.Quit();
     }
 }

@@ -41,7 +41,8 @@ public class GiftTimer : MonoBehaviour
         {
             //timeText.enabled = true;
             _isWaitGiftTime = true;
-            _timeText.text = difference.Hours + ":" + difference.Minutes;
+//            _timeText.text = difference.Hours + ":" + difference.Minutes;
+            _timeText.text = String.Format("{0:d2}:{1:d2}",difference.Minutes,difference.Seconds);
         }
     }
 
@@ -73,15 +74,17 @@ public class GiftTimer : MonoBehaviour
                 GlobalEvents<OnGiftAvailable>.Call(new OnGiftAvailable {IsAvailable = true});
             }
             else {
-                string minutes = difference.Minutes.ToString ();
-                if (difference.Minutes < 10) {
-                    minutes = "0" + minutes;
-                }
-                string seconds = difference.Seconds.ToString ();
-                if (difference.Seconds < 10) {
-                    seconds = "0" + seconds;
-                }
-                _timeText.text = minutes + ":" + seconds;
+//                string minutes = difference.Minutes.ToString ();
+//                if (difference.Minutes < 10) {
+//                    minutes = "0" + minutes;
+//                }
+//                string seconds = difference.Seconds.ToString ();
+//                if (difference.Seconds < 10) {
+//                    seconds = "0" + seconds;
+//                }
+//                _timeText.text = minutes + ":" + seconds;
+                
+                _timeText.text = String.Format("{0:d2}:{1:d2}",difference.Minutes,difference.Seconds);
             }
         }
     }

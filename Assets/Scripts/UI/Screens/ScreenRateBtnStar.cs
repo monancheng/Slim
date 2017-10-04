@@ -10,11 +10,31 @@ public class ScreenRateBtnStar : MonoBehaviour
 	
 	[SerializeField] private Sprite _checked;
 	[SerializeField] private Sprite _unchecked;
+	private bool _isPointerDown;
+
+	public void PointerEnter()
+	{
+		if (_isPointerDown)
+		{
+			GameEvents.Send(OnRateBtnClick, _id);
+			UIManager.ShowUiElement("ScreenRateBtnRate");
+		}
+	}
 	
 	public void Click()
 	{
 		GameEvents.Send(OnRateBtnClick, _id);
 		UIManager.ShowUiElement("ScreenRateBtnRate");
+	}
+
+	public void PointerDown()
+	{
+		_isPointerDown = true;
+	}
+
+	public void PointerUp()
+	{
+		_isPointerDown = false;
 	}
 
 	public void SetCheck(bool flag)

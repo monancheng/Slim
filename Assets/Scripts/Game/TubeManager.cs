@@ -39,8 +39,6 @@ public class TubeManager : MonoBehaviour
     private bool _isWordWait;
     private bool _isWordActive;
     private Color _playerColor;
-    private bool _isTubeAngleRight;
-    private float _tubeAngle;
 
     private void Start()
     {
@@ -140,7 +138,7 @@ public class TubeManager : MonoBehaviour
         if (DefsGame.QUEST_GAMEPLAY_Counter >= 1)
             ColorTheme.GetNextRandomId();
 
-        _tubeAngle = 0;
+//        _tubeAngle = 0;
         
         for (int i = 0; i < 3; i++)
         {
@@ -257,24 +255,24 @@ public class TubeManager : MonoBehaviour
         lightTmp.intensity = 5;
         lightTmp.cullingMask = 1 << currentTube.layer;
 
-        currentTube.transform.Rotate(Vector3.up, _tubeAngle);
+//        currentTube.transform.Rotate(Vector3.up, _tubeAngle);
         
-        if (_isTubeAngleRight)
-        {
-            _tubeAngle += 3f;
-            if (_tubeAngle >= 9f)
-            {
-                _isTubeAngleRight = false;
-            }
-        }
-        else
-        {
-            _tubeAngle -= 3f;
-            if (_tubeAngle <= -9f)
-            {
-                _isTubeAngleRight = true;
-            }
-        }
+//        if (_isTubeAngleRight)
+//        {
+//            _tubeAngle += 3f;
+//            if (_tubeAngle >= 9f)
+//            {
+//                _isTubeAngleRight = false;
+//            }
+//        }
+//        else
+//        {
+//            _tubeAngle -= 3f;
+//            if (_tubeAngle <= -9f)
+//            {
+//                _isTubeAngleRight = true;
+//            }
+//        }
     }
 
     private void IncreaseSpeed()
@@ -299,17 +297,5 @@ public class TubeManager : MonoBehaviour
     private Shader GetShader()
     {
         return Shader.Find("Standard");
-    }
-
-    private void Update()
-    {
-        if ((DefsGame.GameplayCounter == 1||_isFingerStart)
-            && (DefsGame.CurrentScreen == DefsGame.SCREEN_MENU || DefsGame.CurrentScreen == DefsGame.SCREEN_NOTIFICATIONS)
-            && InputController.IsTouchOnScreen(TouchPhase.Began)
-            && InputController.GetPosition().y > 200)
-        {
-            GlobalEvents<OnStartGame>.Call(new OnStartGame());
-            _isFingerStart = false;
-        }
     }
 }

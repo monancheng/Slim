@@ -30,16 +30,17 @@ public class WordTimer : MonoBehaviour {
 				_nextDate = DateTime.FromBinary(_timeOld);
 			}
 
-			var _currentDate = DateTime.UtcNow;
-			var _difference = _nextDate.Subtract(_currentDate);
-			if (_difference.TotalSeconds <= 0f)
+			var currentDate = DateTime.UtcNow;
+			var difference = _nextDate.Subtract(currentDate);
+			if (difference.TotalSeconds <= 0f)
 			{
 				_isWaitTime = false;
 			}
 			else
 			{
 				_isWaitTime = true;
-				_timeText.text = _difference.Hours + ":" + _difference.Minutes;
+//				_timeText.text = _difference.Hours + ":" + _difference.Minutes;
+				_timeText.text = String.Format("{0:d2}:{1:d2}",difference.Minutes,difference.Seconds);
 				_timeTextScreenGift.text = _timeText.text;
 			}
 		}
@@ -72,22 +73,23 @@ public class WordTimer : MonoBehaviour {
 	{
 		if (_isWaitTime)
 		{
-			var _currentDate = DateTime.UtcNow;
-			var _difference = _nextDate.Subtract(_currentDate);
-			if (_difference.TotalSeconds <= 0f)
+			var currentDate = DateTime.UtcNow;
+			var difference = _nextDate.Subtract(currentDate);
+			if (difference.TotalSeconds <= 0f)
 			{
 				ResetTimer();
 			}
 			else {
-				string _minutes = _difference.Minutes.ToString ();
-				if (_difference.Minutes < 10) {
-					_minutes = "0" + _minutes;
-				}
-				string _seconds = _difference.Seconds.ToString ();
-				if (_difference.Seconds < 10) {
-					_seconds = "0" + _seconds;
-				}
-				_timeText.text = _minutes + ":" + _seconds;
+//				string _minutes = _difference.Minutes.ToString ();
+//				if (_difference.Minutes < 10) {
+//					_minutes = "0" + _minutes;
+//				}
+//				string _seconds = _difference.Seconds.ToString ();
+//				if (_difference.Seconds < 10) {
+//					_seconds = "0" + _seconds;
+//				}
+//				_timeText.text = _minutes + ":" + _seconds;
+				_timeText.text = String.Format("{0:d2}:{1:d2}",difference.Minutes,difference.Seconds);
 				_timeTextScreenGift.text = _timeText.text;
 			}
 		}

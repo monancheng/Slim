@@ -53,7 +53,7 @@ public class ScreenMenu : ScreenItem
         UIManager.HideUiElement("BtnGameServices");
         UIManager.HideUiElement("ScreenMainBtnSettings");
         UIManager.HideUiElement("BtnHaveNewSkin");
-        UIManager.HideUiElement("ScreenMenuBtnPlus");
+//        UIManager.HideUiElement("ScreenMenuBtnPlus");
     }
 
     private void OnShowMenuButtons(OnShowMenuButtons obj)
@@ -91,7 +91,6 @@ public class ScreenMenu : ScreenItem
     public void ShowButtons()
     {
         GlobalEvents<OnShowMenuButtons>.Call(new OnShowMenuButtons());
-        DefsGame.CurrentScreen = DefsGame.SCREEN_MENU;
     }
 
     public void HideButtons()
@@ -109,4 +108,31 @@ public class ScreenMenu : ScreenItem
         GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
     }
 
+    private void Update()
+    {
+        if (InputController.IsEscapeClicked())
+            if (!_isButtonHiden)
+            {
+                ShowExitPanel();
+            }
+    }
+    
+    private void ShowExitPanel()
+    {
+        UIManager.ShowUiElement("PanelExit");
+        UIManager.ShowUiElement("PanelExitBtnYes");
+        UIManager.ShowUiElement("PanelExitBtnNo");
+    }
+    
+    public void HideExitPanel()
+    {
+        UIManager.HideUiElement("PanelExit");
+        UIManager.HideUiElement("PanelExitBtnYes");
+        UIManager.HideUiElement("PanelExitBtnNo");
+    }
+    
+    public void Quit()
+    {
+        Application.Quit();
+    }
 }

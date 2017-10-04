@@ -5,6 +5,7 @@ public class ScreenCoins : ScreenItem
 {
     private bool _isWaitReward;
     private bool isShowBtnViveoAds;
+    private bool _isVisible;
 
     private void Start()
     {
@@ -52,10 +53,8 @@ public class ScreenCoins : ScreenItem
         isShowBtnViveoAds = e.IsAvailable;
         if (isShowBtnViveoAds)
         {
-            if (DefsGame.CurrentScreen == DefsGame.SCREEN_IAPS)
-            {
+            if (_isVisible)
                 UIManager.ShowUiElement("ScreenCoinsBtnVideo");
-            }
         }
         else
         {
@@ -81,7 +80,16 @@ public class ScreenCoins : ScreenItem
 
     public void Show()
     {
-        DefsGame.CurrentScreen = DefsGame.SCREEN_IAPS;
+        _isVisible = true;
         ShowButtons();
+        GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = false});
+    }
+
+    public override void Hide()
+    {
+        _isVisible = false;
+        base.Hide();
+        UIManager.ShowUiElement("ScreenMenuBtnPlus");
+        GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = true});
     }
 }

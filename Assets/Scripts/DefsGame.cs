@@ -11,7 +11,7 @@ public struct DefsGame
     public static int CoinsCount; // Количество очков игрока
     public static int CurrentFaceId;
     public static int FacesGeneralMin = 0;
-    public static int FacesGeneralMax = 14;
+    public static int FacesGeneralMax = 18;
     public static int FacesSocialStartID = FacesGeneralMax+1;
     public static int FacesPaybleStartID = FacesSocialStartID + 4;
     public static int[] FaceAvailable = {
@@ -31,15 +31,6 @@ public struct DefsGame
     public static readonly int IAP_SKIN_2 = FacesPaybleStartID + 1;
     public static readonly int IAP_SKIN_3 = FacesPaybleStartID + 2;
     public static readonly int IAP_SKIN_4 = FacesPaybleStartID + 3;  
-
-    public static int CurrentScreen = 0;
-    public static int SCREEN_MENU = 0;
-    public static int SCREEN_GAME = 1;
-    public static int SCREEN_SKINS = 2;
-    public static int SCREEN_IAPS = 3;
-    public static int SCREEN_SETTINGS = 4;
-    public static int SCREEN_EXIT = 10;
-    public static int SCREEN_NOTIFICATIONS = 11;
 
     public static int IS_ACHIEVEMENT_FIRST_WIN;
     public static int IS_ACHIEVEMENT_NEW_SKIN;
@@ -80,8 +71,8 @@ public struct DefsGame
             PlayerPrefs.SetInt("rateCounter", 0);
         }
 
-//        for (var i = 0; i < FaceAvailable.Length; i++)
-//            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 0);
+        for (var i = 0; i < FaceAvailable.Length; i++)
+            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 1);
         
         for (var i = 1; i < FaceAvailable.Length; i++)
             FaceAvailable[i] = SecurePlayerPrefs.GetInt("faceAvailable_" + i);

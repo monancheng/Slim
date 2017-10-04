@@ -101,8 +101,7 @@ public class ScreenGift : ScreenItem
 	{
 		isFirstTime = true;
 		_giftType = 2;
-
-		Debug.Log("OnBtnGetRandomSkinClick");
+		GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = false});
 		CreateGiftAnimation();
 	}
 
@@ -112,7 +111,7 @@ public class ScreenGift : ScreenItem
 		_coinsCount = obj.CoinsCount;
 		_isResetTimer = obj.IsResetTimer;
 		_giftType = 1;
-
+		GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = false});
 		CreateGiftAnimation();
 	}
 	
@@ -121,7 +120,7 @@ public class ScreenGift : ScreenItem
 		isFirstTime = false;
 		_coinsCount = obj.CoinsCount;
 		_giftType = 4;
-
+		GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = false});
 		CreateGiftAnimation();
 	}
 	
@@ -132,7 +131,7 @@ public class ScreenGift : ScreenItem
 		_coinsCount = obj.CoinsCount;
 		_isResetTimer = obj.IsResetTimer;
 		_giftType = 3;
-
+		GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = false});
 		CreateGiftAnimation();
 	}
 	
