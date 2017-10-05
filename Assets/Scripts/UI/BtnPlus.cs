@@ -28,7 +28,7 @@ public class BtnPlus : MonoBehaviour
 //		float height = textGen.GetPreferredHeight(text.text, generationSettings);
 		float imageWidth = GetComponentInChildren<Image>().rectTransform.rect.width * 0.5f;
 		float diamondWidth = _diamondImage.rectTransform.rect.width * 0.5f;
-		transform.position = new Vector3(_diamondImage.gameObject.transform.position.x - diamondWidth - 1.12f*width  - imageWidth, transform.position.y, transform.position.z);
+		transform.position = new Vector3(_diamondImage.gameObject.transform.position.x - diamondWidth - 1.14f*width  - imageWidth, transform.position.y, transform.position.z);
 		transform.localScale = Vector3.zero;
 		transform.DOScale(new Vector3(1, 1, 1), 0.4f).SetEase(Ease.InOutElastic);
 	}
