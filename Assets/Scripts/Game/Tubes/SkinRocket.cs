@@ -9,7 +9,8 @@ public class SkinRocket : MonoBehaviour
 	void Start ()
 	{
 		_sprite = GetComponent<SpriteRenderer>();
-		_sprite.transform.DOScale(new Vector3(1.0f, 1.0f, 1f), 1f).SetLoops(-1,LoopType.Yoyo).SetEase(Ease.InOutBack);
-		_sprite.DOColor(new Color(1f,1f,1f,.7f), 1f).SetLoops(-1,LoopType.Yoyo).SetEase(Ease.InOutBack);
+		_sprite.transform.DOScale(new Vector3(0.11f, 0.1f, 1f), 1f).SetLoops(-1,LoopType.Yoyo).SetEase(Ease.InOutFlash);
+		_sprite.DOColor(new Color(_sprite.color.r, _sprite.color.g, _sprite.color.b, 90f / 255f), 1f)
+			.SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutBack);
 	}
 }

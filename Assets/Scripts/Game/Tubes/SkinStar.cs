@@ -1,7 +1,7 @@
 ﻿using DG.Tweening;
 using UnityEngine;
 
-public class SkinKetchapp : MonoBehaviour
+public class SkinStar : MonoBehaviour
 {
 	private SpriteRenderer _sprite;
 	

@@ -16,7 +16,7 @@ public struct DefsGame
     public static readonly int FacesPaybleStartID = FacesSocialStartID + 4;
     public static int[] FaceAvailable = {
         // General
-        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // Social
         0, 0, 0, 0,
         // Money
