@@ -19,7 +19,10 @@ public class MyTube : MonoBehaviour
     private float _increaseScaleSpeed;
     
    [HideInInspector] public float Scale;
+   [HideInInspector] public GameObject ModelGameObject;
     private bool _isShowAnimation;
+    public float RotationSpeed;
+    public float ScaleCoeff = 1;
     public static event Action OnCanMove;
     public static event Action OnCanSpawnBonus;
     public static event Action <int> OnDestroy;
@@ -37,9 +40,9 @@ public class MyTube : MonoBehaviour
     public void CreateTubeModel(GameObject prefab)
     {
         if (prefab == null) return;
-        GameObject go = Instantiate(prefab);
-        go.transform.SetParent(transform, false);
-        go.transform.localPosition = Vector3.zero;
+        ModelGameObject = Instantiate(prefab);
+        ModelGameObject.transform.SetParent(transform, false);
+        ModelGameObject.transform.localPosition = Vector3.zero;
     }
 
     private void OnEnable()
@@ -127,7 +130,8 @@ public class MyTube : MonoBehaviour
             }
         }
 
-//        transform.Rotate(Vector3.up, TubeManager.RotateSpeed);
+        if (RotationSpeed != 0f)
+        transform.Rotate(Vector3.up, RotationSpeed);
 
         if (_isGameOver && !_isHaveCollision && transform.position.y > 1f)
         {

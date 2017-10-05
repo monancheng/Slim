@@ -1,10 +1,12 @@
 ﻿using DoozyUI;
 using UnityEngine;
-using VoxelBusters.NativePlugins;
+using UnityEngine.UI;
 
 public class ScreenRate : ScreenItem
 {
 	[SerializeField] private ScreenRateBtnStar[] buttons;
+	[SerializeField] private Image smile;
+	[SerializeField] private Sprite[] smileSprites;
 	private int VoteValue;
 	
 	private void Start()
@@ -36,6 +38,8 @@ public class ScreenRate : ScreenItem
 			ScreenRateBtnStar item = buttons[i];
 			item.SetCheck(false);
 		}
+
+		smile.sprite = smileSprites[VoteValue-1];
 	}
 	
 	public void Show()
@@ -61,7 +65,9 @@ public class ScreenRate : ScreenItem
 #elif UNITY_IPHONE
 			Application.OpenURL("http://squaredino.com");
 #endif
-			
+			DefsGame.RateCounter = 1;
+			PlayerPrefs.SetInt("RateCounter", 1);
+			PlayerPrefs.SetInt("RateForVersion", DefsGame.GameVersion);
 		}
 //		else
 //		{

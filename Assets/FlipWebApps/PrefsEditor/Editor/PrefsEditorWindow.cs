@@ -33,6 +33,9 @@ namespace PrefsEditor.Editor
     /// </summary>
     public class PrefsEditorWindow : EditorWindow
     {
+         readonly string[] _tabs = { "Prefs", "Editor Prefs" };
+        int _currentTab;
+
         readonly string[] _systemEntries = { "UnityGraphicsQuality", "Screenmanager Resolution Width", "Screenmanager Is Fullscreen mode" };
         enum ItemType { Int, Float, String }
 
@@ -49,6 +52,8 @@ namespace PrefsEditor.Editor
         string _passPhrase = "";
 
 
+        readonly List<PrefsEntry> _playerPrefsEntries = new List<PrefsEntry>();
+        string _playerPrefsFilter;
         [SerializeField]
         bool _showNew;
         string _newItemKey;
@@ -58,7 +63,15 @@ namespace PrefsEditor.Editor
         string _newItemValueString;
         bool _newItemEncrypted;
 
-        readonly List<PlayerPrefsEntry> _playerPrefsEntries = new List<PlayerPrefsEntry>();
+        readonly List<PrefsEntry> _editorPrefsEntries = new List<PrefsEntry>();
+        string _editorPrefsFilter;
+        [SerializeField]
+        bool _showNewEditor;
+        string _newItemKeyEditor;
+        ItemType _newItemTypeEditor;
+        int _newItemValueIntEditor;
+        float _newItemValueFloatEditor;
+        string _newItemValueStringEditor;
 
         // Add menu item for showing the window
         [MenuItem("Window/Prefs Editor")]
@@ -78,6 +91,8 @@ namespace PrefsEditor.Editor
             _deleteIcon = AssetDatabase.LoadAssetAtPath(@"Assets\FlipWebApps\PrefsEditor\Sprites\Delete.png", typeof(Texture2D)) as Texture2D;
             _lockIcon = AssetDatabase.LoadAssetAtPath(@"Assets\FlipWebApps\PrefsEditor\Sprites\Lock.png", typeof(Texture2D)) as Texture2D;
             _redTexture = MakeColoredTexture(1, 1, new Color(1.0f, 0.0f, 0.0f, 0.1f));
+            _playerPrefsFilter = "";
+            _editorPrefsFilter = "";
             RefreshPlayerPrefs();
         }
 
@@ -87,10 +102,24 @@ namespace PrefsEditor.Editor
         /// </summary>
         void OnGUI()
         {
-            DrawToolbar();
-            if (_showNew) DrawNew();
-            GUILayout.Space(5);
-            DrawPrefs();
+            // Main tabs and display
+            _currentTab = GUILayout.Toolbar(_currentTab, _tabs);
+            switch (_currentTab)
+            {
+                case 0:
+                    DrawToolbar();
+                    if (_showNew) DrawNew();
+                    GUILayout.Space(5);
+                    DrawPrefs(_playerPrefsEntries, true);
+                    break;
+                case 1:
+                    DrawToolbarEditor();
+                    if (_showNewEditor) DrawNewEditor();
+                    GUILayout.Space(5);
+                    DrawPrefs(_editorPrefsEntries, false);
+                    break;
+            }
+
         }
 
 
@@ -100,6 +129,7 @@ namespace PrefsEditor.Editor
         void DrawToolbar()
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+
             if (ButtonTrimmed("New...", _newIcon, EditorStyles.toolbarButton, "Add a new item"))
             {
                 _newItemKey = "";
@@ -120,17 +150,90 @@ namespace PrefsEditor.Editor
             if (ButtonTrimmed("Delete All...", null, EditorStyles.toolbarButton, "Delete all prefs entries"))
             {
                 if (EditorUtility.DisplayDialog("Delete All Player Prefs",
-                    "Are you sure you want to delete all Player Prefs?", "Yes", "No"))              
+                    "Are you sure you want to delete all Player Prefs?", "Yes", "No"))
                     DeleteAll();
             }
 
             GUILayout.Label(new GUIContent("Pass Phrase: ", "A pass phrase that should be used for encrypting / decrypting values."));
             _passPhrase = GUILayout.TextField(_passPhrase, EditorStyles.toolbarTextField, GUILayout.Width(150));
-            if (_passPhrase!= null)
+            if (_passPhrase != null)
             {
                 SecurePlayerPrefs.PassPhrase = _passPhrase;
             }
+
+            GUILayout.Space(20);
             GUILayout.FlexibleSpace();
+
+            // filter
+            EditorGUILayout.BeginHorizontal();
+            GUI.changed = false;
+            EditorGUI.BeginChangeCheck();
+            _playerPrefsFilter = EditorGUILayout.TextField(_playerPrefsFilter, GuiStyles.ToolbarSearchField, GUILayout.ExpandWidth(true));
+            if (EditorGUI.EndChangeCheck())
+            {
+                foreach (var entry in _playerPrefsEntries)
+                    entry.MatchesFilter = entry.Key.IndexOf(_playerPrefsFilter, StringComparison.OrdinalIgnoreCase) >= 0;
+            }
+            if (GUILayout.Button("", string.IsNullOrEmpty(_playerPrefsFilter) ? GuiStyles.ToolbarSearchFieldCancelEmpty : GuiStyles.ToolbarSearchFieldCancel, GUILayout.ExpandWidth(false)))
+            {
+                _playerPrefsFilter = "";
+                GUIUtility.keyboardControl = 0;
+                foreach (var entry in _playerPrefsEntries)
+                    entry.MatchesFilter = true;
+            }
+            EditorGUILayout.EndHorizontal();
+
+            if (ButtonTrimmed("Refresh", _refreshIcon, EditorStyles.toolbarButton, "Reload prefs to reflect any changes"))
+                RefreshPlayerPrefs();
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+
+        /// <summary>
+        /// Draws the toolbar.
+        /// </summary>
+        void DrawToolbarEditor()
+        {
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+
+            if (ButtonTrimmed("New...", _newIcon, EditorStyles.toolbarButton, "Add a new item"))
+            {
+                _newItemKeyEditor = "";
+                _newItemValueIntEditor = 0;
+                _newItemValueFloatEditor = 0;
+                _newItemValueStringEditor = "";
+                _showNewEditor = true;
+                ClearFocus();
+            }
+
+            if (ButtonTrimmed("Save All", _saveIcon, EditorStyles.toolbarButton, "Save modified entries"))
+            {
+                Save();
+                RefreshPlayerPrefs();
+            }
+
+            GUILayout.Space(20);
+            GUILayout.FlexibleSpace();
+
+            // filter
+            EditorGUILayout.BeginHorizontal();
+            GUI.changed = false;
+            EditorGUI.BeginChangeCheck();
+            _editorPrefsFilter = EditorGUILayout.TextField(_editorPrefsFilter, GuiStyles.ToolbarSearchField, GUILayout.ExpandWidth(true));
+            if (EditorGUI.EndChangeCheck())
+            {
+                foreach (var entry in _editorPrefsEntries)
+                    entry.MatchesFilter = entry.Key.IndexOf(_editorPrefsFilter, StringComparison.OrdinalIgnoreCase) >= 0;
+            }
+            if (GUILayout.Button("", string.IsNullOrEmpty(_editorPrefsFilter) ? GuiStyles.ToolbarSearchFieldCancelEmpty : GuiStyles.ToolbarSearchFieldCancel, GUILayout.ExpandWidth(false)))
+            {
+                _editorPrefsFilter = "";
+                GUIUtility.keyboardControl = 0;
+                foreach (var entry in _editorPrefsEntries)
+                    entry.MatchesFilter = true;
+            }
+            EditorGUILayout.EndHorizontal();
 
             if (ButtonTrimmed("Refresh", _refreshIcon, EditorStyles.toolbarButton, "Reload prefs to reflect any changes"))
                 RefreshPlayerPrefs();
@@ -171,21 +274,22 @@ namespace PrefsEditor.Editor
             {
                 if (!string.IsNullOrEmpty(_newItemKey))
                 {
-                    PlayerPrefsEntry newPlayerPrefsEntry = null;
+                    PrefsEntry newPrefsEntry = null;
                     switch (_newItemType)
                     {
                         case ItemType.Int:
-                            newPlayerPrefsEntry = new PlayerPrefsEntry(_newItemKey, _newItemValueInt, _newItemEncrypted);
+                            newPrefsEntry = new PrefsEntry(_newItemKey, _newItemValueInt, _newItemEncrypted, true);
                             break;
                         case ItemType.Float:
-                            newPlayerPrefsEntry = new PlayerPrefsEntry(_newItemKey, _newItemValueFloat, _newItemEncrypted);
+                            newPrefsEntry = new PrefsEntry(_newItemKey, _newItemValueFloat, _newItemEncrypted, true);
                             break;
                         case ItemType.String:
-                            newPlayerPrefsEntry = new PlayerPrefsEntry(_newItemKey, _newItemValueString, _newItemEncrypted);
+                            newPrefsEntry = new PrefsEntry(_newItemKey, _newItemValueString, _newItemEncrypted, true);
                             break;
                     }
-                    newPlayerPrefsEntry.Save();
-                    _playerPrefsEntries.Add(newPlayerPrefsEntry);
+                    newPrefsEntry.MatchesFilter = _newItemKey.IndexOf(_playerPrefsFilter + "", StringComparison.OrdinalIgnoreCase) >= 0;
+                    newPrefsEntry.Save();
+                    _playerPrefsEntries.Add(newPrefsEntry);
                 }
                 ClearFocus();
                 _showNew = false;
@@ -204,84 +308,159 @@ namespace PrefsEditor.Editor
 
 
         /// <summary>
+        /// Draws the new item.
+        /// </summary>
+        void DrawNewEditor()
+        {
+            EditorGUILayout.BeginVertical("box");
+
+            _newItemTypeEditor = (ItemType)EditorGUILayout.EnumPopup(new GUIContent("Type", "The type of value this prefs item will contain"), _newItemTypeEditor);
+            _newItemKeyEditor = EditorGUILayout.TextField(new GUIContent("Key", "Aunique key for this prefs item"), _newItemKeyEditor);
+            switch (_newItemTypeEditor)
+            {
+                case ItemType.Int:
+                    _newItemValueIntEditor = EditorGUILayout.IntField(new GUIContent("Value", "This items value"), _newItemValueIntEditor);
+                    break;
+                case ItemType.Float:
+                    _newItemValueFloatEditor = EditorGUILayout.FloatField(new GUIContent("Value", "This items value"), _newItemValueFloatEditor);
+                    break;
+                case ItemType.String:
+                    _newItemValueStringEditor = EditorGUILayout.TextField(new GUIContent("Value", "This items value"), _newItemValueStringEditor);
+                    break;
+            }
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+
+            if (ButtonTrimmed("Add", null, EditorStyles.miniButtonRight, "Create a new prefs item with the values entered above."))
+            {
+                if (!string.IsNullOrEmpty(_newItemKeyEditor))
+                {
+                    PrefsEntry newPrefsEntry = null;
+                    switch (_newItemTypeEditor)
+                    {
+                        case ItemType.Int:
+                            newPrefsEntry = new PrefsEntry(_newItemKeyEditor, _newItemValueIntEditor, false, false);
+                            break;
+                        case ItemType.Float:
+                            newPrefsEntry = new PrefsEntry(_newItemKeyEditor, _newItemValueFloatEditor, false, false);
+                            break;
+                        case ItemType.String:
+                            newPrefsEntry = new PrefsEntry(_newItemKeyEditor, _newItemValueStringEditor, false, false);
+                            break;
+                    }
+                    newPrefsEntry.MatchesFilter = _newItemKey.IndexOf(_editorPrefsFilter + "", StringComparison.OrdinalIgnoreCase) >= 0;
+                    newPrefsEntry.Save();
+                    _editorPrefsEntries.Add(newPrefsEntry);
+                }
+                ClearFocus();
+                _showNewEditor = false;
+            }
+
+            if (ButtonTrimmed("Cancel", null, EditorStyles.miniButtonRight, "Close this popup without adding a prefs item"))
+            {
+                _showNewEditor = false;
+            }
+
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.EndVertical();
+        }
+
+
+        /// <summary>
         /// Draw the player prefs entries
         /// </summary>
-        private void DrawPrefs()
+        private void DrawPrefs(List<PrefsEntry> _prefsEntries, bool isPlayerPrefs)
         {
-            var drawnLines = 0;
             _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
 
             var boldGUIStyle = new GUIStyle(EditorStyles.numberField);
             boldGUIStyle.fontStyle = FontStyle.Bold;
 
-            for (var i = 0; i < _playerPrefsEntries.Count; i++)
+            for (var i = 0; i < _prefsEntries.Count; i++)
             {
-                var playerPrefsEntry = _playerPrefsEntries[i];
-                drawnLines++;
-
-                GUIStyle s = new GUIStyle();
-                if (playerPrefsEntry.HasError)
-                    s.normal.background = _redTexture;
-
-                EditorGUILayout.BeginHorizontal(s);
-
-                // type
-                var type = "";
-                var typeTooltip = "";
-                switch (playerPrefsEntry.Type)
+                var prefsEntry = _prefsEntries[i];
+                if (prefsEntry.MatchesFilter)
                 {
-                    case SecurePlayerPrefs.ItemType.Int:
-                        type = "I";
-                        typeTooltip = "Int Type";
+                    var s = new GUIStyle();
+                    if (prefsEntry.HasError)
+                        s.normal.background = _redTexture;
+
+                    EditorGUILayout.BeginHorizontal(s);
+
+                    // type
+                    string type;
+                    string typeTooltip;
+                    switch (prefsEntry.Type)
+                    {
+                        case SecurePlayerPrefs.ItemType.Int:
+                            //case SecurePlayerPrefs.ItemType.Bool:
+                            type = "I";
+                            typeTooltip = "Int Type";
+                            break;
+                        case SecurePlayerPrefs.ItemType.Float:
+                            type = "F";
+                            typeTooltip = "Float Type";
+                            break;
+                        case SecurePlayerPrefs.ItemType.String:
+                            //case SecurePlayerPrefs.ItemType.Vector2:
+                            //case SecurePlayerPrefs.ItemType.Vector3:
+                            type = "S";
+                            typeTooltip = "String Type";
+                            break;
+                        default:
+                            type = "?";
+                            typeTooltip = "Unknown";
+                            break;
+                    }
+                    GUILayout.Label(new GUIContent(type, typeTooltip), GUILayout.Width(20));
+
+                    if (isPlayerPrefs)
+                    {
+                        if (prefsEntry.IsEncrypted)
+                            GUILayout.Label(new GUIContent(null, _lockIcon, "Encrypted Values\n\nKey: " + prefsEntry.OriginalEncryptedKey + "\nValue: " + prefsEntry.OriginalEncryptedValue), GUILayout.Width(20));
+                        else
+                            GUILayout.Label(new GUIContent("-", "Not encrypted"), GUILayout.Width(20));
+                    }
+
+                    // key
+                    prefsEntry.Key = EditorGUILayout.TextField(prefsEntry.Key, prefsEntry.IsModified ? boldGUIStyle : EditorStyles.textField, GUILayout.MinWidth(80), GUILayout.MaxWidth(100), GUILayout.ExpandWidth(true));
+
+                    // value
+                    switch (prefsEntry.Type)
+                    {
+                        case SecurePlayerPrefs.ItemType.Int:
+                            //case SecurePlayerPrefs.ItemType.Bool:
+                            prefsEntry.ValueInt = EditorGUILayout.IntField(prefsEntry.ValueInt, prefsEntry.IsModified ? boldGUIStyle : EditorStyles.textField, GUILayout.MinWidth(80));
+                            break;
+                        case SecurePlayerPrefs.ItemType.Float:
+                            prefsEntry.ValueFloat = EditorGUILayout.FloatField(prefsEntry.ValueFloat, prefsEntry.IsModified ? boldGUIStyle : EditorStyles.textField, GUILayout.MinWidth(80));
+                            break;
+                        case SecurePlayerPrefs.ItemType.String:
+                            //case SecurePlayerPrefs.ItemType.Vector2:
+                            //case SecurePlayerPrefs.ItemType.Vector3:
+                            prefsEntry.ValueString = EditorGUILayout.TextField(prefsEntry.ValueString, prefsEntry.IsModified ? boldGUIStyle : EditorStyles.textField, GUILayout.MinWidth(80));
+                            break;
+                    }
+
+                    // save button
+                    if (ButtonTrimmed("", _saveIcon, GUI.skin.button, "Save this entry"))
+                    {
+                        prefsEntry.Save();
+                    }
+
+                    // delete button
+                    if (ButtonTrimmed("", _deleteIcon, GUI.skin.button, "Delete this entry"))
+                    {
+                        prefsEntry.Delete();
+                        _prefsEntries.Remove(prefsEntry);
                         break;
-                    case SecurePlayerPrefs.ItemType.Float:
-                        type = "F";
-                        typeTooltip = "Float Type";
-                        break;
-                    case SecurePlayerPrefs.ItemType.String:
-                        type = "S";
-                        typeTooltip = "String Type";
-                        break;
+                    }
+
+                    EditorGUILayout.EndHorizontal();
                 }
-                GUILayout.Label(new GUIContent(type, typeTooltip), GUILayout.Width(20));
-
-                if (playerPrefsEntry.IsEncrypted)
-                    GUILayout.Label(new GUIContent(null, _lockIcon, "Encrypted Values\n\nKey: " + playerPrefsEntry.OriginalEncryptedKey + "\nValue: " + playerPrefsEntry.OriginalEncryptedValue), GUILayout.Width(20));
-                else
-                    GUILayout.Label(new GUIContent("-", "Not encrypted"), GUILayout.Width(20));
-
-                // key
-                playerPrefsEntry.Key = EditorGUILayout.TextField(playerPrefsEntry.Key, playerPrefsEntry.IsModified ? boldGUIStyle : EditorStyles.textField , GUILayout.MinWidth(80), GUILayout.MaxWidth(100), GUILayout.ExpandWidth(true));
-
-                // value
-                switch (playerPrefsEntry.Type)
-                {
-                    case SecurePlayerPrefs.ItemType.Int:
-                        playerPrefsEntry.ValueInt = EditorGUILayout.IntField(playerPrefsEntry.ValueInt, playerPrefsEntry.IsModified ? boldGUIStyle : EditorStyles.textField, GUILayout.MinWidth(80));
-                        break;
-                    case SecurePlayerPrefs.ItemType.Float:
-                        playerPrefsEntry.ValueFloat = EditorGUILayout.FloatField(playerPrefsEntry.ValueFloat, playerPrefsEntry.IsModified ? boldGUIStyle : EditorStyles.textField, GUILayout.MinWidth(80));
-                        break;
-                    case SecurePlayerPrefs.ItemType.String:
-                        playerPrefsEntry.ValueString = EditorGUILayout.TextField(playerPrefsEntry.ValueString, playerPrefsEntry.IsModified ? boldGUIStyle : EditorStyles.textField, GUILayout.MinWidth(80));
-                        break;
-                }
-
-                // save button
-                if (ButtonTrimmed("", _saveIcon, GUI.skin.button, "Save this entry"))
-                {
-                    playerPrefsEntry.Save();
-                }
-
-                // delete button
-                if (ButtonTrimmed("", _deleteIcon, GUI.skin.button, "Delete this entry"))
-                {
-                    playerPrefsEntry.Delete();
-                    _playerPrefsEntries.Remove(playerPrefsEntry);
-                    break;
-                }
-
-                EditorGUILayout.EndHorizontal();
             }
 
             EditorGUILayout.EndScrollView();
@@ -321,14 +500,17 @@ namespace PrefsEditor.Editor
         void RefreshPlayerPrefs()
         {
             _playerPrefsEntries.Clear();
+            _editorPrefsEntries.Clear();
 
             if (Application.platform == RuntimePlatform.WindowsEditor)
             {
                 RefreshPlayerPrefsWindows();
+                RefreshEditorPrefsWindows();
             }
             else if (Application.platform == RuntimePlatform.OSXEditor)
             {
                 RefreshPlayerPrefsOSX();
+                RefreshEditorPrefsOSX();
             }
             else
             {
@@ -343,6 +525,7 @@ namespace PrefsEditor.Editor
         /// <summary>
         /// On Windows, PlayerPrefs are stored in the registry under HKCU\Software\[company name]\[product name] key, where 
         /// company and product names are the names set up in Project Settings. (http://docs.unity3d.com/ScriptReference/PlayerPrefs.html)
+        /// EditorPrefs are stored in the registry under the HKCU\Software\Unity Technologies\UnityEditor N.x key where N.x is the major version number.
         /// </summary>
         void RefreshPlayerPrefsWindows()
         {
@@ -355,9 +538,33 @@ namespace PrefsEditor.Editor
             prefsKeyNames.ToList().Sort();
             foreach (var prefsKey in prefsKeyNames)
             {
-                var keyName = prefsKey.Substring(0, prefsKey.LastIndexOf("_"));
+                var keyName = prefsKey.Substring(0, prefsKey.LastIndexOf("_", StringComparison.Ordinal));
                 if (!_systemEntries.Contains(keyName))
-                    _playerPrefsEntries.Add(new PlayerPrefsEntry(keyName));
+                    _playerPrefsEntries.Add(new PrefsEntry(keyName, true)
+                    {
+                        MatchesFilter = keyName.IndexOf(_playerPrefsFilter + "", StringComparison.OrdinalIgnoreCase) >= 0
+                    });
+
+            }
+        }
+
+
+        /// <summary>
+        /// On Windows, EditorPrefs are stored in the registry under the HKCU\Software\Unity Technologies\Unity Editor N.x key where N.x is the major version number.
+        /// </summary>
+        void RefreshEditorPrefsWindows()
+        {
+            var registryPath = "Software\\Unity Technologies\\Unity Editor " + Application.unityVersion.Substring(0, Application.unityVersion.IndexOf(".", StringComparison.Ordinal)) + ".x";
+            var prefsKeyStore = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(registryPath);
+            var prefsKeyNames = prefsKeyStore.GetValueNames();
+            prefsKeyNames.ToList().Sort();
+            foreach (var prefsKey in prefsKeyNames)
+            {
+                var keyName = prefsKey.Substring(0, prefsKey.LastIndexOf("_", StringComparison.Ordinal));
+                _editorPrefsEntries.Add(new PrefsEntry(keyName, false)
+                {
+                    MatchesFilter = keyName.IndexOf(_editorPrefsFilter + "", StringComparison.OrdinalIgnoreCase) >= 0
+                });
             }
         }
 
@@ -378,7 +585,10 @@ namespace PrefsEditor.Editor
                 {
                     var keyName = prefsKey;
                     if (!_systemEntries.Contains(keyName))
-                        _playerPrefsEntries.Add(new PlayerPrefsEntry(keyName));
+                        _playerPrefsEntries.Add(new PrefsEntry(keyName, true)
+                        {
+                            MatchesFilter = keyName.IndexOf(_playerPrefsFilter + "", StringComparison.OrdinalIgnoreCase) >= 0
+                        });
                 }
             }
             else
@@ -387,6 +597,30 @@ namespace PrefsEditor.Editor
             }
         }
 
+
+        /// <summary>
+        /// On Mac OS X PlayerPrefs are stored in ~/Library/Preferences folder, in a file named com.unity3d.UnityEditor.plist 
+        /// </summary>
+        void RefreshEditorPrefsOSX()
+        {
+            var prefsPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "/Library/Preferences/com.unity3d.UnityEditor.plist";
+            if (File.Exists(prefsPath))
+            {
+                var prefsPlist = (Dictionary<string, object>)Plist.readPlist(prefsPath);
+                foreach (var prefsKey in prefsPlist.Keys)
+                {
+                    var keyName = prefsKey;
+                    _editorPrefsEntries.Add(new PrefsEntry(keyName, false)
+                    {
+                        MatchesFilter = keyName.IndexOf(_editorPrefsFilter + "", StringComparison.OrdinalIgnoreCase) >= 0
+                    });
+                }
+            }
+            else
+            {
+                Debug.Log("OSX Prefs file not found '" + prefsPath + "'");
+            }
+        }
         #endregion Load Preferences
 
 
@@ -408,7 +642,9 @@ namespace PrefsEditor.Editor
         /// Show a button trimmed to the length of the text
         /// </summary>
         /// <param name="text"></param>
+        /// <param name="texture"></param>
         /// <param name="style"></param>
+        /// <param name="tooltip"></param>
         /// <returns></returns>
         public static bool ButtonTrimmed(string text, Texture2D texture, GUIStyle style, string tooltip = null)
         {
@@ -454,9 +690,11 @@ namespace PrefsEditor.Editor
 
 
     [Serializable]
-    public class PlayerPrefsEntry
+    public class PrefsEntry
     {
         public SecurePlayerPrefs.ItemType Type;
+        public bool IsPlayerPrefs;  // if not player then editor
+        public bool MatchesFilter = true;
 
         public string OriginalEncryptedKey;
         public string OriginalEncryptedValue;
@@ -516,7 +754,7 @@ namespace PrefsEditor.Editor
             }
             set
             {
-                if (value != _valueFloat)
+                if (!Mathf.Approximately(value, _valueFloat))
                 {
                     _valueFloat = value;
                     if (_isValueFloatSet)
@@ -551,31 +789,35 @@ namespace PrefsEditor.Editor
         public bool IsEncrypted;
         public bool HasError;
 
-        public PlayerPrefsEntry(string key)
+        public PrefsEntry(string key, bool isPlayerPrefs)
         {
+            IsPlayerPrefs = isPlayerPrefs;
             LoadValue(key);
         }
 
-        public PlayerPrefsEntry(string key, int value, bool isEncrypted)
+        public PrefsEntry(string key, int value, bool isEncrypted, bool isPlayerPrefs)
         {
             Key = key;
             ValueInt = value;
+            IsPlayerPrefs = isPlayerPrefs;
             Type = SecurePlayerPrefs.ItemType.Int;
             SetupSpecifiedEntry(key, isEncrypted);
         }
 
-        public PlayerPrefsEntry(string key, float value, bool isEncrypted)
+        public PrefsEntry(string key, float value, bool isEncrypted, bool isPlayerPrefs)
         {
             Key = key;
             ValueFloat = value;
+            IsPlayerPrefs = isPlayerPrefs;
             Type = SecurePlayerPrefs.ItemType.Float;
             SetupSpecifiedEntry(key, isEncrypted);
         }
 
-        public PlayerPrefsEntry(string key, string value, bool isEncrypted)
+        public PrefsEntry(string key, string value, bool isEncrypted, bool isPlayerPrefs)
         {
             Key = key;
             ValueString = value ?? "";
+            IsPlayerPrefs = isPlayerPrefs;
             Type = SecurePlayerPrefs.ItemType.String;
             SetupSpecifiedEntry(key, isEncrypted);
         }
@@ -595,40 +837,48 @@ namespace PrefsEditor.Editor
         void LoadValue(string key)
         {
             SecurePlayerPrefs.ItemType itemType = SecurePlayerPrefs.ItemType.None;
-            var stringValue = PlayerPrefs.GetString(key, SecurePlayerPrefs.NotFoundString);
-            if (stringValue != SecurePlayerPrefs.NotFoundString)
-                itemType = SecurePlayerPrefs.GetItemType(stringValue);
+            var stringValue = IsPlayerPrefs ? PlayerPrefs.GetString(key, SecurePlayerPrefs.NotFoundString) : EditorPrefs.GetString(key, SecurePlayerPrefs.NotFoundString);
 
-            if (itemType != SecurePlayerPrefs.ItemType.None)
+            // if player prefs then try and handle encrypted prefs.
+            if (IsPlayerPrefs)
             {
-                // check we can decrypt key - otherwise probably not encrypted
-                var decryptedKey = SecurePlayerPrefs.DecryptKey(key);
-                if (decryptedKey != null)
+                if (stringValue != SecurePlayerPrefs.NotFoundString)
+                    itemType = SecurePlayerPrefs.GetItemType(stringValue);
+
+                if (itemType != SecurePlayerPrefs.ItemType.None)
                 {
-
-                    if (!ValidateEncryptedValue(itemType, stringValue)) return;
-                    IsEncrypted = true;
-                    OriginalEncryptedKey = key;
-                    OriginalEncryptedValue = stringValue;
-                    Key = decryptedKey;
-                    Type = itemType;
-
-                    switch (itemType)
+                    // check we can decrypt key - otherwise probably not encrypted
+                    var decryptedKey = SecurePlayerPrefs.DecryptKey(key);
+                    if (decryptedKey != null)
                     {
-                        case SecurePlayerPrefs.ItemType.Int:
-                            ValueInt = SecurePlayerPrefs.GetInt(decryptedKey, 0, true);
-                            break;
-                        case SecurePlayerPrefs.ItemType.Float:
-                            ValueFloat = SecurePlayerPrefs.GetFloat(decryptedKey, 0, true);
-                            break;
-                        case SecurePlayerPrefs.ItemType.String:
-                            ValueString = SecurePlayerPrefs.GetString(decryptedKey, "", true);
-                            return;
+
+                        if (!ValidateEncryptedValue(itemType, stringValue)) return;
+                        IsEncrypted = true;
+                        OriginalEncryptedKey = key;
+                        OriginalEncryptedValue = stringValue;
+                        Key = decryptedKey;
+                        Type = itemType;
+
+                        switch (itemType)
+                        {
+                            case SecurePlayerPrefs.ItemType.Int:
+                                //case SecurePlayerPrefs.ItemType.Bool:
+                                ValueInt = SecurePlayerPrefs.GetInt(decryptedKey, 0, true);
+                                break;
+                            case SecurePlayerPrefs.ItemType.Float:
+                                ValueFloat = SecurePlayerPrefs.GetFloat(decryptedKey, 0, true);
+                                break;
+                            case SecurePlayerPrefs.ItemType.String:
+                                //case SecurePlayerPrefs.ItemType.Vector2:
+                                //case SecurePlayerPrefs.ItemType.Vector3:
+                                ValueString = SecurePlayerPrefs.GetString(decryptedKey, "", true);
+                                return;
+                        }
                     }
-                }
-                else
-                {
-                    itemType = SecurePlayerPrefs.ItemType.None;
+                    else
+                    {
+                        itemType = SecurePlayerPrefs.ItemType.None;
+                    }
                 }
             }
 
@@ -644,7 +894,7 @@ namespace PrefsEditor.Editor
                 }
                 else
                 {
-                    var intValue = PlayerPrefs.GetInt(Key, int.MinValue + 10);
+                    var intValue = IsPlayerPrefs ? PlayerPrefs.GetInt(Key, int.MinValue + 10) : EditorPrefs.GetInt(Key, int.MinValue + 10);
                     if (intValue != int.MinValue + 10)
                     {
                         Type = SecurePlayerPrefs.ItemType.Int;
@@ -652,7 +902,7 @@ namespace PrefsEditor.Editor
                     }
                     else
                     {
-                        var floatValue = PlayerPrefs.GetFloat(Key, float.MinValue + 10);
+                        var floatValue = IsPlayerPrefs ? PlayerPrefs.GetFloat(Key, float.MinValue + 10) : EditorPrefs.GetFloat(Key, float.MinValue + 10);
                         if (!Mathf.Approximately(floatValue, float.MinValue + 10))
                         {
                             Type = SecurePlayerPrefs.ItemType.Float;
@@ -685,31 +935,50 @@ namespace PrefsEditor.Editor
         /// <returns></returns>
         public void Save()
         {
-            if (IsEncrypted && !SecurePlayerPrefs.IsPassPhraseSet) Debug.LogWarning("Please set the pass phrase that should be used. It is a security risk using the default value.");
+            if (IsPlayerPrefs)
+            {
+                if (IsEncrypted && !SecurePlayerPrefs.IsPassPhraseSet) Debug.LogWarning("Please set the pass phrase that should be used. It is a security risk using the default value.");
 
-            if (Type == SecurePlayerPrefs.ItemType.Int)
-            {
-                OriginalEncryptedValue = SecurePlayerPrefs.EncryptValue(BitConverter.GetBytes(ValueInt), SecurePlayerPrefs.ItemType.Int);
-                SecurePlayerPrefs.SetInt(Key, ValueInt, IsEncrypted);
-            }
-            else if (Type == SecurePlayerPrefs.ItemType.Float)
-            {
-                OriginalEncryptedValue = SecurePlayerPrefs.EncryptValue(BitConverter.GetBytes(ValueFloat), SecurePlayerPrefs.ItemType.Float);
-                SecurePlayerPrefs.SetFloat(Key, ValueFloat, IsEncrypted);
+                if (Type == SecurePlayerPrefs.ItemType.Int)
+                {
+                    OriginalEncryptedValue = SecurePlayerPrefs.EncryptValue(BitConverter.GetBytes(ValueInt), SecurePlayerPrefs.ItemType.Int);
+                    SecurePlayerPrefs.SetInt(Key, ValueInt, IsEncrypted);
+                }
+                else if (Type == SecurePlayerPrefs.ItemType.Float)
+                {
+                    OriginalEncryptedValue = SecurePlayerPrefs.EncryptValue(BitConverter.GetBytes(ValueFloat), SecurePlayerPrefs.ItemType.Float);
+                    SecurePlayerPrefs.SetFloat(Key, ValueFloat, IsEncrypted);
+                }
+                else
+                {
+                    OriginalEncryptedValue = SecurePlayerPrefs.EncryptValue(System.Text.Encoding.UTF8.GetBytes(ValueString), SecurePlayerPrefs.ItemType.String);
+                    SecurePlayerPrefs.SetString(Key, ValueString, IsEncrypted);
+                }
+
+                // if key is changed then also delete the old key.
+                if (OriginalKey != Key)
+                    SecurePlayerPrefs.DeleteKey(OriginalKey, IsEncrypted);
+
+                SecurePlayerPrefs.Save();
             }
             else
             {
-                OriginalEncryptedValue = SecurePlayerPrefs.EncryptValue(System.Text.Encoding.UTF8.GetBytes(ValueString), SecurePlayerPrefs.ItemType.String);
-                SecurePlayerPrefs.SetString(Key, ValueString, IsEncrypted);
+                if (Type == SecurePlayerPrefs.ItemType.Int)
+                {
+                    EditorPrefs.SetInt(Key, ValueInt);
+                }
+                else if (Type == SecurePlayerPrefs.ItemType.Float)
+                {
+                    EditorPrefs.SetFloat(Key, ValueFloat);
+                }
+                else
+                {
+                    EditorPrefs.SetString(Key, ValueString);
+                }
             }
-
-            // if key is changed then also delete the old key.
-            if (OriginalKey != Key)
-                SecurePlayerPrefs.DeleteKey(OriginalKey, IsEncrypted);
 
             OriginalKey = Key;
             IsModified = false;
-            SecurePlayerPrefs.Save();
         }
 
 
@@ -718,8 +987,22 @@ namespace PrefsEditor.Editor
         /// </summary>
         public void Delete()
         {
-            SecurePlayerPrefs.DeleteKey(OriginalKey, IsEncrypted);
-            SecurePlayerPrefs.Save();
+            if (IsPlayerPrefs)
+            {
+                SecurePlayerPrefs.DeleteKey(OriginalKey, IsEncrypted);
+                SecurePlayerPrefs.Save();
+            }
+            else
+            {
+                EditorPrefs.DeleteKey(OriginalKey);
+            }
         }
     }
-}
+
+    public static class GuiStyles
+    {
+        public static readonly GUIStyle ToolbarSearchField = "ToolbarSeachTextField";
+        public static readonly GUIStyle ToolbarSearchFieldCancel = "ToolbarSeachCancelButton";
+        public static readonly GUIStyle ToolbarSearchFieldCancelEmpty = "ToolbarSeachCancelButtonEmpty";
+    }
+    }

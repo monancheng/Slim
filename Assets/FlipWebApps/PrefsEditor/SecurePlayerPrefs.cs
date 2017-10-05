@@ -20,6 +20,7 @@
 //----------------------------------------------
 
 using System;
+using System.Globalization;
 //using System.IO;
 //using System.Security.Cryptography;
 using System.Text;
@@ -43,7 +44,7 @@ namespace PrefsEditor
         /// <summary>
         /// Enum for the different types of preferences an individual item can be.
         /// </summary>
-        public enum ItemType : byte { None, Int, Float, String }
+        public enum ItemType : byte { None, Int, Float, String } //, Bool, Vector2, Vector3 }
 
         /// <summary>
         /// Mode of encryption for the specified item.
@@ -126,7 +127,7 @@ namespace PrefsEditor
         /// For a secured entry, returns the type that it represents. Note that key should be the version saved in Player Prefs
         /// (Encrypted for secured prefs).
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="encryptedString"></param>
         /// <returns></returns>
         public static ItemType GetItemType(string encryptedString)
         {
@@ -275,14 +276,14 @@ namespace PrefsEditor
         /// <summary>
         /// Wrapper for the same method in PlayerPrefs but works with encrypted player prefs.
         /// </summary>
-        public static string GetString(string key, string defaultValue = "", bool? useSecurePrefs = null)
+        public static string GetString(string key, string defaultValue = "", bool? useSecurePrefs = null, ItemType itemType = ItemType.String)
         {
             // if not using secure prefs, or we provide an override then just fall through to standard call.
             if ((!UseSecurePrefs && !useSecurePrefs.HasValue) || (useSecurePrefs.HasValue && useSecurePrefs.Value == false))
                 return PlayerPrefs.GetString(key, defaultValue);
 
             // using secure prefs.
-            var prefsEntryBytes = GetDecryptedPrefsEntry(key, ItemType.String);
+            var prefsEntryBytes = GetDecryptedPrefsEntry(key, itemType);
             if (prefsEntryBytes != null)
             {
                 return Encoding.UTF8.GetString(prefsEntryBytes, 0, prefsEntryBytes.Length);
@@ -304,7 +305,7 @@ namespace PrefsEditor
         /// <summary>
         /// Wrapper for the same method in PlayerPrefs but works with encrypted player prefs.
         /// </summary>
-        public static void SetString(string key, string value, bool? useSecurePrefs = null)
+        public static void SetString(string key, string value, bool? useSecurePrefs = null, ItemType itemType = ItemType.String)
         {
             // if not using secure prefs, or we provide an override then just fall through to standard call.
             if ((!UseSecurePrefs && !useSecurePrefs.HasValue) || (useSecurePrefs.HasValue && useSecurePrefs.Value == false))
@@ -314,7 +315,7 @@ namespace PrefsEditor
             }
 
             var valueBytes = Encoding.UTF8.GetBytes(value);
-            SetEncryptedPrefsEntry(key, valueBytes, ItemType.String);
+            SetEncryptedPrefsEntry(key, valueBytes, itemType);
         }
         #endregion String
 
@@ -337,6 +338,117 @@ namespace PrefsEditor
             SetInt(key, value ? 1 : 0, useSecurePrefs);
         }
         #endregion Boolean Extension
+
+        #region Vector2 Extension
+
+        /// <summary>
+        /// Get a Vector2 value from PlayerPrefs.
+        /// </summary>
+        public static Vector2? GetVector2(string key, Vector2? defaultValue = null, bool? useSecurePrefs = null)
+        {
+            var result = GetString(key, null, useSecurePrefs); //, ItemType.Vector2);
+            if (result == null)
+                return defaultValue;
+            var parts = result.Split(':');
+            if (parts.Length != 2)
+            {
+                Debug.LogWarning(
+                    "GetVector2 found an invalid value and will return the default. Please check you are accessing the correct prefs item.");
+                return defaultValue;
+            }
+            float x, y;
+            if (float.TryParse(parts[0], NumberStyles.Any, CultureInfo.InvariantCulture, out x) && 
+                float.TryParse(parts[1], NumberStyles.Any, CultureInfo.InvariantCulture, out y))
+                return new Vector2(x, y);
+            Debug.LogWarning(
+                "GetVector2 found an invalid number value and will return the default. Please check you are accessing the correct prefs item.");
+            return defaultValue;
+        }
+
+
+        /// <summary>
+        /// Set a Vector2 value in PlayerPrefs.
+        /// </summary>
+        public static void SetVector2(string key, Vector2 value, bool? useSecurePrefs = null)
+        {
+            SetString(key, value.x.ToString(CultureInfo.InvariantCulture) + ":" + value.y.ToString(CultureInfo.InvariantCulture), useSecurePrefs); //, ItemType.Vector2);
+        }
+        #endregion Vector2 Extension
+
+        #region Vector3 Extension
+
+        /// <summary>
+        /// Get a Vector3 value from PlayerPrefs.
+        /// </summary>
+        public static Vector3? GetVector3(string key, Vector3? defaultValue = null, bool? useSecurePrefs = null)
+        {
+            var result = GetString(key, null, useSecurePrefs); //, ItemType.Vector3);
+            if (result == null)
+                return defaultValue;
+            var parts = result.Split(':');
+            if (parts.Length != 3)
+            {
+                Debug.LogWarning(
+                    "GetVector3 found an invalid value and will return the default. Please check you are accessing the correct prefs item.");
+                return defaultValue;
+            }
+            float x, y, z;
+            if (float.TryParse(parts[0], NumberStyles.Any, CultureInfo.InvariantCulture, out x) &&
+                float.TryParse(parts[1], NumberStyles.Any, CultureInfo.InvariantCulture, out y) &&
+                float.TryParse(parts[2], NumberStyles.Any, CultureInfo.InvariantCulture, out z))
+                return new Vector3(x, y, z);
+            Debug.LogWarning(
+                "GetVector3 found an invalid number value and will return the default. Please check you are accessing the correct prefs item.");
+            return defaultValue;
+        }
+
+        /// <summary>
+        /// Set a Vector3 value in PlayerPrefs.
+        /// </summary>
+        public static void SetVector3(string key, Vector3 value, bool? useSecurePrefs = null)
+        {
+            SetString(key, value.x.ToString(CultureInfo.InvariantCulture) + ":" + value.y.ToString(CultureInfo.InvariantCulture) + ":" + value.z.ToString(CultureInfo.InvariantCulture), useSecurePrefs); //, ItemType.Vector3);
+        }
+
+        #endregion Vector3 Extension
+
+        #region Color Extension
+
+        /// <summary>
+        /// Get a Color value from PlayerPrefs.
+        /// </summary>
+        public static Color? GetColor(string key, Color? defaultValue = null, bool? useSecurePrefs = null)
+        {
+            var result = GetString(key, null, useSecurePrefs); //, ItemType.Vector3);
+            if (result == null)
+                return defaultValue;
+            var parts = result.Split(':');
+            if (parts.Length != 4)
+            {
+                Debug.LogWarning(
+                    "Color found an invalid value and will return the default. Please check you are accessing the correct prefs item.");
+                return defaultValue;
+            }
+            byte r, g, b, a;
+            if (byte.TryParse(parts[0], NumberStyles.Any, CultureInfo.InvariantCulture, out r) &&
+                byte.TryParse(parts[1], NumberStyles.Any, CultureInfo.InvariantCulture, out g) &&
+                byte.TryParse(parts[2], NumberStyles.Any, CultureInfo.InvariantCulture, out b) &&
+                byte.TryParse(parts[3], NumberStyles.Any, CultureInfo.InvariantCulture, out a))
+                return new Color(r, g, b, a);
+            Debug.LogWarning(
+                "Color found an invalid number value and will return the default. Please check you are accessing the correct prefs item.");
+            return defaultValue;
+        }
+
+        /// <summary>
+        /// Set a Color value in PlayerPrefs.
+        /// </summary>
+        public static void SetColor(string key, Color value, bool? useSecurePrefs = null)
+        {
+            SetString(key, value.r.ToString(CultureInfo.InvariantCulture) + ":" + value.g.ToString(CultureInfo.InvariantCulture) + ":" + value.b.ToString(CultureInfo.InvariantCulture) + ":" + value.a.ToString(CultureInfo.InvariantCulture), useSecurePrefs);
+        }
+
+        #endregion Color Extension
 
         #region Encryption
 

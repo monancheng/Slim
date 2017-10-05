@@ -200,6 +200,9 @@ public class ScreenGift : ScreenItem
 		Hide();
 		GlobalEvents<OnShowRewarded>.Call(new OnShowRewarded());
 		_isWaitRewardGift = true;
+		// TEMP
+		GlobalEvents<OnBtnGiftClick>.Call(new OnBtnGiftClick {CoinsCount = 25, IsResetTimer = true});
+		
 	}
 
 	public void OnBtnGiftWord()
@@ -207,5 +210,8 @@ public class ScreenGift : ScreenItem
 		Hide();
 		GlobalEvents<OnShowRewarded>.Call(new OnShowRewarded());
 		_isWaitRewardWord = true;
+// TEMP
+		GlobalEvents<OnWordResetTimer>.Call(new OnWordResetTimer());
+		GlobalEvents<OnGiftCollected>.Call(new OnGiftCollected());
 	}
 }

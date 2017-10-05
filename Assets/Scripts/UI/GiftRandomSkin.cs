@@ -1,11 +1,18 @@
 ﻿using System.Collections.Generic;
 using DoozyUI;
+using PrefsEditor;
 using UnityEngine;
 
 public class GiftRandomSkin : MonoBehaviour
 {
 	private bool _isSkinsAllGeneralOpened;
+	private bool _isFirstGift;
 
+	void Start()
+	{
+		_isFirstGift = SecurePlayerPrefs.GetBool("isFirstSkinGift", true);
+	}
+	
 	private void OnEnable()
 	{
 		GlobalEvents<OnGiftShowRandomSkinAnimation>.Happened += OnGiftShowRandomSkinAnimation;
@@ -20,14 +27,25 @@ public class GiftRandomSkin : MonoBehaviour
 	private void OnGiftShowRandomSkinAnimation(OnGiftShowRandomSkinAnimation obj)
 	{
 		Debug.Log("OnGiftShowRandomSkinAnimation(OnGiftShowRandomSkinAnimation obj)");
-		int id = GetRandomAvailableSkin();
+		int id = -1;
+		// TEMP
+		// Первым подарком дарим Спинер
+		if (_isFirstGift)
+		{
+			_isFirstGift = false;
+			SecurePlayerPrefs.SetBool("isFirstSkinGift", false);
+			if (DefsGame.FaceAvailable[7] == 0) id = 7;
+		}
+		
+		if (id == -1) id = GetRandomAvailableSkin();
+			
 		if (id != -1)
 		{
-			transform.localScale = Vector3.one;	
+			transform.localScale = Vector3.one;
 
 			GlobalEvents<OnBuySkin>.Call(new OnBuySkin {Id = id});
 		}
-		
+
 		GlobalEvents<OnHideGiftScreen>.Call(new OnHideGiftScreen());
 	}
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DoozyUI;
+using PrefsEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -34,9 +35,11 @@ public class ScreenGameOver : ScreenItem
     }
 
     private GiftCollectedType _giftCollectedType = GiftCollectedType.None;
+    private bool _isFirstGift;
 
     private void Start()
     {
+        _isFirstGift = SecurePlayerPrefs.GetBool("isFirstGift", true);
         InitUi();
     }
     
@@ -86,12 +89,11 @@ public class ScreenGameOver : ScreenItem
         }
         
         // Важность - Средняя
-        
-//        if (_activeNamesList.Count < 4 && _isGotNewCharacter && DefsGame.RateCounter == 0)
-//        {
+        if (_activeNamesList.Count < 4 && _isGotNewCharacter && DefsGame.RateCounter == 0)
+        {
             _activeNamesList.Add("NotifyRate");
             _isGotNewCharacter = false;
-//        }
+        }
         
         if (_activeNamesList.Count < 4 && (DefsGame.GameplayCounter == 5 || 
                                            DefsGame.GameplayCounter > 5 && (DefsGame.GameplayCounter-5) % 5 == 0/* && _isRewardedAvailable*/))
@@ -122,10 +124,10 @@ public class ScreenGameOver : ScreenItem
         
         // Важность - Низкая
         ran = Random.value;
-        if (_giftValue == 0 && _activeNamesList.Count < 4  && (_activeNamesList.Count == 0 && ran > 0.65f
-                                                               || _activeNamesList.Count == 1 && ran > 0.70f
-                                                               || _activeNamesList.Count == 2 && ran > 0.75f
-                                                               || _activeNamesList.Count == 3 && ran > 0.80f))
+        if (_giftValue == 0 && _activeNamesList.Count < 4  && (_activeNamesList.Count == 0 && ran > 0.6f
+                                                               || _activeNamesList.Count == 1 && ran > 0.65f
+                                                               || _activeNamesList.Count == 2 && ran > 0.70f
+                                                               || _activeNamesList.Count == 3 && ran > 0.75f))
         {
             AddNotifyGiftWaiting();
         }
@@ -204,8 +206,12 @@ public class ScreenGameOver : ScreenItem
         _activeNamesList.Add("NotifyGift");
         // Один из первых запусков, радуем игрока монетками
         // Если он еще не открывал персонажей, то дадим ему столько монет, сколько ему нужно для открытия персонажа
-        if (DefsGame.QUEST_CHARACTERS_Counter == 1 && DefsGame.QUEST_GAMEPLAY_Counter > 3)
-        {
+//        if (DefsGame.QUEST_CHARACTERS_Counter == 1 && DefsGame.QUEST_GAMEPLAY_Counter > 3)
+//        {
+
+        if (_isFirstGift) {
+            _isFirstGift = false;
+            SecurePlayerPrefs.SetBool("isFirstGift", false);
             if (DefsGame.CoinsCount <= 150)
             {
                 _giftValue = 200 - DefsGame.CoinsCount;
@@ -392,6 +398,7 @@ public class ScreenGameOver : ScreenItem
     private void OnCoinsAdded(OnCoinsAdded obj)
     {
         int toNextSkin = 200 - obj.Total;
+        if (toNextSkin < 0) toNextSkin = 0;
         _nextCharacterText.text = toNextSkin.ToString();
         
         int idNotifyOld = _activeNamesList.IndexOf("NotifyNextCharacter");
@@ -430,6 +437,8 @@ public class ScreenGameOver : ScreenItem
         {
             if (DefsGame.CoinsCount >= 200)
             {
+                int idNotifyOld = _activeNamesList.IndexOf("NotifyNextCharacter");
+                if (idNotifyOld != -1) _activeNamesList.RemoveAt(idNotifyOld);  
                 AddNotifySkin();
             } else
             _activeNamesList.Add("NotifyGiftWaiting");
@@ -531,9 +540,6 @@ public class ScreenGameOver : ScreenItem
         Invoke("ShowActiveItems", 0.5f);
 //        GlobalEvents<OnHideMenuButtons>.Call(new OnHideMenuButtons());
         
-        DefsGame.RateCounter = 1;
-        PlayerPrefs.SetInt("RateCounter", 1);
-        PlayerPrefs.SetInt("RateForVersion", DefsGame.GameVersion);
         GlobalEvents<OnRateScreenShow>.Call(new OnRateScreenShow ());
     }
     

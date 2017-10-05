@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
+// ReSharper disable All
 
 namespace PrefsEditor.Editor
 {

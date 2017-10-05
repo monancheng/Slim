@@ -35,10 +35,10 @@ public class TubeManager : MonoBehaviour
     private readonly List<MyTube> _itemList = new List<MyTube>();
     private int _coinCounter;
     private int _increaseCounter;
-    private bool _isFingerStart;
     private bool _isWordWait;
     private bool _isWordActive;
     private Color _playerColor;
+    private bool _isTubeRotationRight;
 
     private void Start()
     {
@@ -105,7 +105,6 @@ public class TubeManager : MonoBehaviour
 
     private void OnNoGameOverButtons(OnNoGameOverButtons obj)
     {
-        _isFingerStart = true;
     }
 
     private void RemoveItem(int id)
@@ -129,7 +128,7 @@ public class TubeManager : MonoBehaviour
     private void StartGame(OnStartGame obj)
     {
         CurrentSpeed = StartSpeed;
-		_coinCounter = 0;
+		_coinCounter = 2;
         GameEvents.Send(OnTubesSpeedScale, CurrentSpeed/MaxSpeed);
     }
 
@@ -198,7 +197,7 @@ public class TubeManager : MonoBehaviour
 
 		if (!isBonusCreated) {
 			if (_coinCounter % 6 == 0) {			
-			    if (Random.value > 0.3f) {
+			    if (Random.value > 0.25f) {
 					GameEvents.Send (OnCreateCoin);
 					isBonusCreated = true;
 			    }
@@ -242,6 +241,7 @@ public class TubeManager : MonoBehaviour
         if (startPos) currentTube.transform.position = new Vector3(0f, posY, 0f); 
         else currentTube.transform.position = new Vector3(Random.Range(-12f, 12f), posY, 0f);
         var script = currentTube.AddComponent<MyTube>();
+        
         script.ShapeObject = shapeObject;
         script.CreateTubeModel(_tubes[DefsGame.CurrentFaceId]);
         script.ChangeRadius(radius/InitRadius);
@@ -254,6 +254,21 @@ public class TubeManager : MonoBehaviour
         lightTmp.range = 30*radius/InitRadius;
         lightTmp.intensity = 5;
         lightTmp.cullingMask = 1 << currentTube.layer;
+        
+        if (DefsGame.CurrentFaceId == 7)
+        {
+            _isTubeRotationRight = !_isTubeRotationRight;
+            if (_isTubeRotationRight)
+                script.RotationSpeed = 2f; else script.RotationSpeed = -2f;
+        }
+        else if (DefsGame.CurrentFaceId == 2 || DefsGame.CurrentFaceId == 9)
+        {
+            if (_isTubeRotationRight) script.ModelGameObject.transform.localScale = new Vector3(
+                script.ModelGameObject.transform.localScale.x*-1f,
+                script.ModelGameObject.transform.localScale.y,
+                script.ModelGameObject.transform.localScale.z);
+            _isTubeRotationRight = !_isTubeRotationRight;
+        }
 
 //        currentTube.transform.Rotate(Vector3.up, _tubeAngle);
         

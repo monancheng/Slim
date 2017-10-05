@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class Coin : MonoBehaviour
@@ -24,18 +25,22 @@ public class Coin : MonoBehaviour
     {
         if (_isShowAnimation)
         {
-            transform.localScale = new Vector3(transform.localScale.x + 0.07f, transform.localScale.y + 0.07f, 1f);
-            if (transform.localScale.x >= 1f)
+            transform.localScale = new Vector3(transform.localScale.x + 0.125f, transform.localScale.y + 0.125f, 1f);
+            if (transform.localScale.x >= 1.35f)
             {
                 _isShowAnimation = false;
-                transform.localScale = new Vector3(1f, 1f, 1f);
             }
+            transform.position = new Vector3(transform.position.x + _velocity * Mathf.Cos(_moveAngle),
+                transform.position.y + _velocity * Mathf.Sin(_moveAngle), 1f);
         }
         else if (_isMoveToTarget)
         {
             if (transform.localScale.x > 1)
+            {
                 transform.localScale = new Vector3(transform.localScale.x - 0.1f,
                     transform.localScale.y - 0.1f, 1f);
+                return;
+            }
 
             var ang = Mathf.Atan2(_targetPos.y - transform.position.y, _targetPos.x - transform.position.x);
 
@@ -70,8 +75,15 @@ public class Coin : MonoBehaviour
 
     public void MoveToEnd()
     {
-        transform.position = Camera.main.ScreenToViewportPoint(new Vector3(Screen.width*0.5f + Random.Range(-33, 33), Screen.height*0.5f + Random.Range(-33, 33), 0f));
-	    _targetPos = new Vector3(ParentObj.transform.position.x, ParentObj.transform.position.y, transform.position.z);
+        Invoke("MoveToEndInvoked", 0f);
+    }
+
+    private void MoveToEndInvoked()
+    {
+        float x = Mathf.Sin(Random.Range(-100, 100));
+        float y = Mathf.Cos(Random.Range(-100, 100));
+        transform.position = new Vector3(x, y, 0f);
+        _targetPos = new Vector3(ParentObj.transform.position.x, ParentObj.transform.position.y, transform.position.z);
         _velocity = 5.0f + Random.value * 5.0f;
         if (Random.value < 0.5f) _moveAngle = Random.value * 180f * Mathf.Deg2Rad;
         else _moveAngle = -Random.value * 180f * Mathf.Deg2Rad;
@@ -83,5 +95,6 @@ public class Coin : MonoBehaviour
         _isMoveToTarget = true;
 
         transform.localScale = new Vector3(0.1f, 0.1f, 1f);
+        Show();
     }
 }

@@ -279,263 +279,6 @@ namespace PrefsEditor.Editor
 
         #endregion
 
-        #region Int Prefs Tests
-
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(4)]
-        public void GetInt(int value)
-        {
-            // Arrange
-            SecurePlayerPrefs.UseSecurePrefs = false;
-            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
-            PlayerPrefs.DeleteKey("TestInt" + value);
-            PlayerPrefs.SetInt("TestInt" + value, value);
-
-            // Act
-
-            // Assert
-            Assert.AreEqual(value, SecurePlayerPrefs.GetInt("TestInt" + value), "The value was not set");
-
-            // Cleanup
-            PlayerPrefs.DeleteKey("TestInt" + value);
-        }
-
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(4)]
-        public void SetInt(int value)
-        {
-            // Arrange
-            SecurePlayerPrefs.UseSecurePrefs = false;
-            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
-            SecurePlayerPrefs.DeleteKey("TestInt" + value);
-            SecurePlayerPrefs.SetInt("TestInt" + value, value);
-
-            // Act
-
-            // Assert
-            Assert.AreEqual(value, PlayerPrefs.GetInt("TestInt" + value), "The value was not set");
-
-            // Cleanup
-            SecurePlayerPrefs.DeleteKey("TestInt" + value);
-        }
-
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(4)]
-        public void SetIntEncrypted(int value)
-        {
-            // Arrange
-            SecurePlayerPrefs.UseSecurePrefs = true;
-            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
-            SecurePlayerPrefs.DeleteKey("TestInt" + value);
-
-            // Act
-            SecurePlayerPrefs.SetInt("TestInt" + value, value);
-
-            // Assert
-            Assert.IsNotNull(SecurePlayerPrefs.GetRawEncryptedPrefsEntry("TestInt" + value), "The value was null");
-            Assert.AreNotEqual(value.ToString(), SecurePlayerPrefs.GetRawEncryptedPrefsEntry("TestInt" + value), "The value was not set encrypted");
-
-            // Cleanup
-            SecurePlayerPrefs.DeleteKey("TestInt" + value);
-        }
-
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(4)]
-        public void GetIntEncrypted(int value)
-        {
-            // Arrange
-            SecurePlayerPrefs.UseSecurePrefs = true;
-            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
-            SecurePlayerPrefs.DeleteKey("TestInt" + value);
-
-            // Act
-            SecurePlayerPrefs.SetInt("TestInt" + value, value);
-
-            // Assert
-            Assert.AreEqual(value, SecurePlayerPrefs.GetInt("TestInt" + value), "The value could not be decrypted");
-
-            // Cleanup
-            SecurePlayerPrefs.DeleteKey("TestInt" + value);
-        }
-
-
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(4)]
-        public void GetIntAutoConvert(int value)
-        {
-            // Arrange
-            SecurePlayerPrefs.UseSecurePrefs = true;
-            SecurePlayerPrefs.AutoConvertUnsecurePrefs = true;
-            SecurePlayerPrefs.DeleteKey("TestInt" + value);
-            PlayerPrefs.DeleteKey("TestInt" + value);
-            PlayerPrefs.SetInt("TestInt" + value, value);
-
-            // Act
-
-            // Assert
-            Assert.AreEqual(value, SecurePlayerPrefs.GetInt("TestInt" + value), "The value could not be decrypted");
-            Assert.IsFalse(PlayerPrefs.HasKey("TestInt" + value), "The old converted key was not removed");
-
-            // Cleanup
-            SecurePlayerPrefs.DeleteKey("TestInt" + value);
-            PlayerPrefs.DeleteKey("TestInt" + value);
-        }
-
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(4)]
-        public void GetIntNoAutoConvert(int value)
-        {
-            // Arrange
-            SecurePlayerPrefs.UseSecurePrefs = true;
-            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
-            SecurePlayerPrefs.DeleteKey("TestInt" + value);
-            PlayerPrefs.DeleteKey("TestInt" + value);
-            PlayerPrefs.SetInt("TestInt" + value, value);
-
-            // Act
-
-            // Assert
-            Assert.AreNotEqual(value, SecurePlayerPrefs.GetInt("TestInt" + value), "The value was wrongly retrieved");
-            Assert.IsTrue(PlayerPrefs.HasKey("TestInt" + value), "The old converted key was removed");
-
-            // Cleanup
-            SecurePlayerPrefs.DeleteKey("TestInt" + value);
-            PlayerPrefs.DeleteKey("TestInt" + value);
-        }
-
-        #endregion Int Prefs Tests
-
-        #region Bool Prefs Tests
-
-        [TestCase(true)]
-        [TestCase(false)]
-        public void GetBool(bool value)
-        {
-            // Arrange
-            SecurePlayerPrefs.UseSecurePrefs = false;
-            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
-            PlayerPrefs.DeleteKey("TestBool" + value);
-            PlayerPrefs.SetInt("TestBool" + value, value ? 1 : 0);
-
-            // Act
-
-            // Assert
-            Assert.AreEqual(value, SecurePlayerPrefs.GetBool("TestBool" + value), "The value was not set");
-
-            // Cleanup
-            PlayerPrefs.DeleteKey("TestBool" + value);
-        }
-
-        [TestCase(true)]
-        [TestCase(false)]
-        public void SetBool(bool value)
-        {
-            // Arrange
-            SecurePlayerPrefs.UseSecurePrefs = false;
-            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
-            SecurePlayerPrefs.DeleteKey("TestBool" + value);
-            SecurePlayerPrefs.SetBool("TestBool" + value, value);
-
-            // Act
-
-            // Assert
-            Assert.AreEqual(value, PlayerPrefs.GetInt("TestBool" + value) == 1, "The value was not set");
-
-            // Cleanup
-            SecurePlayerPrefs.DeleteKey("TestBool" + value);
-        }
-
-        [TestCase(true)]
-        [TestCase(false)]
-        public void SetBoolEncrypted(bool value)
-        {
-            // Arrange
-            SecurePlayerPrefs.UseSecurePrefs = true;
-            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
-            SecurePlayerPrefs.DeleteKey("TestBool" + value);
-
-            // Act
-            SecurePlayerPrefs.SetBool("TestBool" + value, value);
-
-            // Assert
-            Assert.IsNotNull(SecurePlayerPrefs.GetRawEncryptedPrefsEntry("TestBool" + value), "The value was null");
-            Assert.AreNotEqual(value.ToString(), SecurePlayerPrefs.GetRawEncryptedPrefsEntry("TestBool" + value), "The value was not set encrypted");
-
-            // Cleanup
-            SecurePlayerPrefs.DeleteKey("TestBool" + value);
-        }
-
-        [TestCase(true)]
-        [TestCase(false)]
-        public void GetBoolEncrypted(bool value)
-        {
-            // Arrange
-            SecurePlayerPrefs.UseSecurePrefs = true;
-            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
-            SecurePlayerPrefs.DeleteKey("TestBool" + value);
-
-            // Act
-            SecurePlayerPrefs.SetBool("TestBool" + value, value);
-
-            // Assert
-            Assert.AreEqual(value, SecurePlayerPrefs.GetBool("TestBool" + value), "The value could not be decrypted");
-
-            // Cleanup
-            SecurePlayerPrefs.DeleteKey("TestBool" + value);
-        }
-
-
-        [TestCase(true)]
-        [TestCase(false)]
-        public void GetBoolAutoConvert(bool value)
-        {
-            // Arrange
-            SecurePlayerPrefs.UseSecurePrefs = true;
-            SecurePlayerPrefs.AutoConvertUnsecurePrefs = true;
-            SecurePlayerPrefs.DeleteKey("TestBool" + value);
-            PlayerPrefs.DeleteKey("TestBool" + value);
-            PlayerPrefs.SetInt("TestBool" + value, value ? 1 : 0);
-
-            // Act
-
-            // Assert
-            Assert.AreEqual(value, SecurePlayerPrefs.GetBool("TestBool" + value), "The value could not be decrypted");
-            Assert.IsFalse(PlayerPrefs.HasKey("TestBool" + value), "The old converted key was not removed");
-
-            // Cleanup
-            SecurePlayerPrefs.DeleteKey("TestBool" + value);
-            PlayerPrefs.DeleteKey("TestBool" + value);
-        }
-
-        [TestCase(true)]
-        public void GetBoolNoAutoConvert(bool value)
-        {
-            // Arrange
-            SecurePlayerPrefs.UseSecurePrefs = true;
-            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
-            SecurePlayerPrefs.DeleteKey("TestBool" + value);
-            PlayerPrefs.DeleteKey("TestBool" + value);
-            PlayerPrefs.SetInt("TestBool" + value, value ? 1 : 0);
-
-            // Act
-
-            // Assert
-            Assert.AreNotEqual(value, SecurePlayerPrefs.GetBool("TestBool" + value), "The value was wrongly retrieved");
-            Assert.IsTrue(PlayerPrefs.HasKey("TestBool" + value), "The old converted key was removed");
-
-            // Cleanup
-            SecurePlayerPrefs.DeleteKey("TestBool" + value);
-            PlayerPrefs.DeleteKey("TestBool" + value);
-        }
-
-        #endregion Bool Prefs Tests
-
         #region Float Prefs Tests
 
         [TestCase(1.0f)]
@@ -668,6 +411,138 @@ namespace PrefsEditor.Editor
 
         #endregion Float Prefs Tests
 
+        #region Int Prefs Tests
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(4)]
+        public void GetInt(int value)
+        {
+            // Arrange
+            SecurePlayerPrefs.UseSecurePrefs = false;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            PlayerPrefs.DeleteKey("TestInt" + value);
+            PlayerPrefs.SetInt("TestInt" + value, value);
+
+            // Act
+
+            // Assert
+            Assert.AreEqual(value, SecurePlayerPrefs.GetInt("TestInt" + value), "The value was not set");
+
+            // Cleanup
+            PlayerPrefs.DeleteKey("TestInt" + value);
+        }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(4)]
+        public void SetInt(int value)
+        {
+            // Arrange
+            SecurePlayerPrefs.UseSecurePrefs = false;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestInt" + value);
+            SecurePlayerPrefs.SetInt("TestInt" + value, value);
+
+            // Act
+
+            // Assert
+            Assert.AreEqual(value, PlayerPrefs.GetInt("TestInt" + value), "The value was not set");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestInt" + value);
+        }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(4)]
+        public void SetIntEncrypted(int value)
+        {
+            // Arrange
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestInt" + value);
+
+            // Act
+            SecurePlayerPrefs.SetInt("TestInt" + value, value);
+
+            // Assert
+            Assert.IsNotNull(SecurePlayerPrefs.GetRawEncryptedPrefsEntry("TestInt" + value), "The value was null");
+            Assert.AreNotEqual(value.ToString(), SecurePlayerPrefs.GetRawEncryptedPrefsEntry("TestInt" + value), "The value was not set encrypted");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestInt" + value);
+        }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(4)]
+        public void GetIntEncrypted(int value)
+        {
+            // Arrange
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestInt" + value);
+
+            // Act
+            SecurePlayerPrefs.SetInt("TestInt" + value, value);
+
+            // Assert
+            Assert.AreEqual(value, SecurePlayerPrefs.GetInt("TestInt" + value), "The value could not be decrypted");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestInt" + value);
+        }
+
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(4)]
+        public void GetIntAutoConvert(int value)
+        {
+            // Arrange
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = true;
+            SecurePlayerPrefs.DeleteKey("TestInt" + value);
+            PlayerPrefs.DeleteKey("TestInt" + value);
+            PlayerPrefs.SetInt("TestInt" + value, value);
+
+            // Act
+
+            // Assert
+            Assert.AreEqual(value, SecurePlayerPrefs.GetInt("TestInt" + value), "The value could not be decrypted");
+            Assert.IsFalse(PlayerPrefs.HasKey("TestInt" + value), "The old converted key was not removed");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestInt" + value);
+            PlayerPrefs.DeleteKey("TestInt" + value);
+        }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(4)]
+        public void GetIntNoAutoConvert(int value)
+        {
+            // Arrange
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestInt" + value);
+            PlayerPrefs.DeleteKey("TestInt" + value);
+            PlayerPrefs.SetInt("TestInt" + value, value);
+
+            // Act
+
+            // Assert
+            Assert.AreNotEqual(value, SecurePlayerPrefs.GetInt("TestInt" + value), "The value was wrongly retrieved");
+            Assert.IsTrue(PlayerPrefs.HasKey("TestInt" + value), "The old converted key was removed");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestInt" + value);
+            PlayerPrefs.DeleteKey("TestInt" + value);
+        }
+
+        #endregion Int Prefs Tests
+
         #region String Prefs Tests
 
         [TestCase("Test String 1")]
@@ -725,7 +600,7 @@ namespace PrefsEditor.Editor
 
             // Assert
             Assert.IsNotNull(SecurePlayerPrefs.GetRawEncryptedPrefsEntry("TestString" + value), "The value was null");
-            Assert.AreNotEqual(value.ToString(), SecurePlayerPrefs.GetRawEncryptedPrefsEntry("TestString" + value), "The value was not set encrypted");
+            Assert.AreNotEqual(value, SecurePlayerPrefs.GetRawEncryptedPrefsEntry("TestString" + value), "The value was not set encrypted");
 
             // Cleanup
             SecurePlayerPrefs.DeleteKey("TestString" + value);
@@ -799,6 +674,509 @@ namespace PrefsEditor.Editor
         }
 
         #endregion String Prefs Tests
+
+        #region Bool Prefs Tests
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void GetBool(bool value)
+        {
+            // Arrange
+            SecurePlayerPrefs.UseSecurePrefs = false;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            PlayerPrefs.DeleteKey("TestBool" + value);
+            PlayerPrefs.SetInt("TestBool" + value, value ? 1 : 0);
+
+            // Act
+
+            // Assert
+            Assert.AreEqual(value, SecurePlayerPrefs.GetBool("TestBool" + value), "The value was not set");
+
+            // Cleanup
+            PlayerPrefs.DeleteKey("TestBool" + value);
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetBool(bool value)
+        {
+            // Arrange
+            SecurePlayerPrefs.UseSecurePrefs = false;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestBool" + value);
+            SecurePlayerPrefs.SetBool("TestBool" + value, value);
+
+            // Act
+
+            // Assert
+            Assert.AreEqual(value, PlayerPrefs.GetInt("TestBool" + value) == 1, "The value was not set");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestBool" + value);
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetBoolEncrypted(bool value)
+        {
+            // Arrange
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestBool" + value);
+
+            // Act
+            SecurePlayerPrefs.SetBool("TestBool" + value, value);
+
+            // Assert
+            Assert.IsNotNull(SecurePlayerPrefs.GetRawEncryptedPrefsEntry("TestBool" + value), "The value was null");
+            Assert.AreNotEqual(value.ToString(), SecurePlayerPrefs.GetRawEncryptedPrefsEntry("TestBool" + value), "The value was not set encrypted");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestBool" + value);
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void GetBoolEncrypted(bool value)
+        {
+            // Arrange
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestBool" + value);
+
+            // Act
+            SecurePlayerPrefs.SetBool("TestBool" + value, value);
+
+            // Assert
+            Assert.AreEqual(value, SecurePlayerPrefs.GetBool("TestBool" + value), "The value could not be decrypted");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestBool" + value);
+        }
+
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void GetBoolAutoConvert(bool value)
+        {
+            // Arrange
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = true;
+            SecurePlayerPrefs.DeleteKey("TestBool" + value);
+            PlayerPrefs.DeleteKey("TestBool" + value);
+            PlayerPrefs.SetInt("TestBool" + value, value ? 1 : 0);
+
+            // Act
+
+            // Assert
+            Assert.AreEqual(value, SecurePlayerPrefs.GetBool("TestBool" + value), "The value could not be decrypted");
+            Assert.IsFalse(PlayerPrefs.HasKey("TestBool" + value), "The old converted key was not removed");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestBool" + value);
+            PlayerPrefs.DeleteKey("TestBool" + value);
+        }
+
+        [TestCase(true)]
+        public void GetBoolNoAutoConvert(bool value)
+        {
+            // Arrange
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestBool" + value);
+            PlayerPrefs.DeleteKey("TestBool" + value);
+            PlayerPrefs.SetInt("TestBool" + value, value ? 1 : 0);
+
+            // Act
+
+            // Assert
+            Assert.AreNotEqual(value, SecurePlayerPrefs.GetBool("TestBool" + value), "The value was wrongly retrieved");
+            Assert.IsTrue(PlayerPrefs.HasKey("TestBool" + value), "The old converted key was removed");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestBool" + value);
+            PlayerPrefs.DeleteKey("TestBool" + value);
+        }
+
+        #endregion Bool Prefs Tests
+
+        #region Vector2 Prefs Tests
+        [TestCase]
+        public void GetVector2()
+        {
+            // Arrange
+            var value = new Vector2(10, 20); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = false;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            PlayerPrefs.DeleteKey("TestVector2" + value);
+            PlayerPrefs.SetString("TestVector2" + value, "10:20");
+
+            // Act
+
+            // Assert
+            Assert.AreEqual(value, SecurePlayerPrefs.GetVector2("TestVector2" + value), "The value was not set");
+
+            // Cleanup
+            PlayerPrefs.DeleteKey("TestVector2" + value);
+        }
+
+        [TestCase]
+        public void SetVector2()
+        {
+            // Arrange
+            var value = new Vector2(10, 20); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = false;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestVector2" + value);
+            SecurePlayerPrefs.SetVector2("TestVector2" + value, value);
+
+            // Act
+
+            // Assert
+            Assert.AreEqual("10:20", PlayerPrefs.GetString("TestVector2" + value), "The value was not set");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestVector2" + value);
+        }
+
+        [TestCase]
+        public void SetVector2Encrypted()
+        {
+            // Arrange
+            var value = new Vector2(10, 20); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestVector2" + value);
+
+            // Act
+            SecurePlayerPrefs.SetVector2("TestVector2" + value, value);
+
+            // Assert
+            Assert.IsNotNull(SecurePlayerPrefs.GetRawEncryptedPrefsEntry("TestVector2" + value), "The value was null");
+            Assert.AreNotEqual(value.ToString(), SecurePlayerPrefs.GetRawEncryptedPrefsEntry("TestVector2" + value), "The value was not set encrypted");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestVector2" + value);
+        }
+
+
+        [TestCase]
+        public void GetVector2Encrypted()
+        {
+            // Arrange
+            var value = new Vector2(10, 20); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestVector2" + value);
+
+            // Act
+            SecurePlayerPrefs.SetVector2("TestVector2" + value, value);
+
+            // Assert
+            Assert.AreEqual(value, SecurePlayerPrefs.GetVector2("TestVector2" + value), "The value could not be decrypted");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestVector2" + value);
+        }
+
+
+        [TestCase]
+        public void GetVector2AutoConvert()
+        {
+            // Arrange
+            var value = new Vector2(10, 20); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = true;
+            SecurePlayerPrefs.DeleteKey("TestVector2" + value);
+            PlayerPrefs.DeleteKey("TestVector2" + value);
+            PlayerPrefs.SetString("TestVector2" + value, "10:20");
+
+            // Act
+
+            // Assert
+            Assert.AreEqual(value, SecurePlayerPrefs.GetVector2("TestVector2" + value), "The value could not be decrypted");
+            Assert.IsFalse(PlayerPrefs.HasKey("TestVector2" + value), "The old converted key was not removed");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestVector2" + value);
+            PlayerPrefs.DeleteKey("TestVector2" + value);
+        }
+
+        [TestCase]
+        public void GetVector2NoAutoConvert()
+        {
+            // Arrange
+            var value = new Vector2(10, 20); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestVector2" + value);
+            PlayerPrefs.DeleteKey("TestVector2" + value);
+            PlayerPrefs.SetString("TestVector2" + value, "10:20");
+
+            // Act
+
+            // Assert
+            Assert.AreNotEqual(value, SecurePlayerPrefs.GetVector2("TestVector2" + value), "The value was wrongly retrieved");
+            Assert.IsTrue(PlayerPrefs.HasKey("TestVector2" + value), "The old converted key was removed");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestVector2" + value);
+            PlayerPrefs.DeleteKey("TestVector2" + value);
+        }
+
+        #endregion Vector2 Prefs Tests
+
+        #region Vector3 Prefs Tests
+        [TestCase]
+        public void GetVector3()
+        {
+            // Arrange
+            var value = new Vector3(10, 20, 30); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = false;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            PlayerPrefs.DeleteKey("TestVector3" + value);
+            PlayerPrefs.SetString("TestVector3" + value, "10:20:30");
+
+            // Act
+
+            // Assert
+            Assert.AreEqual(value, SecurePlayerPrefs.GetVector3("TestVector3" + value), "The value was not set");
+
+            // Cleanup
+            PlayerPrefs.DeleteKey("TestVector3" + value);
+        }
+
+        [TestCase]
+        public void SetVector3()
+        {
+            // Arrange
+            var value = new Vector3(10, 20, 30); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = false;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestVector3" + value);
+            SecurePlayerPrefs.SetVector3("TestVector3" + value, value);
+
+            // Act
+
+            // Assert
+            Assert.AreEqual("10:20:30", PlayerPrefs.GetString("TestVector3" + value), "The value was not set");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestVector3" + value);
+        }
+
+        [TestCase]
+        public void SetVector3Encrypted()
+        {
+            // Arrange
+            var value = new Vector3(10, 20, 30); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestVector3" + value);
+
+            // Act
+            SecurePlayerPrefs.SetVector3("TestVector3" + value, value);
+
+            // Assert
+            Assert.IsNotNull(SecurePlayerPrefs.GetRawEncryptedPrefsEntry("TestVector3" + value), "The value was null");
+            Assert.AreNotEqual(value.ToString(), SecurePlayerPrefs.GetRawEncryptedPrefsEntry("TestVector3" + value), "The value was not set encrypted");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestVector3" + value);
+        }
+
+
+        [TestCase]
+        public void GetVector3Encrypted()
+        {
+            // Arrange
+            var value = new Vector3(10, 20, 30); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestVector3" + value);
+
+            // Act
+            SecurePlayerPrefs.SetVector3("TestVector3" + value, value);
+
+            // Assert
+            Assert.AreEqual(value, SecurePlayerPrefs.GetVector3("TestVector3" + value), "The value could not be decrypted");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestVector3" + value);
+        }
+
+
+        [TestCase]
+        public void GetVector3AutoConvert()
+        {
+            // Arrange
+            var value = new Vector3(10, 20, 30); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = true;
+            SecurePlayerPrefs.DeleteKey("TestVector3" + value);
+            PlayerPrefs.DeleteKey("TestVector3" + value);
+            PlayerPrefs.SetString("TestVector3" + value, "10:20:30");
+
+            // Act
+
+            // Assert
+            Assert.AreEqual(value, SecurePlayerPrefs.GetVector3("TestVector3" + value), "The value could not be decrypted");
+            Assert.IsFalse(PlayerPrefs.HasKey("TestVector3" + value), "The old converted key was not removed");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestVector3" + value);
+            PlayerPrefs.DeleteKey("TestVector3" + value);
+        }
+
+        [TestCase]
+        public void GetVector3NoAutoConvert()
+        {
+            // Arrange
+            var value = new Vector3(10, 20, 30); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestVector3" + value);
+            PlayerPrefs.DeleteKey("TestVector3" + value);
+            PlayerPrefs.SetString("TestVector3" + value, "10:20:30");
+
+            // Act
+
+            // Assert
+            Assert.AreNotEqual(value, SecurePlayerPrefs.GetVector3("TestVector3" + value), "The value was wrongly retrieved");
+            Assert.IsTrue(PlayerPrefs.HasKey("TestVector3" + value), "The old converted key was removed");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestVector3" + value);
+            PlayerPrefs.DeleteKey("TestVector3" + value);
+        }
+
+        #endregion Vector3 Prefs Tests
+
+        #region Color Prefs Tests
+        [TestCase]
+        public void GetColor()
+        {
+            // Arrange
+            var value = new Color(10, 20, 30, 40); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = false;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            PlayerPrefs.DeleteKey("TestColor" + value);
+            PlayerPrefs.SetString("TestColor" + value, "10:20:30:40");
+
+            // Act
+
+            // Assert
+            Assert.AreEqual(value, SecurePlayerPrefs.GetColor("TestColor" + value), "The value was not set");
+
+            // Cleanup
+            PlayerPrefs.DeleteKey("TestColor" + value);
+        }
+
+        [TestCase]
+        public void SetColor()
+        {
+            // Arrange
+            var value = new Color(10, 20, 30, 40); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = false;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestColor" + value);
+            SecurePlayerPrefs.SetColor("TestColor" + value, value);
+
+            // Act
+
+            // Assert
+            Assert.AreEqual("10:20:30:40", PlayerPrefs.GetString("TestColor" + value), "The value was not set");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestColor" + value);
+        }
+
+        [TestCase]
+        public void SetColorEncrypted()
+        {
+            // Arrange
+            var value = new Color(10, 20, 30, 40); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestColor" + value);
+
+            // Act
+            SecurePlayerPrefs.SetColor("TestColor" + value, value);
+
+            // Assert
+            Assert.IsNotNull(SecurePlayerPrefs.GetRawEncryptedPrefsEntry("TestColor" + value), "The value was null");
+            Assert.AreNotEqual(value.ToString(), SecurePlayerPrefs.GetRawEncryptedPrefsEntry("TestColor" + value), "The value was not set encrypted");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestColor" + value);
+        }
+
+
+        [TestCase]
+        public void GetColorEncrypted()
+        {
+            // Arrange
+            var value = new Color(10, 20, 30, 40); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestColor" + value);
+
+            // Act
+            SecurePlayerPrefs.SetColor("TestColor" + value, value);
+
+            // Assert
+            Assert.AreEqual(value, SecurePlayerPrefs.GetColor("TestColor" + value), "The value could not be decrypted");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestColor" + value);
+        }
+
+
+        [TestCase]
+        public void GetColorAutoConvert()
+        {
+            // Arrange
+            var value = new Color(10, 20, 30, 40); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = true;
+            SecurePlayerPrefs.DeleteKey("TestColor" + value);
+            PlayerPrefs.DeleteKey("TestColor" + value);
+            PlayerPrefs.SetString("TestColor" + value, "10:20:30:40");
+
+            // Act
+
+            // Assert
+            Assert.AreEqual(value, SecurePlayerPrefs.GetColor("TestColor" + value), "The value could not be decrypted");
+            Assert.IsFalse(PlayerPrefs.HasKey("TestColor" + value), "The old converted key was not removed");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestColor" + value);
+            PlayerPrefs.DeleteKey("TestColor" + value);
+        }
+
+        [TestCase]
+        public void GetColorNoAutoConvert()
+        {
+            // Arrange
+            var value = new Color(10, 20, 30, 40); // can't pass objects as as paraameter so single hardcoded test
+            SecurePlayerPrefs.UseSecurePrefs = true;
+            SecurePlayerPrefs.AutoConvertUnsecurePrefs = false;
+            SecurePlayerPrefs.DeleteKey("TestColor" + value);
+            PlayerPrefs.DeleteKey("TestColor" + value);
+            PlayerPrefs.SetString("TestColor" + value, "10:20:30:40");
+
+            // Act
+
+            // Assert
+            Assert.AreNotEqual(value, SecurePlayerPrefs.GetColor("TestColor" + value), "The value was wrongly retrieved");
+            Assert.IsTrue(PlayerPrefs.HasKey("TestColor" + value), "The old converted key was removed");
+
+            // Cleanup
+            SecurePlayerPrefs.DeleteKey("TestColor" + value);
+            PlayerPrefs.DeleteKey("TestColor" + value);
+        }
+
+        #endregion Color Prefs Tests
 
     }
 }

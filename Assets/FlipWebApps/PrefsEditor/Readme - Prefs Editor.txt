@@ -1,4 +1,4 @@
-Prefs Editor v2.1
+Prefs Editor v2.2
 
 Thank you for using Prefs Editor. 
 
@@ -39,6 +39,10 @@ Please visit our website at http://www.flipwebapps.com/unity-assets/prefs-editor
 - - - - - - - - - -
 
 CHANGE LOG
+
+v2.2
+	- Prefs Editor Window: Now supports EditorPrefs
+	- Prefs Editor Window: Added a filter to limit results
 
 v2.1
 	- SecurePlayerPrefs: Namespace simplified from FlipWebApps.PrefsEditor to PrefsEditor. Do a rename of any references in your code.

@@ -12,11 +12,11 @@ public struct DefsGame
     public static int CurrentFaceId;
     public static int FacesGeneralMin = 0;
     public static int FacesGeneralMax = 18;
-    public static int FacesSocialStartID = FacesGeneralMax+1;
-    public static int FacesPaybleStartID = FacesSocialStartID + 4;
+    public static readonly int FacesSocialStartID = FacesGeneralMax+1;
+    public static readonly int FacesPaybleStartID = FacesSocialStartID + 4;
     public static int[] FaceAvailable = {
         // General
-        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         // Social
         0, 0, 0, 0,
         // Money
@@ -63,7 +63,7 @@ public struct DefsGame
         GameBestScore = SecurePlayerPrefs.GetInt("BestScore");
 //      gameBestScore = 0;
         CoinsCount = SecurePlayerPrefs.GetInt("coinsCount");
-        CoinsCount = 2000;
+//        CoinsCount = 2000;
         RateCounter = PlayerPrefs.GetInt("rateCounter", 0);
         if (RateCounter != 0 && PlayerPrefs.GetInt("RateForVersion", -1) != GameVersion)
         {
@@ -71,8 +71,8 @@ public struct DefsGame
             PlayerPrefs.SetInt("rateCounter", 0);
         }
 
-        for (var i = 0; i < FaceAvailable.Length; i++)
-            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 1);
+//        for (var i = 0; i < FaceAvailable.Length; i++)
+//            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 1);
         
         for (var i = 1; i < FaceAvailable.Length; i++)
             FaceAvailable[i] = SecurePlayerPrefs.GetInt("faceAvailable_" + i);

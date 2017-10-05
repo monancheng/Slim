@@ -104,11 +104,13 @@ public class BillingManager : MonoBehaviour
         /*
         BuyItem(NPSettings.Billing.Products[IAP_COINS_1]);
         */
+        GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 200});
     }
 
     public void BuyTier2()
     {
 //        BuyItem(NPSettings.Billing.Products[IAP_COINS_2]);
+        GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 1000});
     }
 
     public void BuySkin(int id)

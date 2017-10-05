@@ -30,6 +30,7 @@ public class ScreenMenu : ScreenItem
     private void OnHideMenu(OnHideMenu obj)
     {
         UIManager.HideUiElement("GameName");
+        UIManager.HideUiElement("ScreenMenuBtnPlus");
         HideButtons();
     }
     
