@@ -47,7 +47,7 @@ public class TubeManager : MonoBehaviour
         
         ColorTheme.SetFirstColor();
         CreateTubeStart();
-//        GameEvents.Send(OnSendCurrentColorToPlayer, _colors[DefsGame.CurrentFaceId]);
+//        GameEvents.Send(OnSendCurrentColorToPlayer, _colors[ScreenSkins.CurrentFaceId]);
     }
 
     private void OnEnable()
@@ -73,12 +73,12 @@ public class TubeManager : MonoBehaviour
 
 //    private void OnChangeSkin(OnChangeSkin obj)
 //    {
-//        GameEvents.Send(OnSendCurrentColorToPlayer, _colors[DefsGame.CurrentFaceId]);
+//        GameEvents.Send(OnSendCurrentColorToPlayer, _colors[ScreenSkins.CurrentFaceId]);
 //    }
 
     private void OnTubeCreateExample(OnTubeCreateExample obj)
     {
-        CreateTube(InitRadius, _colors[DefsGame.CurrentFaceId], 200f, true);
+        CreateTube(InitRadius, _colors[ScreenSkins.CurrentFaceId], 200f, true);
     }
 
     private void OnShowMenu(OnShowMenu obj)
@@ -143,8 +143,8 @@ public class TubeManager : MonoBehaviour
         {
             float newRadius = InitRadius + _radiusAddCoeff;
             
-            Color color = _colors[DefsGame.CurrentFaceId];
-            if (Math.Abs(_colors[DefsGame.CurrentFaceId].a) < 0.1f)
+            Color color = _colors[ScreenSkins.CurrentFaceId];
+            if (Math.Abs(_colors[ScreenSkins.CurrentFaceId].a) < 0.1f)
             {
                 color = ColorTheme.GetTubeColor();
             }
@@ -175,8 +175,8 @@ public class TubeManager : MonoBehaviour
         _radiusAddCoeff -= StartRadiusMinus;
         if (_radiusAddCoeff < 0f) _radiusAddCoeff = 0f;
 
-        Color color = _colors[DefsGame.CurrentFaceId];
-        if (Math.Abs(_colors[DefsGame.CurrentFaceId].a) < 0.1f)
+        Color color = _colors[ScreenSkins.CurrentFaceId];
+        if (Math.Abs(_colors[ScreenSkins.CurrentFaceId].a) < 0.1f)
         {
             color = ColorTheme.GetTubeColor();
         }
@@ -217,7 +217,7 @@ public class TubeManager : MonoBehaviour
     private void CreateTube(float radius, Color color, float posY, bool startPos = false)
     {
         float outer = OuterRadius;
-        if (DefsGame.CurrentFaceId == 0)
+        if (ScreenSkins.CurrentFaceId == 0)
         {
             outer += 7f;
         }
@@ -243,7 +243,7 @@ public class TubeManager : MonoBehaviour
         var script = currentTube.AddComponent<MyTube>();
         
         script.ShapeObject = shapeObject;
-        script.CreateTubeModel(_tubes[DefsGame.CurrentFaceId]);
+        script.CreateTubeModel(_tubes[ScreenSkins.CurrentFaceId]);
         script.ChangeRadius(radius/InitRadius);
         _itemList.Add(script);
         currentTube.GetComponent<Collider>().isTrigger = true;
@@ -255,13 +255,13 @@ public class TubeManager : MonoBehaviour
         lightTmp.intensity = 5;
         lightTmp.cullingMask = 1 << currentTube.layer;
         
-        if (DefsGame.CurrentFaceId == 7)
+        if (ScreenSkins.CurrentFaceId == 7)
         {
             _isTubeRotationRight = !_isTubeRotationRight;
             if (_isTubeRotationRight)
                 script.RotationSpeed = 2f; else script.RotationSpeed = -2f;
         }
-        else if (DefsGame.CurrentFaceId == 2 || DefsGame.CurrentFaceId == 9)
+        else if (ScreenSkins.CurrentFaceId == 2 || ScreenSkins.CurrentFaceId == 9)
         {
             if (_isTubeRotationRight) script.ModelGameObject.transform.localScale = new Vector3(
                 script.ModelGameObject.transform.localScale.x*-1f,

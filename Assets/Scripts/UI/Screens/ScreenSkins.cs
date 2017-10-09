@@ -9,10 +9,49 @@ public class ScreenSkins : ScreenItem
 {
     [SerializeField] private GameObject[] _skinBtns;
     [SerializeField] private GameObject _choosedSkin;
-    private bool _isNewSkinAvailable;
     
+    public static int CurrentFaceId;
+    private const int FacesGeneralMin = 0;
+    private const int FacesGeneralMax = 18;
+    private const int FacesSocialStartId = FacesGeneralMax+1;
+    private const int FacesPaybleStartId = FacesSocialStartId + 4;
+
+    private const int SkinFacebook = FacesSocialStartId;
+    private const int SkinTwitter = FacesSocialStartId + 1;
+    private const int SkinInstagram = FacesSocialStartId + 2;
+    private const int SkinSponsor = FacesSocialStartId + 3;
+    
+    private const int IapSkin1 = FacesPaybleStartId;
+    private const int IapSkin2 = FacesPaybleStartId + 1;
+    private const int IapSkin3 = FacesPaybleStartId + 2;
+    private const int IapSkin4 = FacesPaybleStartId + 3;
+    private int[] _faceAvailable = {
+        // General
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        // Social
+        0, 0, 0, 0,
+        // Money
+        0, 0, 0, 0};
+    
+    private bool _isFirstGift;
+    private bool _isSkinsAllGeneralOpened;
+
     private void Start()
     {
+        CurrentFaceId = SecurePlayerPrefs.GetInt("currentFaceID");
+//      CurrentFaceId = 0;
+        _isFirstGift = SecurePlayerPrefs.GetBool("isFirstSkinGift", true);
+        //        for (var i = 0; i < FaceAvailable.Length; i++)
+//            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 1);
+        
+        for (var i = 1; i < _faceAvailable.Length; i++)
+            _faceAvailable[i] = SecurePlayerPrefs.GetInt("faceAvailable_" + i);
+
+        for (var i = 0; i < _faceAvailable.Length; i++)
+        {
+            if (_faceAvailable[i] == 1) ++DefsGame.QUEST_CHARACTERS_Counter;
+        }
+        
         InitUi();
         AreThereSkins();
         AreThereSkinsGeneral();
@@ -22,7 +61,7 @@ public class ScreenSkins : ScreenItem
         if (DefsGame.CoinsCount > 0)
         {
             UIManager.ShowUiElement("LabelCoins");
-            UIManager.ShowUiElement("ScreenMenuBtnPlus");
+//            UIManager.ShowUiElement("ScreenMenuBtnPlus");
         }
     }
 
@@ -30,7 +69,24 @@ public class ScreenSkins : ScreenItem
     {
         GlobalEvents<OnBuySkin>.Happened += OnBuySkin;
         GlobalEvents<OnBuySkinByIAP>.Happened += OnBuySkinByIAP;
+        GlobalEvents<OnSkinsUnlockAll>.Happened += OnSkinsUnlockAll;
+        GlobalEvents<OnGiftShowRandomSkinAnimation>.Happened += OnGiftShowRandomSkinAnimation;
 //        GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
+    }
+
+    private void OnSkinsUnlockAll(OnSkinsUnlockAll obj)
+    {
+        for (var i = 0; i < _faceAvailable.Length; i++)
+        {
+            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 1);
+            _faceAvailable[i] = 1;
+        }
+
+        DefsGame.QUEST_CHARACTERS_Counter = _faceAvailable.Length;
+        
+        ChooseColorForButtons();
+        AreThereSkins();
+        AreThereSkinsGeneral();
     }
 
 //    private void OnCoinsAdded(OnCoinsAdded obj)
@@ -48,13 +104,13 @@ public class ScreenSkins : ScreenItem
     {
         switch (obj.Id)
         {
-            case BillingManager.IAP_SKIN_1: OpenSkin(DefsGame.IAP_SKIN_1);
+            case BillingManager.IAP_SKIN_1: OpenSkin(IapSkin1);
                 break;
-            case BillingManager.IAP_SKIN_2: OpenSkin(DefsGame.IAP_SKIN_2);
+            case BillingManager.IAP_SKIN_2: OpenSkin(IapSkin2);
                 break;
-            case BillingManager.IAP_SKIN_3: OpenSkin(DefsGame.IAP_SKIN_3);
+            case BillingManager.IAP_SKIN_3: OpenSkin(IapSkin3);
                 break;
-            case BillingManager.IAP_SKIN_4: OpenSkin(DefsGame.IAP_SKIN_4);
+            case BillingManager.IAP_SKIN_4: OpenSkin(IapSkin4);
                 break;
         }
         MasterAudio.PlaySoundAndForget("GUI_Grab");
@@ -65,7 +121,7 @@ public class ScreenSkins : ScreenItem
 
     public void SetSkin(int id)
     {
-//        if (id == DefsGame.CurrentFaceId)
+//        if (id == CurrentFaceId)
 //        {
 //            Hide();
 //            GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
@@ -74,34 +130,34 @@ public class ScreenSkins : ScreenItem
 //        }
 
         bool isAvailable = false;
-        if (DefsGame.FaceAvailable[id] == 1)
+        if (_faceAvailable[id] == 1)
         {
-            DefsGame.CurrentFaceId = id;
+            CurrentFaceId = id;
             GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = id});
-            SecurePlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
+            SecurePlayerPrefs.SetInt("currentFaceID", CurrentFaceId);
             ChooseColorForButtons();
             isAvailable = true;
         } else
         // Social
-        if (id == DefsGame.SKIN_FACEBOOK)
+        if (id == SkinFacebook)
         {
             Application.OpenURL("http://facebook.com");
             OpenSkin(id);
             isAvailable = true;
         } else 
-        if (id == DefsGame.SKIN_TWITTER)
+        if (id == SkinTwitter)
         {
             Application.OpenURL("http://twitter.com");
             OpenSkin(id);
             isAvailable = true;
         } else 
-        if (id == DefsGame.SKIN_INSTAGRAM)
+        if (id == SkinInstagram)
         {
             Application.OpenURL("http://instagram.com");
             OpenSkin(id);
             isAvailable = true;
         } else 
-        if (id == DefsGame.SKIN_SPONSOR)
+        if (id == SkinSponsor)
         {
             Application.OpenURL("http://www.ketchappstudio.com");
             OpenSkin(id);
@@ -145,8 +201,8 @@ public class ScreenSkins : ScreenItem
 
     private void OpenSkin(int id)
     {
-        DefsGame.FaceAvailable[id] = 1;
-        DefsGame.CurrentFaceId = id;
+        _faceAvailable[id] = 1;
+        CurrentFaceId = id;
         SecurePlayerPrefs.SetInt("currentFaceID", id);
         SecurePlayerPrefs.SetInt("faceAvailable_" + id, 1);
         ++DefsGame.QUEST_CHARACTERS_Counter;
@@ -166,7 +222,7 @@ public class ScreenSkins : ScreenItem
         
         // Other screens
         UIManager.ShowUiElement("LabelCoins");
-        UIManager.ShowUiElement("ScreenMenuBtnPlus");
+//        UIManager.ShowUiElement("ScreenMenuBtnPlus");
         
         Invoke("ChooseColorForButtons", 1f);
         GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = false});
@@ -180,8 +236,8 @@ public class ScreenSkins : ScreenItem
 
     private void ChooseColorForButtons()
     {
-        for (var i = 0; i < DefsGame.FaceAvailable.Length; i++)
-            if (DefsGame.FaceAvailable[i] == 1)
+        for (var i = 0; i < _faceAvailable.Length; i++)
+            if (_faceAvailable[i] == 1)
             {
                 _skinBtns[i].GetComponent<ScreenSkinsBtn>().SetLock(true);
             }
@@ -190,13 +246,13 @@ public class ScreenSkins : ScreenItem
                 _skinBtns[i].GetComponent<ScreenSkinsBtn>().SetLock(false);
             }
         
-        _choosedSkin.transform.position = _skinBtns[DefsGame.CurrentFaceId].transform.position;
+        _choosedSkin.transform.position = _skinBtns[CurrentFaceId].transform.position;
     }
 
 //    private void CheckAvailableSkin()
 //    {
-//        for (var i = DefsGame.FacesGeneralMin; i < DefsGame.FacesGeneralMax; i++)
-//            if (DefsGame.FaceAvailable[i] == 0 && DefsGame.CoinsCount >= 200)
+//        for (var i = FacesGeneralMin; i < FacesGeneralMax; i++)
+//            if (FaceAvailable[i] == 0 && CoinsCount >= 200)
 //            {
 //                _isNewSkinAvailable = true;
 //                return;
@@ -206,8 +262,8 @@ public class ScreenSkins : ScreenItem
     
     private void AreThereSkins()
     {
-        for (var i = 1; i < DefsGame.FaceAvailable.Length; i++)
-            if (DefsGame.FaceAvailable[i] == 0)
+        for (var i = 1; i < _faceAvailable.Length; i++)
+            if (_faceAvailable[i] == 0)
             {
                 return;
             }
@@ -216,20 +272,21 @@ public class ScreenSkins : ScreenItem
     
     private void AreThereSkinsGeneral()
     {
-        for (var i = DefsGame.FacesGeneralMin; i < DefsGame.FacesGeneralMax; i++)
-            if (DefsGame.FaceAvailable[i] == 0)
+        for (var i = FacesGeneralMin; i < FacesGeneralMax; i++)
+            if (_faceAvailable[i] == 0)
             {
                 return;
             }
+        _isSkinsAllGeneralOpened = true;
         GlobalEvents<OnSkinAllGeneralOpened>.Call(new OnSkinAllGeneralOpened());
     }
 
     public void SetRandomSkin()
     {
         List<int> availableList = new List<int>();
-        for (int j = 0; j < DefsGame.FaceAvailable.Length; j++)
+        for (int j = 0; j < _faceAvailable.Length; j++)
         {
-            if (DefsGame.FaceAvailable[j] == 1)
+            if (_faceAvailable[j] == 1)
             {
                 availableList.Add(j);
             }
@@ -237,12 +294,64 @@ public class ScreenSkins : ScreenItem
         
         int id = Random.Range(0, availableList.Count);
 
-        DefsGame.CurrentFaceId = availableList[id];
-        SecurePlayerPrefs.SetInt("currentFaceID", DefsGame.CurrentFaceId);
-        _choosedSkin.transform.position = _skinBtns[DefsGame.CurrentFaceId].transform.position;
+        CurrentFaceId = availableList[id];
+        SecurePlayerPrefs.SetInt("currentFaceID", CurrentFaceId);
+        _choosedSkin.transform.position = _skinBtns[CurrentFaceId].transform.position;
         availableList.Clear();
         
         Hide();
         GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
+    }
+    
+    private void OnGiftShowRandomSkinAnimation(OnGiftShowRandomSkinAnimation obj)
+    {
+        Debug.Log("OnGiftShowRandomSkinAnimation(OnGiftShowRandomSkinAnimation obj)");
+        int id = -1;
+        // TEMP
+        // Первым подарком дарим Спинер
+        if (_isFirstGift)
+        {
+            _isFirstGift = false;
+            SecurePlayerPrefs.SetBool("isFirstSkinGift", false);
+            if (_faceAvailable[7] == 0) id = 7;
+        }
+		
+        if (id == -1) id = GetRandomLockedSkin();
+			
+        if (id != -1)
+        {
+            transform.localScale = Vector3.one;
+
+            GlobalEvents<OnBuySkin>.Call(new OnBuySkin {Id = id});
+        }
+
+        GlobalEvents<OnHideGiftScreen>.Call(new OnHideGiftScreen());
+    }
+    
+    private int GetRandomLockedSkin()
+    {
+        Debug.Log("GetRandomAvailableSkin");
+		
+        if (_isSkinsAllGeneralOpened) return -1;
+		
+        // Создаем список со всеми доступными скинами
+        List<int> availableSkins = new List<int>();
+        for (int j = FacesGeneralMin; j < FacesGeneralMax; j++)
+        {
+            if (_faceAvailable[j] == 0)
+            {
+                availableSkins.Add(j);
+            }
+        }
+
+        if (availableSkins.Count > 0)
+        {
+            int id = Random.Range(0, availableSkins.Count + 1);
+            Debug.Log("GetRandomAvailableSkin RETURN id = " + availableSkins[id]);
+            return availableSkins[id];
+        }
+
+        Debug.Log("GetRandomAvailableSkin RETURN id = " + -1);
+        return -1;
     }
 }

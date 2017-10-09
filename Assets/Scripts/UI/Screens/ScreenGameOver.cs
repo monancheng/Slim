@@ -36,6 +36,7 @@ public class ScreenGameOver : ScreenItem
 
     private GiftCollectedType _giftCollectedType = GiftCollectedType.None;
     private bool _isFirstGift;
+    private bool _isAllSkinsOpened;
 
     private void Start()
     {
@@ -56,6 +57,7 @@ public class ScreenGameOver : ScreenItem
         GlobalEvents<OnWordUpdateProgress>.Happened += OnWordGotChar;
         GlobalEvents<OnWordNeedToWait>.Happened += OnWordNeedToWait;
         GlobalEvents<OnWordsAvailable>.Happened += OnWordsAvailable;
+        GlobalEvents<OnSkinAllOpened>.Happened += OnSkinAllOpened;
         GlobalEvents<OnSkinAllGeneralOpened>.Happened += OnSkinAllGeneralOpened;
         
         // Внутренние
@@ -63,6 +65,11 @@ public class ScreenGameOver : ScreenItem
         GlobalEvents<OnGiftCollected>.Happened += OnGiftCollected;
 		GlobalEvents<OnGifShared>.Happened += OnGifShared;
 //		Record.OnShareGIFEvent += OnShareGIFEvent;
+    }
+
+    private void OnSkinAllOpened(OnSkinAllOpened obj)
+    {
+        _isAllSkinsOpened = true;
     }
 
     private void OnGameOverScreenShowActiveItems(OnGameOverScreenShowActiveItems obj)
@@ -141,19 +148,28 @@ public class ScreenGameOver : ScreenItem
             AddNotifyNextSkin();
         } 
         
-        if (MyAds.NoAds == 0 && _activeNamesList.Count < 4 && Random.value > 0.7f && DefsGame.QUEST_GAMEPLAY_Counter > 10)
+        ran = Random.value;
+        if (_activeNamesList.Count < 4 && MyAds.NoAds == 0 && DefsGame.QUEST_GAMEPLAY_Counter > 10)
         {
-            _activeNamesList.Add("NotifyNoAds");
+            if (ran < 0.2f) _activeNamesList.Add("NotifyNoAds"); else
+            if (ran < 0.32f) _activeNamesList.Add("NotifyNoAds200"); else
+            if (ran < 0.4f) _activeNamesList.Add("NotifyNoAds500");
         }
         
-        if (_activeNamesList.Count < 4 && Random.value > 0.7f && DefsGame.QUEST_GAMEPLAY_Counter > 10)
+        
+        if (_activeNamesList.Count < 4 && !_isAllSkinsOpened && Random.value > 0.7f && DefsGame.QUEST_GAMEPLAY_Counter > 10)
         {
             _activeNamesList.Add("NotifyTier1");
         }
         
-        if (_activeNamesList.Count < 4 && Random.value > 0.7f && DefsGame.QUEST_GAMEPLAY_Counter > 10)
+        if (_activeNamesList.Count < 4 && !_isAllSkinsOpened && Random.value > 0.7f && DefsGame.QUEST_GAMEPLAY_Counter > 20)
         {
             _activeNamesList.Add("NotifyTier2");
+        }
+        
+        if (_activeNamesList.Count < 4 && !_isAllSkinsOpened && DefsGame.IsFirstBuy && Random.value > 0.25f && DefsGame.QUEST_GAMEPLAY_Counter > 30)
+        {
+            _activeNamesList.Add("NotifyUnlockAll");
         }
 
         // Перемешиваем элементы списка, чтобы они располагались рандомно по оси У
@@ -592,16 +608,70 @@ public class ScreenGameOver : ScreenItem
     
     public void BtnNoAds()
     {
-        UIManager.HideUiElement("NotifyNoAds");
+        HideActiveItems();
+        int id = _activeNamesList.IndexOf("NotifyNoAds"); 
+        if (id != -1) _activeNamesList.RemoveAt(id);
+        ShuffleItems();
+        Invoke("ShowActiveItems", 0.5f);
+
+        GlobalEvents<OnAdsDisable>.Call(new OnAdsDisable ());
+    }
+
+    public void BtnNoAds200()
+    {
+        HideActiveItems();
+        int id = _activeNamesList.IndexOf("NotifyNoAds200"); 
+        if (id != -1) _activeNamesList.RemoveAt(id);
+        ShuffleItems();
+        Invoke("ShowActiveItems", 0.5f);
+
+        GlobalEvents<OnAdsDisable>.Call(new OnAdsDisable ());
+        GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 200});
+    }
+
+    public void BtnNoAds500()
+    {
+        HideActiveItems();
+        int id = _activeNamesList.IndexOf("NotifyNoAds500"); 
+        if (id != -1) _activeNamesList.RemoveAt(id);
+        ShuffleItems();
+        Invoke("ShowActiveItems", 0.5f);
+
+        GlobalEvents<OnAdsDisable>.Call(new OnAdsDisable ());
+        GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 500});
     }
     
     public void BtnTier1()
     {
-        UIManager.HideUiElement("NotifyTier1");
+        HideActiveItems();
+        int id = _activeNamesList.IndexOf("NotifyTier1"); 
+        if (id != -1) _activeNamesList.RemoveAt(id);
+        ShuffleItems();
+        Invoke("ShowActiveItems", 0.5f);
+        
+        GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 200});
     }
     
     public void BtnTier2()
     {
-        UIManager.HideUiElement("NotifyTier2");
+        HideActiveItems();
+        int id = _activeNamesList.IndexOf("NotifyTier2"); 
+        if (id != -1) _activeNamesList.RemoveAt(id);
+        ShuffleItems();
+        Invoke("ShowActiveItems", 0.5f);
+        
+        GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 1000});
+    }
+    
+    public void BtnTierMax()
+    {
+        HideActiveItems();
+        int id = _activeNamesList.IndexOf("NotifyUnlockAll"); 
+        if (id != -1) _activeNamesList.RemoveAt(id);
+        ShuffleItems();
+        Invoke("ShowActiveItems", 0.5f);
+        
+        GlobalEvents<OnAdsDisable>.Call(new OnAdsDisable ());
+        GlobalEvents<OnSkinsUnlockAll>.Call(new OnSkinsUnlockAll ());
     }
 }

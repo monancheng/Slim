@@ -17,6 +17,12 @@ public class ScreenCoins : ScreenItem
         GlobalEvents<OnGiveReward>.Happened += GetReward;
         GlobalEvents<OnRewardedLoaded>.Happened += OnRewardedAvailable;
         GlobalEvents<OnShowScreenCoins>.Happened += OnShowScreenCoins;
+        GlobalEvents<OnScreenCoinsHide>.Happened += OnScreenCoinsHide;
+    }
+
+    private void OnScreenCoinsHide(OnScreenCoinsHide obj)
+    {
+        Hide();
     }
 
     private void OnShowScreenCoins(OnShowScreenCoins obj)
@@ -45,7 +51,7 @@ public class ScreenCoins : ScreenItem
 //        UIManager.ShowUiElement("ScreenCoinsBtnRestore");
 //#endif
         
-        UIManager.HideUiElement("ScreenMenuBtnPlus");
+//        UIManager.HideUiElement("ScreenMenuBtnPlus");
     }
 
     private void OnRewardedAvailable(OnRewardedLoaded e)
@@ -89,7 +95,7 @@ public class ScreenCoins : ScreenItem
     {
         _isVisible = false;
         base.Hide();
-        UIManager.ShowUiElement("ScreenMenuBtnPlus");
+//        UIManager.ShowUiElement("ScreenMenuBtnPlus");
         GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = true});
     }
 }

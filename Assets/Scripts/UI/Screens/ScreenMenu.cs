@@ -30,7 +30,7 @@ public class ScreenMenu : ScreenItem
     private void OnHideMenu(OnHideMenu obj)
     {
         UIManager.HideUiElement("GameName");
-        UIManager.HideUiElement("ScreenMenuBtnPlus");
+//        UIManager.HideUiElement("ScreenMenuBtnPlus");
         HideButtons();
     }
     
@@ -70,12 +70,12 @@ public class ScreenMenu : ScreenItem
         if (DefsGame.CoinsCount > 0)
         {
             UIManager.ShowUiElement("LabelCoins");
-            UIManager.ShowUiElement("ScreenMenuBtnPlus");
+//            UIManager.ShowUiElement("ScreenMenuBtnPlus");
         }
         else
         {
             UIManager.HideUiElement("LabelCoins");
-            UIManager.HideUiElement("ScreenMenuBtnPlus");
+//            UIManager.HideUiElement("ScreenMenuBtnPlus");
         }
         
         UIManager.ShowUiElement("BtnSkins");

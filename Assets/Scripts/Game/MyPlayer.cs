@@ -54,7 +54,7 @@ public class MyPlayer : MonoBehaviour
 //        _renderer = GetComponent<MeshRenderer>();
 
         RespownAndWait();
-        GameEvents.Send(OnChangeColor, _colors[DefsGame.CurrentFaceId]);
+        GameEvents.Send(OnChangeColor, _colors[ScreenSkins.CurrentFaceId]);
         transform.DORotate(new Vector3(0, 0, 20f), 1, RotateMode.LocalAxisAdd).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
 
         _startDistance = Vector3.Distance(new Vector3(0f, CirclePositionY, transform.position.z), transform.position);
@@ -107,7 +107,7 @@ public class MyPlayer : MonoBehaviour
         _isHaveCollision = false;
 
         ChangeSize();
-        GetComponent<Renderer>().material.SetColor("_Color", _colors[DefsGame.CurrentFaceId]);
+        GetComponent<Renderer>().material.SetColor("_Color", _colors[ScreenSkins.CurrentFaceId]);
     }
 
     private void StartGame(OnStartGame obj)

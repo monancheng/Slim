@@ -1,4 +1,5 @@
 ﻿using System;
+using PrefsEditor;
 using UnityEngine;
 //using VoxelBusters.NativePlugins;
 
@@ -105,18 +106,36 @@ public class BillingManager : MonoBehaviour
         BuyItem(NPSettings.Billing.Products[IAP_COINS_1]);
         */
         GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 200});
+        DefsGame.IsFirstBuy = true;
+        SecurePlayerPrefs.GetBool("IsFirstBuy", true);
     }
 
     public void BuyTier2()
     {
 //        BuyItem(NPSettings.Billing.Products[IAP_COINS_2]);
         GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 1000});
+        DefsGame.IsFirstBuy = true;
+        SecurePlayerPrefs.GetBool("IsFirstBuy", true);
+    }
+    
+    public void BuyTierUnlockAll()
+    {
+        //        BuyItem(NPSettings.Billing.Products[IAP_COINS_2]);
+        GlobalEvents<OnAdsDisable>.Call(new OnAdsDisable ());
+        GlobalEvents<OnSkinsUnlockAll>.Call(new OnSkinsUnlockAll ());
+        DefsGame.IsFirstBuy = true;
+        SecurePlayerPrefs.SetBool("IsFirstBuy", true);
+        DefsGame.IsSkinsAllUnlocked = true;
+        SecurePlayerPrefs.SetBool("IsAllUnlocked", true);
+        GlobalEvents<OnScreenCoinsHide>.Call(new OnScreenCoinsHide ());
     }
 
     public void BuySkin(int id)
     {
 //        BuyItem(NPSettings.Billing.Products[id]);
         GlobalEvents<OnBuySkinByIAP>.Call(new OnBuySkinByIAP{Id = id});
+        DefsGame.IsFirstBuy = true;
+        SecurePlayerPrefs.GetBool("IsFirstBuy", true);
     }
 
     public void BuyNoAds()

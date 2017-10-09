@@ -8,29 +8,10 @@ public struct DefsGame
     public static int GameplayCounter = 0; // Считает количество игр сыгранных в этой игровой сессии
     public static int CurrentPointsCount = 0;
     public static int GameBestScore; // Лучший счет
-    public static int CoinsCount; // Количество очков игрока
-    public static int CurrentFaceId;
-    public static int FacesGeneralMin = 0;
-    public static int FacesGeneralMax = 18;
-    public static readonly int FacesSocialStartID = FacesGeneralMax+1;
-    public static readonly int FacesPaybleStartID = FacesSocialStartID + 4;
-    public static int[] FaceAvailable = {
-        // General
-        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        // Social
-        0, 0, 0, 0,
-        // Money
-        0, 0, 0, 0};
-
-    public static readonly int SKIN_FACEBOOK = FacesSocialStartID;
-    public static readonly int SKIN_TWITTER = FacesSocialStartID + 1;
-    public static readonly int SKIN_INSTAGRAM = FacesSocialStartID + 2;
-    public static readonly int SKIN_SPONSOR = FacesSocialStartID + 3;
+    public static int CoinsCount; // Количество очков игрока  
     
-    public static readonly int IAP_SKIN_1 = FacesPaybleStartID;
-    public static readonly int IAP_SKIN_2 = FacesPaybleStartID + 1;
-    public static readonly int IAP_SKIN_3 = FacesPaybleStartID + 2;
-    public static readonly int IAP_SKIN_4 = FacesPaybleStartID + 3;  
+    public static bool IsFirstBuy; // Первая покупка была произведена 
+    public static bool IsSkinsAllUnlocked; // Все скины открыты
 
     public static int IS_ACHIEVEMENT_FIRST_WIN;
     public static int IS_ACHIEVEMENT_NEW_SKIN;
@@ -58,8 +39,7 @@ public struct DefsGame
         SecurePlayerPrefs.UseSecurePrefs = true;
         SecurePlayerPrefs.AutoConvertUnsecurePrefs = true;
         
-        CurrentFaceId = SecurePlayerPrefs.GetInt("currentFaceID");
-//      CurrentFaceId = 0;
+        IsFirstBuy = SecurePlayerPrefs.GetBool("IsFirstBuy");
         GameBestScore = SecurePlayerPrefs.GetInt("BestScore");
 //      gameBestScore = 0;
         CoinsCount = SecurePlayerPrefs.GetInt("coinsCount");
@@ -69,17 +49,6 @@ public struct DefsGame
         {
             RateCounter = 0;
             PlayerPrefs.SetInt("rateCounter", 0);
-        }
-
-//        for (var i = 0; i < FaceAvailable.Length; i++)
-//            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 1);
-        
-        for (var i = 1; i < FaceAvailable.Length; i++)
-            FaceAvailable[i] = SecurePlayerPrefs.GetInt("faceAvailable_" + i);
-
-        for (var i = 0; i < FaceAvailable.Length; i++)
-        {
-            if (FaceAvailable[i] == 1) ++QUEST_CHARACTERS_Counter;
         }
 
         IS_ACHIEVEMENT_FIRST_WIN = PlayerPrefs.GetInt("IS_ACHIEVEMENT_FIRST_WIN", 0);

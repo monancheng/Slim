@@ -3,37 +3,23 @@
 //--------------------------------------------------------
 
 // Завершение игры
-public struct OnGameOver
-{
-}
+public struct OnGameOver{}
 
-public struct OnStartGame
-{
-}
+public struct OnStartGame{}
 
-public struct OnShowMenu
-{
-}
+public struct OnShowMenu{}
 
-public struct OnShowScreenCoins
-{
-}
+public struct OnShowScreenCoins{}
 
-public struct OnHideMenu
-{
-}
+public struct OnScreenCoinsHide{}
 
-public struct OnShowMenuButtons
-{
-}
+public struct OnHideMenu{}
 
-public struct OnHideMenuButtons
-{
-}
+public struct OnShowMenuButtons{}
 
-public struct OnRateScreenShow
-{
-}
+public struct OnHideMenuButtons{}
+
+public struct OnRateScreenShow{}
 
 // Игрок заработал очки
 public struct OnPointsAdd
@@ -42,14 +28,10 @@ public struct OnPointsAdd
 }
 
 // Сросить идикатор очков
-public struct OnPointsReset
-{
-}
+public struct OnPointsReset{}
 
 // Проиграть анимацию BestScore
-public struct OnBestScoreUpdate
-{
-}
+public struct OnBestScoreUpdate{}
 
 //--------------------------------------------------------
 // Game Input - объект, который принимает клики по игровому
@@ -71,6 +53,8 @@ public struct OnAdsVideoTryShow {}
 public struct OnShowVideoAds {}
 // Начался показ Video рекламы
 public struct OnAdsVideoShowing {}
+// Отключить рекламу
+public struct OnAdsDisable {}
 
 // Rewarded реклама зарузилась
 public struct OnRewardedLoaded { public bool IsAvailable; }
@@ -109,27 +93,19 @@ public struct OnCoinsAdded
 //--------------------------------------------------------
 
 // Показываем нотификейшины на экране
-public struct OnGameOverScreenShow
-{
-}
+public struct OnGameOverScreenShow{}
 // Показываем активные нотификейшины на экране
-public struct OnGameOverScreenShowActiveItems
-{
-}
+public struct OnGameOverScreenShowActiveItems{}
 
 // Получили нового персонажа
-public struct OnGotNewCharacter
-{
-}
+public struct OnGotNewCharacter{}
 
 //--------------------------------------------------------
 // BUTTONS CLICKS
 //--------------------------------------------------------
 
 // Нажали на кнопку "Поделиться игрой"
-public struct OnBtnShareClick
-{
-}
+public struct OnBtnShareClick{}
 
 // Нажали на кнопку "Поделиться Gif"
 public struct OnBtnShareGifClick
@@ -152,9 +128,7 @@ public struct OnBtnWordClick
 }
 
 // Нажали на кнопку "Купить рандомный скин"
-public struct OnBtnGetRandomSkinClick
-{
-}
+public struct OnBtnGetRandomSkinClick{}
 
 // Показать на экран Скин, который игрок получает после нажатия на ленточку "Получить скин за 200 монет"
 public struct OnBuySkin
@@ -167,6 +141,9 @@ public struct OnBuySkinByIAP
 {
     public int Id;
 }
+
+// Разблокировать все скины и отключить рекламу
+public struct OnSkinsUnlockAll{}
 
 // Показать на экран Скин, который игрок получает после нажатия на ленточку "Получить скин"
 public struct OnGiftSkin
@@ -181,19 +158,13 @@ public struct OnChangeSkin
 }
 
 // Все скины открыты
-public struct OnSkinAllOpened
-{
-}
+public struct OnSkinAllOpened{}
 
 // Все GENERAL скины открыты
-public struct OnSkinAllGeneralOpened
-{
-}
+public struct OnSkinAllGeneralOpened{}
 
 // На финишном эране нет кнопок для показа
-public struct OnNoGameOverButtons
-{
-}
+public struct OnNoGameOverButtons{}
 
 //--------------------------------------------------------
 //						    Gift
@@ -206,24 +177,16 @@ public struct OnCoinsAddToScreen
 }
 
 // Закончилась анимация Вручения подарка
-public struct OnGiftCollected
-{
-}
+public struct OnGiftCollected{}
 
 // Показать на экран Скин, который игрок получает после нажатия на ленточку "Получить скин за 200 монет"
-public struct OnGiftShowRandomSkinAnimation
-{
-}
+public struct OnGiftShowRandomSkinAnimation{}
 
 // Скрыть экран подарка
-public struct OnHideGiftScreen
-{
-}
+public struct OnHideGiftScreen{}
 
 // Закончили проигрывание анимации подарка
-public struct OnGiftAnimationDone
-{
-}
+public struct OnGiftAnimationDone{}
 
 // Высыпать на экран горсть монет
 public struct OnGiftResetTimer
@@ -254,14 +217,10 @@ public struct OnWordCollected
 }
 
 // Стартуем новый таймер (ждем слово)
-public struct OnWordStartTimer
-{
-}
+public struct OnWordStartTimer{}
 
 // Обнулить таймер слов (нужно, чтобы начать собирать новое слово немедленно)
-public struct OnWordResetTimer
-{
-}
+public struct OnWordResetTimer{}
 
 // Нужно ли ждать пока новое Слово будет доступно
 public struct OnWordNeedToWait
@@ -280,19 +239,13 @@ public struct OnGifSetName
 }
 
 // На финишном эране нет кнопок для показа
-public struct OnGifSaved
-{
-}
+public struct OnGifSaved{}
 
 // Закончилась анимация Вручения подарка
-public struct OnGifShared
-{
-}
+public struct OnGifShared{}
 
 // Спрятать все Tube
-public struct OnHideTubes
-{
-}
+public struct OnHideTubes{}
 
 //--------------------------------------------------------
 //							IAPs
@@ -306,8 +259,6 @@ public struct OnIAPsBuySkin
 //							Tube Manager
 //--------------------------------------------------------
 
-public struct OnTubeCreateExample
-{
-}
+public struct OnTubeCreateExample{}
 
 

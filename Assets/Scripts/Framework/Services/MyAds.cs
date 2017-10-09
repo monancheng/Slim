@@ -32,6 +32,13 @@ public class MyAds : MonoBehaviour
         GlobalEvents<OnAdsRewardedShowing>.Happened += OnAdsRewardedShowing;
         GlobalEvents<OnAdsVideoTryShow>.Happened += OnAdsVideoTryShow;
         GlobalEvents<OnAdsVideoShowing>.Happened += OnAdsVideoShowing;
+        GlobalEvents<OnAdsDisable>.Happened += OnAdsDisable;
+    }
+
+    private void OnAdsDisable(OnAdsDisable obj)
+    {
+        NoAds = 1;
+        SecurePlayerPrefs.GetInt("noAds, 1");
     }
 
     private void OnAdsVideoTryShow(OnAdsVideoTryShow obj)
