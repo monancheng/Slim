@@ -21,7 +21,7 @@ public class GiftTimer : MonoBehaviour
         if (strTime == "")
         {
             _giftNextDate = DateTime.UtcNow;
-            _giftNextDate = _giftNextDate.AddSeconds(30);
+            _giftNextDate = _giftNextDate.AddSeconds(25);
         }
         else
         {

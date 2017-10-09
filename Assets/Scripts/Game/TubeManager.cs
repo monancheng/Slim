@@ -12,7 +12,7 @@ public class TubeManager : MonoBehaviour
     [SerializeField] private GameObject[] _tubes;
     [SerializeField] private Color[] _colors;
     
-    private const float StartSpeed = 146f;
+    private const float StartSpeed = 147f;
     private const float StartRadiusMinus = 1.5f;
     public static float CurrentSpeed = StartSpeed;
     public static event Action <float> OnTubesSpeedScale;
@@ -26,7 +26,7 @@ public class TubeManager : MonoBehaviour
     private const float OuterRadius = 14f;
     public static readonly float InitRadius = 7f;
     
-    private const float MaxSpeed = 225f;
+    private const float MaxSpeed = 227f;
     private float _acceleration = 2.9f;
     
     private int _counter;
@@ -292,17 +292,17 @@ public class TubeManager : MonoBehaviour
 
     private void IncreaseSpeed()
     {
-        if (CurrentSpeed < 152f) _acceleration = 3.0f; else
-        if (CurrentSpeed < 157f) _acceleration = 2.7f; else
-        if (CurrentSpeed < 162f) _acceleration = 2.3f; else
-        if (CurrentSpeed < 167f) _acceleration = 1.8f; else
-        if (CurrentSpeed < 172f) _acceleration = 1.4f; else
-        if (CurrentSpeed < 177f) _acceleration = 1.2f; else
-        if (CurrentSpeed < 182f) _acceleration = 1.1f; else
-        if (CurrentSpeed < 187f) _acceleration = 1.0f; else
-        if (CurrentSpeed < 192f) _acceleration = 0.90f; else
-        if (CurrentSpeed < 197f) _acceleration = 0.85f; else
-        if (CurrentSpeed < 202f) _acceleration = 0.80f; else
+        if (CurrentSpeed < 153f) _acceleration = 3.1f; else
+        if (CurrentSpeed < 158f) _acceleration = 2.8f; else
+        if (CurrentSpeed < 163f) _acceleration = 2.3f; else
+        if (CurrentSpeed < 168f) _acceleration = 1.8f; else
+        if (CurrentSpeed < 173f) _acceleration = 1.4f; else
+        if (CurrentSpeed < 178f) _acceleration = 1.2f; else
+        if (CurrentSpeed < 183f) _acceleration = 1.1f; else
+        if (CurrentSpeed < 188f) _acceleration = 1.0f; else
+        if (CurrentSpeed < 193f) _acceleration = 0.90f; else
+        if (CurrentSpeed < 198f) _acceleration = 0.85f; else
+        if (CurrentSpeed < 203f) _acceleration = 0.80f; else
             _acceleration = 0.5f;
         CurrentSpeed += _acceleration;
         if (CurrentSpeed > MaxSpeed) CurrentSpeed = MaxSpeed;

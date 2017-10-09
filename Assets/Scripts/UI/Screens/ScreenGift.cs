@@ -36,6 +36,7 @@ public class ScreenGift : ScreenItem
 		if (_isWaitRewardGift)
 		{
 			_isWaitRewardGift = false;
+			GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
 			GlobalEvents<OnBtnGiftClick>.Call(new OnBtnGiftClick {CoinsCount = 25, IsResetTimer = true});
 			isFirstTime = false;
 		}
@@ -84,6 +85,7 @@ public class ScreenGift : ScreenItem
 			return;
 		} 
 		
+		GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
 		GlobalEvents<OnGiftCollected>.Call(new OnGiftCollected());
 	}
 	
@@ -202,7 +204,7 @@ public class ScreenGift : ScreenItem
 		_isWaitRewardGift = true;
 		// TEMP
 		GlobalEvents<OnBtnGiftClick>.Call(new OnBtnGiftClick {CoinsCount = 25, IsResetTimer = true});
-		
+		isFirstTime = false;
 	}
 
 	public void OnBtnGiftWord()
