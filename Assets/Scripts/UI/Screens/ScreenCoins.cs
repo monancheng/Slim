@@ -88,7 +88,6 @@ public class ScreenCoins : ScreenItem
     {
         _isVisible = true;
         ShowButtons();
-        GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = false});
     }
 
     public override void Hide()
@@ -96,6 +95,5 @@ public class ScreenCoins : ScreenItem
         _isVisible = false;
         base.Hide();
 //        UIManager.ShowUiElement("ScreenMenuBtnPlus");
-        GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = true});
     }
 }

@@ -36,7 +36,7 @@ public class ScreenSkins : ScreenItem
     private bool _isFirstGift;
     private bool _isSkinsAllGeneralOpened;
 
-    private void Start()
+    private void Awake()
     {
         CurrentFaceId = SecurePlayerPrefs.GetInt("currentFaceID");
 //      CurrentFaceId = 0;
@@ -51,7 +51,10 @@ public class ScreenSkins : ScreenItem
         {
             if (_faceAvailable[i] == 1) ++DefsGame.QUEST_CHARACTERS_Counter;
         }
-        
+    }
+
+    private void Start()
+    {
         InitUi();
         AreThereSkins();
         AreThereSkinsGeneral();

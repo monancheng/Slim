@@ -18,7 +18,7 @@ public class ScreenSettings : ScreenItem
   
         if (MyAds.NoAds < 1) UIManager.ShowUiElement("ScreenSettingsBtnNoAds");
         #if UNITY_IPHONE
-                UIManager.ShowUiElement("ScreenSettingsBtnRestore");
+            UIManager.ShowUiElement("ScreenSettingsBtnRestore");
         #endif
         
         GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = false});
