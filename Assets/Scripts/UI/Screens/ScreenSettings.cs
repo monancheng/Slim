@@ -10,15 +10,11 @@ public class ScreenSettings : ScreenItem
 
     public void Show()
     {
-        UIManager.ShowUiElement("ScreenSettingsBtnBack");
-        UIManager.ShowUiElement("BtnSound");
-        UIManager.ShowUiElement("BtnPlus");
-        UIManager.ShowUiElement("BtnRate");
-        UIManager.ShowUiElement("BtnShare");
+        base.Show();
   
-        if (MyAds.NoAds < 1) UIManager.ShowUiElement("ScreenSettingsBtnNoAds");
-        #if UNITY_IPHONE
-            UIManager.ShowUiElement("ScreenSettingsBtnRestore");
+        if (MyAds.NoAds == 0) UIManager.HideUiElement("ScreenSettingsBtnNoAds");
+        #if UNITY_ANDROID
+            UIManager.HideUiElement("ScreenSettingsBtnRestore");
         #endif
         
         GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = false});

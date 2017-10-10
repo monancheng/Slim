@@ -32,14 +32,11 @@ public class ScreenCoins : ScreenItem
 
     private void ShowButtons()
     {
-        UIManager.ShowUiElement("ScreenCoinsBackground");
-        UIManager.ShowUiElement("ScreenCoins");
-        UIManager.ShowUiElement("ScreenCoinsBtnBack");
-        UIManager.ShowUiElement("BtnTier1");
-        UIManager.ShowUiElement("BtnTier2");
-        if (isShowBtnViveoAds)
+        base.Show();
+        
+        if (!isShowBtnViveoAds)
         {
-            UIManager.ShowUiElement("ScreenCoinsBtnVideo");
+            UIManager.HideUiElement("ScreenCoinsBtnVideo");
         }
         
         // TEMP

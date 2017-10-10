@@ -220,8 +220,7 @@ public class ScreenSkins : ScreenItem
     {
         GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
         
-        foreach (UIElement element in elements)
-            UIManager.ShowUiElement(element.elementName);
+        base.Show();
         
         // Other screens
         UIManager.ShowUiElement("LabelCoins");

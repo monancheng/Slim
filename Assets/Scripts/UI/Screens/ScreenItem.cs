@@ -9,6 +9,12 @@ public class ScreenItem : MonoBehaviour {
 		elements = GetComponentsInChildren<UIElement>();
 	}
 	
+	public virtual void Show()
+	{
+		foreach (UIElement element in elements)
+			UIManager.ShowUiElement(element.elementName);
+	}
+	
 	public virtual void Hide()
 	{
 		foreach (UIElement element in elements)
