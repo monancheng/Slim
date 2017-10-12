@@ -108,6 +108,14 @@ namespace VoxelBusters.NativePlugins
 				              _comment:			"Sharing");
 			}
 
+			if (m_supportedFeatures.UsesWebView)
+			{
+				WriteActivity(_xmlWriter:		_xmlWriter,
+				              _name:			"com.voxelbusters.nativeplugins.features.webview.FileChooserActivity",
+				              _theme:			"@style/FloatingActivityTheme",
+				              _comment:			"Webview : For File Choosing");
+			}
+
 			
 			
 			
@@ -118,6 +126,11 @@ namespace VoxelBusters.NativePlugins
 			              _name:			"com.voxelbusters.nativeplugins.features.ui.UiActivity",
 			              _theme:			"@style/FloatingActivityTheme",
 			              _comment:			"UI  : Generic helper activity for launching Dialogs");
+
+			WriteActivity(_xmlWriter:		_xmlWriter,
+				_name:			"com.voxelbusters.nativeplugins.helpers.PermissionRequestActivity",
+				_theme:			"@style/FloatingActivityTheme", 
+				_comment:			"Game Play Services helper activity");
 		}
 
 		private void WriteProviderInfo (XmlWriter _xmlWriter)
@@ -125,16 +138,16 @@ namespace VoxelBusters.NativePlugins
 			// Provider
 			_xmlWriter.WriteComment("Custom File Provider. Sharing from internal folders  \"com.voxelbusters.nativeplugins.extensions.FileProviderExtended\"");
 			_xmlWriter.WriteStartElement("provider");
-			{
-				_xmlWriter.WriteAttributeString("android:name", 				"com.voxelbusters.nativeplugins.extensions.FileProviderExtended");
-				_xmlWriter.WriteAttributeString("android:authorities", 			string.Format("{0}.fileprovider", PlayerSettings.GetBundleIdentifier()));
-				_xmlWriter.WriteAttributeString("android:exported", 			"false");
-				_xmlWriter.WriteAttributeString("android:grantUriPermissions", 	"true");
+			{				
+				WriteAttributeString(_xmlWriter, "android", "name", null, "com.voxelbusters.nativeplugins.extensions.FileProviderExtended");
+				WriteAttributeString(_xmlWriter, "android", "authorities", null, string.Format("{0}.fileprovider", PlayerSettings.GetBundleIdentifier()));
+				WriteAttributeString(_xmlWriter, "android", "exported", null, "false");
+				WriteAttributeString(_xmlWriter, "android", "grantUriPermissions", null, "true");
 				
 				_xmlWriter.WriteStartElement("meta-data");
 				{
-					_xmlWriter.WriteAttributeString("android:name", 			"android.support.FILE_PROVIDER_PATHS");
-					_xmlWriter.WriteAttributeString("android:resource", 		"@xml/nativeplugins_file_paths");
+					WriteAttributeString(_xmlWriter, "android", "name", null, "android.support.FILE_PROVIDER_PATHS");
+					WriteAttributeString(_xmlWriter, "android", "resource", null, "@xml/nativeplugins_file_paths");
 				}
 				_xmlWriter.WriteEndElement();
 			}
@@ -150,7 +163,7 @@ namespace VoxelBusters.NativePlugins
 				_xmlWriter.WriteComment("Billing : Amazon Billing Receiver");
 				_xmlWriter.WriteStartElement("receiver");
 				{
-					_xmlWriter.WriteAttributeString("android:name", 			"com.amazon.device.iap.ResponseReceiver");
+					WriteAttributeString(_xmlWriter, "android", "name", null, "com.amazon.device.iap.ResponseReceiver");
 					
 					_xmlWriter.WriteStartElement("intent-filter");
 					{
@@ -171,8 +184,9 @@ namespace VoxelBusters.NativePlugins
 				_xmlWriter.WriteComment("Notifications : GCM Receiver");
 				_xmlWriter.WriteStartElement("receiver");
 				{
-					_xmlWriter.WriteAttributeString("android:name", 			"com.voxelbusters.nativeplugins.features.notification.serviceprovider.gcm.GCMBroadcastReceiver");
-					_xmlWriter.WriteAttributeString("android:permission", 		"com.google.android.c2dm.permission.SEND");
+
+					WriteAttributeString(_xmlWriter, "android", "name", null, "com.voxelbusters.nativeplugins.features.notification.serviceprovider.gcm.GCMBroadcastReceiver");
+					WriteAttributeString(_xmlWriter, "android", "permission", null, "com.google.android.c2dm.permission.SEND");
 					
 					_xmlWriter.WriteStartElement("intent-filter");
 					{
@@ -196,7 +210,7 @@ namespace VoxelBusters.NativePlugins
 				_xmlWriter.WriteComment("Notifications : Receiver for alarm to help Local Notifications");
 				_xmlWriter.WriteStartElement("receiver");
 				{
-					_xmlWriter.WriteAttributeString("android:name", 			"com.voxelbusters.nativeplugins.features.notification.core.AlarmEventReceiver");
+					WriteAttributeString(_xmlWriter, "android", "name", null, "com.voxelbusters.nativeplugins.features.notification.core.AlarmEventReceiver");
 				}
 				_xmlWriter.WriteEndElement();
 			}
@@ -220,8 +234,8 @@ namespace VoxelBusters.NativePlugins
 #if USES_GAME_SERVICES
 			_xmlWriter.WriteStartElement("meta-data");
 			{
-				_xmlWriter.WriteAttributeString("android:name", 	"com.google.android.gms.games.APP_ID");
-				_xmlWriter.WriteAttributeString("android:value", string.Format("\\ {0}", NPSettings.GameServicesSettings.Android.PlayServicesApplicationID));// \ added because its getting considered as integer when added from xml instead of string.
+				WriteAttributeString(_xmlWriter, "android", "name", null, "com.google.android.gms.games.APP_ID");
+				WriteAttributeString(_xmlWriter, "android", "value", null, string.Format("\\ {0}", NPSettings.GameServicesSettings.Android.PlayServicesApplicationID));// Space Added because its getting considered as integer when added from xml instead of string.
 			}
 			_xmlWriter.WriteEndElement();
 #endif
@@ -259,19 +273,25 @@ namespace VoxelBusters.NativePlugins
 
 			if (m_supportedFeatures.UsesMediaLibrary)
 			{
-				WriteUsesPermission(_xmlWriter:	_xmlWriter, 
-				                    _name: 		"android.permission.CAMERA", 
-				                    _features:	new Feature[] { 
+				if (m_supportedFeatures.MediaLibrary.usesCamera)
+				{
+					WriteUsesPermission(_xmlWriter:	_xmlWriter, 
+				    	                _name: 		"android.permission.CAMERA", 
+				        	            _features:	new Feature[] { 
 													new Feature("android.hardware.camera", false), 
 													new Feature("android.hardware.camera.autofocus", false)}, 	
 				                    _comment:	"Media Library");
+				}
 
-				WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+				if (m_supportedFeatures.MediaLibrary.usesPhotoAlbum)
+				{
+					WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
 				                    _name: 		"com.google.android.apps.photos.permission.GOOGLE_PHOTOS");
 
 				
-				WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+					WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
 				                    _name: 		"android.permission.MANAGE_DOCUMENTS");
+				}
 			}
 
 			if (m_supportedFeatures.UsesNotificationService)
@@ -310,40 +330,97 @@ namespace VoxelBusters.NativePlugins
 					                _name: 		"com.google.android.providers.gsf.permission.READ_GSERVICES", 	
 					                _comment: 	"GameServices : For getting content provider access.");
 
-				// Below permissions are no more required as we are targetting selective API's in Google Play Services.
-				/*WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
-				                    _name: 		"android.permission.GET_ACCOUNTS");
-
-				WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
-				                    _name: 		"android.permission.USE_CREDENTIALS");*/
 			}
 
 			#endif
 
-
 			//Write common permissions here
+
+			if(m_supportedFeatures.UsesNotificationService || NPSettings.Utility.Android.ModifiesApplicationBadge)
+			{
+				// For badge permissions
+				WriteBadgePermissionsForAllPlatforms(_xmlWriter);
+			}
 
 			//Internet access - Add by default as many features need this.
 			WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
 			                    _name: 		"android.permission.INTERNET",
 			                    _comment:	"Required for internet access");
 
+			#if !NATIVE_PLUGINS_LITE_VERSION
 			//Storage Access
-			if(	m_supportedFeatures.UsesSharing 
-			   	#if !NATIVE_PLUGINS_LITE_VERSION
-				||m_supportedFeatures.UsesMediaLibrary
-				||m_supportedFeatures.UsesTwitter
-				#endif
-				)	
+			if(m_supportedFeatures.UsesMediaLibrary || m_supportedFeatures.UsesTwitter)	//Cross check if its required for Twitter
 			{
 				WriteUsesPermission(_xmlWriter:	_xmlWriter,
 				                    _name: 		"android.permission.WRITE_EXTERNAL_STORAGE", 	
-				                    _comment:	"For Saving to external directory - Save to Gallery Feature in MediaLibrary / Used for sharing");
+				                    _comment:	"For Saving to external directory - Save to Gallery Feature in MediaLibrary");
 				
 				WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
 				                    _name: 		"android.permission.READ_EXTERNAL_STORAGE");
 			}
+			#endif
 
+		}
+
+		private void WriteBadgePermissionsForAllPlatforms (XmlWriter _xmlWriter)
+		{
+			WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+					            _name: "com.sec.android.provider.badge.permission.READ", 	
+			                    _comment: "Notifications : Badge Permission for Samsung Devices");
+
+			WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+			                    _name: "com.sec.android.provider.badge.permission.WRITE");
+
+			WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+			                    _name: "com.htc.launcher.permission.READ_SETTINGS", 	
+			                    _comment: "Notifications : Badge Permission for HTC Devices");
+			WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+			                    _name: "com.htc.launcher.permission.UPDATE_SHORTCUT");
+
+			
+			WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+			                    _name: "com.sonyericsson.home.permission.BROADCAST_BADGE", 	
+			                    _comment: "Notifications : Badge Permission for Sony Devices");
+			WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+			                    _name: "com.sonymobile.home.permission.PROVIDER_INSERT_BADGE");
+
+			
+			WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+			                    _name: "com.anddoes.launcher.permission.UPDATE_COUNT", 	
+			                    _comment: "Notifications : Badge Permission for Apex Devices");
+			
+
+			WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+			                    _name: "com.majeur.launcher.permission.UPDATE_BADGE", 	
+			                    _comment: "Notifications : Badge Permission for Solid Devices");
+			
+			WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+			                    _name: "com.huawei.android.launcher.permission.CHANGE_BADGE", 	
+			                    _comment: "Notifications : Badge Permission for Huawei Devices");
+			WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+			                    _name: "com.huawei.android.launcher.permission.READ_SETTINGS");
+			WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+			                    _name: "com.huawei.android.launcher.permission.WRITE_SETTINGS");
+
+
+			WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+			                    _name: "android.permission.READ_APP_BADGE", 	
+			                    _comment: "Notifications : Badge Permission for ZUK Devices");
+			
+
+			WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+			                    _name: "com.oppo.launcher.permission.READ_SETTINGS", 	
+			                    _comment: "Notifications : Badge Permission for Oppo Devices");
+			WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+			                    _name: "com.oppo.launcher.permission.WRITE_SETTINGS");
+
+
+			WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+			                    _name: "me.everything.badger.permission.BADGE_COUNT_READ", 	
+			                    _comment: "Notifications : Badge Permission for EverythingMe Support");
+			WriteUsesPermission(_xmlWriter:	_xmlWriter, 	
+			                    _name: "me.everything.badger.permission.BADGE_COUNT_WRITE");
+			
 		}
 
 		#endregion

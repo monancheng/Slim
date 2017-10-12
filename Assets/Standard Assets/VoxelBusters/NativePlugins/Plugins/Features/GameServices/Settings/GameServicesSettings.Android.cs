@@ -31,6 +31,10 @@ namespace VoxelBusters.NativePlugins
 			[Tooltip ("Allow to show default error dialogs.")]
 			private 	bool		m_showDefaultErrorDialogs = true;
 
+			[SerializeField]
+			[Tooltip ("Allow auto sign in if user logged in previously.")]
+			private 	bool		m_allowAutoLogin = true;
+
 			#endregion
 
 			#region Properties
@@ -64,6 +68,14 @@ namespace VoxelBusters.NativePlugins
 				get
 				{
 					return m_showDefaultErrorDialogs;
+				}
+			}
+
+			internal bool AllowAutoLogin
+			{
+				get
+				{
+					return m_allowAutoLogin;
 				}
 			}
 

@@ -18,8 +18,7 @@ namespace VoxelBusters.NativePlugins
 		private		const 	string					kActiveView				= "np-active-view";
 
 		// URL
-
-		private		const 	string					kTutorialURL			= "http://tutorials.cpnp.voxelbusters.com/";
+		private		const 	string					kTutorialURL			= "http://bit.ly/2ssUZpl";		
 		private		const	string					kDocumentationURL		= "http://bit.ly/1cBFHDd";
 		private		const	string					kForumURL				= "http://bit.ly/1AjQRYp";
 		

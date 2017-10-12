@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if USES_ADDRESS_BOOK 
+using UnityEngine;
 using System.Collections;
 using VoxelBusters.Utility;
 using VoxelBusters.DebugPRO;
@@ -106,3 +107,4 @@ namespace VoxelBusters.NativePlugins
 		#endregion
 	}
 }
+#endif

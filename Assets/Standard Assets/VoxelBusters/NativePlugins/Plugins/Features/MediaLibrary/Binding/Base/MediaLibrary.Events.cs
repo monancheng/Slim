@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if USES_MEDIA_LIBRARY
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using VoxelBusters.Utility;
@@ -201,3 +202,4 @@ namespace VoxelBusters.NativePlugins
 		#endregion
 	}
 }
+#endif

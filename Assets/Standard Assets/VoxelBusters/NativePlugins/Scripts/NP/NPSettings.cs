@@ -13,6 +13,7 @@ using UnityPlayerSettings	= UnityEditor.PlayerSettings;
 using VBPlayerSettings		= VoxelBusters.Utility.PlayerSettings;
 
 [assembly: InternalsVisibleTo("Assembly-CSharp-Editor")]
+[assembly: InternalsVisibleTo("Assembly-CSharp-Editor-firstpass")]
 #endif
 
 namespace VoxelBusters.NativePlugins
@@ -22,18 +23,14 @@ namespace VoxelBusters.NativePlugins
 #if UNITY_EDITOR
 	[InitializeOnLoad]
 #endif
-	public class NPSettings : 	AdvancedScriptableObject <NPSettings>, 
-#if UNITY_EDITOR
-								IRateMyAppDelegate,
-#endif
-								IAssetStoreProduct
+	public class NPSettings : AdvancedScriptableObject <NPSettings>, IRateMyAppDelegate, IAssetStoreProduct
 	{
 		#region Constants
 
 		// Product info
 		private		const	bool		kIsFullVersion					= true;
 		private 	const 	string 		kProductName					= "Native Plugins";
-		private 	const 	string 		kProductVersion					= "1.5.1";
+		private 	const 	string 		kProductVersion					= "1.5.3";
 
 		// Pref key
 		private		const	string		kPrefsKeyBuildIdentifier		= "np-build-identifier";
@@ -70,7 +67,7 @@ namespace VoxelBusters.NativePlugins
 #if UNITY_5 || UNITY_2017_1_OR_NEWER
 			BuildTargetGroup.iOS,
 #else
-			BuildTargetGroup.iOS, 
+			BuildTargetGroup.iPhone, 
 #endif
 #if UNITY_5 || UNITY_2017_1_OR_NEWER			
 			BuildTargetGroup.WSA, 
@@ -93,8 +90,7 @@ namespace VoxelBusters.NativePlugins
 		[NonSerialized]
 		private	AssetStoreProduct			m_assetStoreProduct;
 		private	RateMyApp					m_rateMyApp;
-		[SerializeField]
-		[HideInInspector]
+		[SerializeField, HideInInspector]
 		private	string						m_lastOpenedDateString;
 
 		[SerializeField]
@@ -280,7 +276,7 @@ namespace VoxelBusters.NativePlugins
 
 		#endregion
 
-		#region Constructor
+		#region Static Constructor
 
 #if UNITY_EDITOR && !DISABLE_NPSETTINGS_GENERATION
 		static NPSettings ()
@@ -319,21 +315,23 @@ namespace VoxelBusters.NativePlugins
 
 		protected override void OnEnable ()
 		{
+		
 			base.OnEnable ();
 
+#if UNITY_EDITOR
 			Initialise();
+#endif
 		}
 
 		#endregion
 
 		#region Private Methods
 
+#if UNITY_EDITOR
 		private void Initialise ()
 		{
 			m_assetStoreProduct	= new AssetStoreProduct(kProductName, kProductVersion, Constants.kLogoPath);
-
-#if UNITY_EDITOR
-			//SetupRateNPSettings();
+//			SetupRateNPSettings();
 			
 #if USES_BILLING
 			// Rebuilding asset bundles is required
@@ -343,9 +341,8 @@ namespace VoxelBusters.NativePlugins
 					_billingProduct.RebuildObject();
 			}
 #endif
-
-#endif
 		}
+#endif
 
 #if UNITY_EDITOR
 		private void SetupRateNPSettings ()
@@ -399,6 +396,28 @@ namespace VoxelBusters.NativePlugins
 
 		private void UpdateDefineSymbols ()
 		{
+
+			ApplicationSettings.Features 		_supportedFeatures		= m_applicationSettings.SupportedFeatures;
+			ApplicationSettings.AddonServices	_supportedAddonServices	= m_applicationSettings.SupportedAddonServices;
+
+#if UNITY_ANDROID
+			if (_supportedFeatures.UsesCloudServices && !_supportedFeatures.UsesGameServices)
+			{
+				string _error = "Cloud Services on Android needs Game Services feature to be enabled. Please enable Game Services now.";
+				Debug.LogError("[Cross Platform Native Plugins] " + _error);
+				EditorUtility.DisplayDialog("Cross Platform Native Plugins - Alert", _error, "Ok");
+			}
+				
+#if USES_BILLING
+			if (string.IsNullOrEmpty(NPSettings.Billing.Android.PublicKey))
+			{
+				string _error = "Please specify Public key in Billing Settings for using Billing feature. You can get this key from Google Play Developer Console -> Your App -> Development & Tools -> Services & API -> Licensing & in-app billing.";
+				Debug.LogError("[Cross Platform Native Plugins] " + _error);
+			}
+#endif
+			
+#endif
+
 			foreach (BuildTargetGroup _curBuildTargetGroup in buildTargetGroups)
 			{
 				string[]		_curDefineSymbols	= UnityPlayerSettings.GetScriptingDefineSymbolsForGroup(_curBuildTargetGroup).Split(defineSeperators, StringSplitOptions.RemoveEmptyEntries);
@@ -417,9 +436,6 @@ namespace VoxelBusters.NativePlugins
 						_newDefineSymbols.Add(kLiteVersionMacro);
 				}
 #pragma warning restore
-
-				ApplicationSettings.Features 		_supportedFeatures		= m_applicationSettings.SupportedFeatures;
-				ApplicationSettings.AddonServices	_supportedAddonServices	= m_applicationSettings.SupportedAddonServices;
 
 				// Regarding supported features
 				AddOrRemoveFeatureDefineSymbol(_newDefineSymbols, _supportedFeatures.UsesAddressBook, 	kMacroAddressBook);
@@ -545,9 +561,17 @@ namespace VoxelBusters.NativePlugins
 			UpdateJARFile(_supportedFeatures.UsesSharing, 				Constants.kSharingJARName);
 			UpdateJARFile(_supportedFeatures.UsesTwitter, 				Constants.kSocialNetworkTwitterJARName);
 			UpdateJARFile(_supportedFeatures.UsesWebView, 				Constants.kWebviewJARName);
-			UpdateJARFile(_supportedAddOnServices.UsesSoomlaGrow, 		Constants.kSoomlaIntegrationJARName);		
-		}
 
+			//External Additional Support
+			UpdateJARFile(_supportedAddOnServices.UsesSoomlaGrow, 		Constants.kSoomlaIntegrationJARName);	
+			UpdateJARFile(_supportedFeatures.UsesNotificationService || NPSettings.Utility.Android.ModifiesApplicationBadge, 	Constants.kExternalNotificationLibJARName); // For Shortcut Badger
+
+#if	(UNITY_5 || UNITY_2017_1_OR_NEWER)
+			// Update external libraries/plugins properties
+			UpdatePluginPlatforms(_supportedFeatures);
+#endif
+		}
+		
 		private void UpdateJARFile (bool _usesFeature, string _JARName)
 		{
 			string 	_filePath	= Constants.kAndroidPluginsJARPath + "/" + _JARName;
@@ -563,24 +587,52 @@ namespace VoxelBusters.NativePlugins
 				FileOperations.Rename(_filePath + ".jar.meta", _JARName + ".jar.unused.meta" );
 			}
 		}
+
+		private void UpdatePluginPlatforms (ApplicationSettings.Features _supportedFeatures)
+		{
+				foreach (PluginImporter plugin in PluginImporter.GetAllImporters()) 
+				{
+					if (plugin == null || Path.IsPathRooted (plugin.assetPath)) // Skip null or inbuilt plugins
+						continue;
+						
+					string filename = Path.GetFileName (plugin.assetPath);
+
+					if (plugin.assetPath.Contains(Constants.kAndroidPluginsPath))
+					{
+						// Debug.Log("[Updating Plugin Properties] " + plugin.assetPath);
+						if (filename.Equals(Constants.kTwitterLibraryName))
+						{
+							plugin.SetCompatibleWithAnyPlatform(false);
+							plugin.SetCompatibleWithPlatform(BuildTarget.Android,_supportedFeatures.UsesTwitter);
+						}
+						
+						if (filename.Equals(Constants.kYoutubeLibraryName))
+						{
+							plugin.SetCompatibleWithAnyPlatform(false);
+							plugin.SetCompatibleWithPlatform(BuildTarget.Android,_supportedFeatures.UsesMediaLibrary);
+						}
+					}
+				}
+		}
 #endif
 
 		#endregion
 
-
-#if UNITY_EDITOR
-		#region Rate NPSettings Delegate Methods
+		#region IRateMyAppDelegate Implementation
 
 		public bool CanShowRateMyAppDialog ()
 		{
+#if UNITY_EDITOR
 			return !(EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isPaused);
+#else
+			return false;
+#endif
 		}
 
 		public void OnBeforeShowingRateMyAppDialog ()
 		{}
 
 		#endregion
-#endif
 
 
 		#region Editor Callback Methods

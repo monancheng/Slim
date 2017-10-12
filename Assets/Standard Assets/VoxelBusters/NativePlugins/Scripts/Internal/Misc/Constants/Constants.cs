@@ -71,7 +71,7 @@ namespace VoxelBusters.NativePlugins.Internal
 
 		#endregion
 
-		#region Plugin Android Jar Files Names
+		#region Plugin Android Jar Files / Library Names
 		
 		public const string kAddressBookJARName					= "feature.addressbook";
 		public const string kBillingJARName						= "feature.billing";
@@ -85,6 +85,11 @@ namespace VoxelBusters.NativePlugins.Internal
 		public const string kSoomlaIntegrationJARName			= "feature.sdk.soomla.integration";
 		public const string kSocialNetworkTwitterJARName		= "feature.socialnetwork.twitter";
 		public const string kWebviewJARName						= "feature.webview";
+		public const string kExternalNotificationLibJARName		= "feature.externallibrary.shortcutbadger";
+
+		public const string kTwitterLibraryName 				= "twitter_lib";
+		public const string kYoutubeLibraryName 				= "youtube_lib";
+
 		
 		#endregion
 

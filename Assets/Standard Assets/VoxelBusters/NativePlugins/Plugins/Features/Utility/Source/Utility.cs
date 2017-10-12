@@ -103,16 +103,16 @@ namespace VoxelBusters.NativePlugins
 		/// {
 		/// 	public void OpenStorePage ()
 		/// 	{
-		/// 		NPBinding.Utility.OpenStoreLink(Platform.Android("com.example.app"), 
-		/// 										Platform.IOS("ios-app-id"));
+		/// 		NPBinding.Utility.OpenStoreLink(PlatformValue.Android("com.example.app"), 
+		/// 										PlatformValue.IOS("ios-app-id"));
 		///     }
 		/// }
 		/// </code>
 		/// </example>
-		public void OpenStoreLink (params PlatformID[] _applicationIDList)
+		public void OpenStoreLink (params PlatformValue[] _storeIdentifiers)
 		{
-			string	_applicationID	= NPUtility.GetActivePlatformID(_applicationIDList);
-			if (string.IsNullOrEmpty(_applicationID))
+			PlatformValue _storeIdentifier	= PlatformValueHelper.GetCurrentPlatformValue(_array: _storeIdentifiers);
+			if (_storeIdentifier == null)
 			{
 #if NP_DEBUG
 				Debug.Log("[Utility] The operation could not be completed because application identifier is invalid.");
@@ -120,7 +120,7 @@ namespace VoxelBusters.NativePlugins
 				return;
 			}
 			
-			OpenStoreLink(_applicationID);
+			OpenStoreLink(_applicationID: _storeIdentifier.Value);
 		}
 		
 		/// <summary>

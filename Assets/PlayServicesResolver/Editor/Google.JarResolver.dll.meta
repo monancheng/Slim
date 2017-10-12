@@ -1,7 +1,11 @@
 fileFormatVersion: 2
-guid: 89e33f4dcc3c64cdd9f55d3dcb836f0a
-timeCreated: 1506357582
-licenseType: Pro
+guid: 2590bd31de3a41c0a9f49c8b11641ec6
+labels:
+- gvh
+- gvh_targets-editor
+- gvh_version-1.2.54.0
+timeCreated: 1507184781
+licenseType: Store
 PluginImporter:
   serializedVersion: 2
   iconMap: {}
@@ -11,7 +15,7 @@ PluginImporter:
   platformData:
     data:
       first:
-        Any: 
+        '': data
       second:
         enabled: 0
         settings: {}

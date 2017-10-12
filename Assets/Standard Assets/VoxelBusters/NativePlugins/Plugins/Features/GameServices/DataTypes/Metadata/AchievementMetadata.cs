@@ -13,7 +13,7 @@ namespace VoxelBusters.NativePlugins
 		private		string			m_globalID;
 		[SerializeField]
 		[Tooltip("Collection of identifiers, where each identifier is used to identify achievement in a specific platform game server.")]
-		private		PlatformID[]	m_platformIDs;
+		private		PlatformValue[]	m_platformIDs;
 		[SerializeField]
 		[Tooltip("The number of steps required to complete an achievement. Must be greater than 0.")]
 		private		int				m_noOfSteps		= 1;
@@ -48,7 +48,7 @@ namespace VoxelBusters.NativePlugins
 			}
 		}
 		
-		public PlatformID[] PlatformIDs
+		public PlatformValue[] PlatformIDs
 		{
 			get
 			{

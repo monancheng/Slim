@@ -112,7 +112,7 @@ namespace VoxelBusters.NativePlugins
 			IDictionary _localData 							= GetLocalStoreDiskData();
 			List<string> _changedKeys 						= null; 			
 			eCloudDataStoreValueChangeReason _changeReason;
-
+			
 			if (_localData != null)
 			{
 				_changedKeys = GetChangedKeys(_localData, _newCloudData);
@@ -142,6 +142,7 @@ namespace VoxelBusters.NativePlugins
 			{
 				m_initialSyncDone = true;
 				_changeReason 	= eCloudDataStoreValueChangeReason.INITIAL_SYNC;
+				CloudKeyValueStoreDidInitialise(true);
 			}
 
 			// Refresh the keys in in-memory store.

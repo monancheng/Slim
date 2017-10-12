@@ -3,7 +3,7 @@ using System.Collections;
 using VoxelBusters.DebugPRO;
 using VoxelBusters.Utility;
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID && USES_ADDRESS_BOOK
 namespace VoxelBusters.NativePlugins
 {
 	using Internal;
@@ -38,10 +38,7 @@ namespace VoxelBusters.NativePlugins
 		
 		protected override void ReadContacts (eABAuthorizationStatus _status, ReadContactsCompletion _onCompletion)
 		{
-			base.ReadContacts(_status, _onCompletion);
-
-			if (_status != eABAuthorizationStatus.AUTHORIZED)
-				return;
+			ReadContactsFinishedEvent = _onCompletion;
 
 			// Native method is called
 			Plugin.Call(Native.Methods.READ_CONTACTS);

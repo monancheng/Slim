@@ -38,17 +38,15 @@ namespace VoxelBusters.NativePlugins.Internal
 		public static string GetPlatformID (IIdentifierContainer[] _collection, string _globalID)
 		{
 			IIdentifierContainer	_object	= _collection.FindObjectWithGlobalID(_globalID);
-			
 			if (_object == null)
 				return null;
 			
-			return _object.PlatformIDs.GetCurrentPlatformID();
+			return _object.GetCurrentPlatformID();
 		}
 		
 		public static string GetGlobalID (IIdentifierContainer[] _collection, string _platformID)
 		{
 			IIdentifierContainer	_object	= _collection.FindObjectWithPlatformID(_platformID);
-
 			if (_object == null)
 				return _platformID;
 			

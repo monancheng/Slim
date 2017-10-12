@@ -21,14 +21,25 @@ namespace VoxelBusters.NativePlugins
 		private static readonly string PluginName = "CrossPlatformNativePlugins";
 		private static readonly string DependencyFileDirectory = "ProjectSettings";
 
-		
+#if UNITY_2017_1_OR_NEWER
+		private static readonly string PlayServicesVersionString	=	"11.0+";
+		private static readonly string SupportLibsVersionString		=	"26.0.1+";//26.0.1+ is must as we need to use NotificationCompat for Oreo and Up devices - wehn targetting >= 26
+#else
+		private static readonly string PlayServicesVersionString	=	"10.0+";
+		private static readonly string SupportLibsVersionString		=	"24.2+";
+#endif
+
+		private static readonly string[] Supportv4SubLibraries = new string[]{
+			"support-v4"
+		};
+
 		/// <summary>
 		/// Initializes static members of the <see cref="NPAndroidLibraryDependencies"/> class.
 		/// </summary>
 		static NPAndroidLibraryDependencies()
 		{
 			EditorUtils.Invoke(()=>{
-				CreateDependencies();		
+				CreateDependencies();
 			}, 0.1f);
 		}
 
@@ -56,27 +67,27 @@ namespace VoxelBusters.NativePlugins
 			{
 				Google.VersionHandler.InvokeInstanceMethod(
 	            svcSupport, "DependOn",
-	            new object[] { 	"com.google.android.gms", 
+	            new object[] { 	"com.google.android.gms",
 								"play-services-games",
-	                           	"9.8+" },
-	            namedArgs: new Dictionary<string, object>() 
+								PlayServicesVersionString },
+	            namedArgs: new Dictionary<string, object>()
 							{
 		                		{
-									"packageIds", 
-									new string[] 
+									"packageIds",
+									new string[]
 									{
 		                       			"extra-google-m2repository",
 		                        		"extra-android-m2repository"
-									} 
+									}
 								}
 				            }
 				);
 
 				Google.VersionHandler.InvokeInstanceMethod(
 	            svcSupport, "DependOn",
-	            new object[] { 	"com.google.android.gms", 
+	            new object[] { 	"com.google.android.gms",
 								"play-services-nearby",
-								"9.8+" },
+								PlayServicesVersionString },
 	            namedArgs: null
 				);
 			}
@@ -85,23 +96,35 @@ namespace VoxelBusters.NativePlugins
 			{
 				Google.VersionHandler.InvokeInstanceMethod(
 	            svcSupport, "DependOn",
-	            new object[] { 	"com.google.android.gms", 
+	            new object[] { 	"com.google.android.gms",
 								"play-services-gcm",
-								"9.8+" },
+								PlayServicesVersionString },
 	            namedArgs: null
 				);
 			}
-			
-			// Marshmallow permissions requires app-compat. Also used by some old API's for compatibility.
-			Google.VersionHandler.InvokeInstanceMethod(
-	            svcSupport, "DependOn",
-	            new object[] { 	"com.android.support", 
-								"support-v4",
-	                           	"23.+" },
-	            namedArgs: null
-				);
 
-			/*// If not enabled by default, resolve manually.
+			//https://developer.android.com/topic/libraries/support-library/packages.html
+			// Marshmallow permissions requires app-compat. Also used by some old API's for compatibility.
+			foreach (string each in Supportv4SubLibraries)
+			{
+				Google.VersionHandler.InvokeInstanceMethod(
+					svcSupport, "DependOn",
+					new object[] { 	"com.android.support",
+						each,
+						SupportLibsVersionString },
+					namedArgs: null
+				);
+			}
+
+			/*Google.VersionHandler.InvokeInstanceMethod(
+				svcSupport, "DependOn",
+				new object[] { 	"com.android.support",
+					"appcompat-v7",
+					SupportLibsVersionString },
+				namedArgs: null
+			);*/
+
+			/* If not enabled by default, resolve manually.
 			if (!PlayServicesResolver.Resolver.AutomaticResolutionEnabled())
 			{
 				PlayServicesResolver.Resolver.DoResolution(svcSupport, "Assets/Plugins/Android", PlayServicesResolver.HandleOverwriteConfirmation);

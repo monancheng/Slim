@@ -16,10 +16,18 @@ namespace VoxelBusters.NativePlugins
 		MediaLibraryAndroid()
 		{
 			Plugin = AndroidPluginUtility.GetSingletonInstance(Native.Class.NAME);
-
-			Plugin.Call(Native.Methods.INITIALIZE, NPSettings.MediaLibrary.Android.YoutubeAPIKey);		
 		}
 
+		#endregion
+
+		#region Unity Methods
+		
+		protected override void Awake()
+		{
+			base.Awake ();
+			Plugin.Call(Native.Methods.INITIALIZE, NPSettings.MediaLibrary.Android.YoutubeAPIKey);		
+		}
+		
 		#endregion
 
 		#region overridden methods
@@ -51,9 +59,8 @@ namespace VoxelBusters.NativePlugins
 			base.SaveImageToGallery(_imageByteArray, _onCompletion);
 			
 			if (_imageByteArray != null)
-				Plugin.Call(Native.Methods.SAVE_IMAGE_TO_GALLERY, _imageByteArray, _imageByteArray.Length);
+				Plugin.Call(Native.Methods.SAVE_IMAGE_TO_GALLERY, _imageByteArray, _imageByteArray.Length, NPSettings.MediaLibrary.Android.SaveGalleryImagesToAppSpecificFolder);
 		}
-
 
 		public override void PlayVideoFromGallery (PickVideoCompletion _onPickVideoCompletion,
 		                                          PlayVideoCompletion _onPlayVideoCompletion)

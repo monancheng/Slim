@@ -13,6 +13,12 @@ namespace VoxelBusters.NativePlugins
 		#region Delegates
 
 		/// <summary>
+		/// Delegate that will be called upon completion of Initialise() method, done at start.
+		/// </summary>
+		/// <param name="_success">A bool value used to indicate operation status.</param>
+		public delegate void InitialiseCompletion (bool _success);
+
+		/// <summary>
 		/// Delegate that will be called upon explicitly synchronising in-memory keys and values.
 		/// </summary>
 		/// <param name="_success">A bool value used to indicate operation status.</param>
@@ -31,6 +37,11 @@ namespace VoxelBusters.NativePlugins
 		#endregion
 
 		#region Events
+
+		/// <summary>
+		/// Event that will be called when initial data from cloud gets downloaded. This can be considered as a result for Initialise call you do at start of this service.
+		/// </summary>
+		public static event InitialiseCompletion KeyValueStoreDidInitialiseEvent;
 
 		/// <summary>
 		/// Event that will be called upon explicitly synchronising in-memory keys and values.
@@ -124,6 +135,22 @@ namespace VoxelBusters.NativePlugins
 		#endregion
 
 		#region Native Callback Methods
+
+		protected virtual void CloudKeyValueStoreDidInitialise (string _successStr)
+		{
+			bool	_success	= bool.Parse(_successStr);
+			
+			// Invoke handler
+			CloudKeyValueStoreDidInitialise(_success);
+		}
+
+		protected virtual void CloudKeyValueStoreDidInitialise (bool _isSuccess)
+		{
+			Console.Log(Constants.kDebugTag, "[CloudServices] Received key store value Initialised event.");
+			
+			if (KeyValueStoreDidInitialiseEvent != null)
+				KeyValueStoreDidInitialiseEvent(_isSuccess);
+		}
 
 		protected virtual void CloudKeyValueStoreDidSynchronise (string _successStr)
 		{

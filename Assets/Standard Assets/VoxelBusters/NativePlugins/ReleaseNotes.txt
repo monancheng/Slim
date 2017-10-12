@@ -1,3 +1,22 @@
+1.5.3
+Important : UPGRADE INSTRUCTIONS : "https://tutorials.cpnp.voxelbusters.com/Upgrade%20Guide/upgrade_guide.html"
+
+***Uninstall (from Window->VoxelBusters Menu) before importing the new update***
+
+* No more permissions asked for Sharing functionality
+* Runtime Permission Support
+* Support for Proguard
+* Bug fixes for Xcode export issues on specific Windows 10 versions
+* Game Services rare crash issues fixed
+* Support for 2017.1, 2017.2.0f1, 2017.3 (beta)
+* Minimum API for android is set to 14 (can work below 14 too but need to go for lower version of support libraries)
+* Android Oreo Notification support
+* Refined all permissions on Android
+* Supports .Net 4.5 API Compatibility
+* New version of Google Jar Resolver
+* Better compatibility with other plugins
+* iOS 11 & Android Oreo Support
+
 1.5
 Important : UPGRADE INSTRUCTIONS : "https://tutorials.cpnp.voxelbusters.com/Upgrade%20Guide/upgrade_guide.html"
 
