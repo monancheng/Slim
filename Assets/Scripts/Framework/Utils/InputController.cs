@@ -62,7 +62,7 @@ public class InputController : MonoBehaviour
 
     public static Vector2 GetPosition(int index = 0)
     {
-#if !UNITY_EDITOR && (UNITY_IPHONE || UNITY_ANDROID)
+#if !UNITY_EDITOR && (UNITY_IOS || UNITY_ANDROID)
 		return IsHasTouch (index) ? Input.GetTouch (index).position : (Vector2) Input.mousePosition;
 		#else
         return Input.mousePosition;

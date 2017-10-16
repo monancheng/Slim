@@ -62,7 +62,7 @@ public class ScreenRate : ScreenItem
 		{
 #if UNITY_ANDROID
 			Application.OpenURL("http://squaredino.com");
-#elif UNITY_IPHONE
+#elif UNITY_IOS
 			Application.OpenURL("http://squaredino.com");
 #endif
 			DefsGame.RateCounter = 1;

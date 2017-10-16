@@ -14,9 +14,13 @@ public class MyAds : MonoBehaviour
     private bool _isVideoWaitTimer;
     private bool _isFirstTimeVideo;
 
+    private void Awake()
+    {
+        NoAds = SecurePlayerPrefs.GetInt("noAds");
+    }
+
     private void Start()
     {
-        NoAds = SecurePlayerPrefs.GetInt("noAds, 0");
         _rewardDate = DateTime.UtcNow;
         _isRewardedWaitTimer = true;
 
@@ -38,7 +42,7 @@ public class MyAds : MonoBehaviour
     private void OnAdsDisable(OnAdsDisable obj)
     {
         NoAds = 1;
-        SecurePlayerPrefs.GetInt("noAds, 1");
+        SecurePlayerPrefs.SetInt("noAds",1);
     }
 
     private void OnAdsVideoTryShow(OnAdsVideoTryShow obj)

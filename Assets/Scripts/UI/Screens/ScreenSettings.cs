@@ -12,7 +12,7 @@ public class ScreenSettings : ScreenItem
     {
         base.Show();
   
-        if (MyAds.NoAds == 0) UIManager.HideUiElement("ScreenSettingsBtnNoAds");
+        if (MyAds.NoAds == 1) UIManager.HideUiElement("ScreenSettingsBtnNoAds");
         #if UNITY_ANDROID
             UIManager.HideUiElement("ScreenSettingsBtnRestore");
         #endif
