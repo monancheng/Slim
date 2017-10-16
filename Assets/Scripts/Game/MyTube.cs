@@ -157,15 +157,23 @@ public class MyTube : MonoBehaviour
             transform.position = new Vector3(transform.position.x, transform.position.y - TubeManager.CurrentSpeed * Time.deltaTime,
                 transform.position.z);
 
-            if (!_isGameOver && !_isSentMoveEvent && transform.position.y < 1f)
+            if (!_isGameOver)
             {
-                _isReadyToDelete = true;
-                if (!_isHaveCollision)
-                    GlobalEvents<OnGameOver>.Call(new OnGameOver());
-                else
+                if (transform.position.y < 1f)
+                {
+                    _isReadyToDelete = true;
+                    if (!_isHaveCollision)
+                        GlobalEvents<OnGameOver>.Call(new OnGameOver());
+                    
+                }
+                else if (transform.position.y < 13.5f && !_isSentMoveEvent)
+                {
+                    _isSentMoveEvent = true;
                     GameEvents.Send(OnCanMove);
-                _isSentMoveEvent = true;
+                }
             }
+            
+            
 
             if ((_isGameOver || _isReadyToDelete) && transform.position.y < -24f)
             {
