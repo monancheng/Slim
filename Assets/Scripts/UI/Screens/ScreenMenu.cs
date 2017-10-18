@@ -114,7 +114,6 @@ public class ScreenMenu : ScreenItem
         if (InputController.IsEscapeClicked())
             if (!_isButtonHiden)
             {
-                
                 ShowExitPanel();
             }
     }

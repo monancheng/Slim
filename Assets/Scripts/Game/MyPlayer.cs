@@ -230,6 +230,9 @@ public class MyPlayer : MonoBehaviour
 
     private void Update()
     {
+            if (InputController.IsEscapeClicked())
+                GlobalEvents<OnGameOver>.Call(new OnGameOver());
+        
         if (_isMoveToExit)
         {
             transform.position = new Vector3(transform.position.x,
