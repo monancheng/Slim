@@ -4,8 +4,9 @@ using VoxelBusters.NativePlugins;
 public class Share : MonoBehaviour
 {
 	private string _gifName;
-    
-    private void OnEnable()
+	private bool _isGift;
+
+	private void OnEnable()
     {
         GlobalEvents<OnBtnShareClick>.Happened += OnBtnShareClick;
 //		GlobalEvents<OnBtnShareGifClick>.Happened += OnBtnShareGifClick;
@@ -35,11 +36,12 @@ public class Share : MonoBehaviour
 
 	private void OnBtnShareClick(OnBtnShareClick obj)
 	{
-		ShareClick();
+		ShareClick(true);
 	}
 
-	public void ShareClick()
+	public void ShareClick(bool isGift = false)
 	{
+		_isGift = isGift;
 		var _shareLink = "http://smarturl.it/YummMonsters";
 
 		var shareText = "Wow! I Just Scored [" + DefsGame.GameBestScore +
@@ -70,6 +72,7 @@ public class Share : MonoBehaviour
 
 	void FinishedSharing (eShareResult _result){
 		Debug.Log("Share Result = " + _result);
+		if(_isGift)
 		GlobalEvents<OnGifShared>.Call (new OnGifShared ());
 	}
 }
