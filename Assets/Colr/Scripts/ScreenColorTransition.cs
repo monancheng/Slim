@@ -19,6 +19,7 @@ namespace Colr {
 		}
 
 		void Awake() {
+			// 22b5f7ed-989d-49d1-90d9-c62d76c3081a
             var shader = Shader.Find("Hidden/ScreenColorTransition");
             if (shader == null)
             {

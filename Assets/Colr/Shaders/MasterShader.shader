@@ -1,7 +1,3 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
-
 Shader "Colr/Master Shader" {
 
 	Properties {
@@ -215,9 +211,6 @@ Shader "Colr/Master Shader" {
 
                 #if LIGHTMAP_COLR_ON && LIGHTMAP_ON
                     half4 lmColor = UNITY_SAMPLE_TEX2D(unity_Lightmap, v.lightmap_uv) * SHADOW_ATTENUATION(v);
-					#if !UNITY_STANDALONE
-						unity_Lightmap_HDR = half4(8, 0, 0, 0);
-					#endif
                     half4 dlm = half4(DecodeLightmap(lmColor), 0);
                     half4 lmPower = lerp(VEC4_ONE, dlm, _LightmapPower);
                     result = lerp(half4(_LightmapColor, 0), VEC4_ONE, lmPower) * lightColor;

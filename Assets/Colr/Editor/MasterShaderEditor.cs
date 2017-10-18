@@ -27,6 +27,7 @@ public class MasterShaderEditor : MaterialEditor
     private static string FOG_BOTTOM = "FOG_BOTTOM";
     
     private static string INDEPENDENT_SIDES = "INDEPENDENT_SIDES";
+    private static string HDR_MOBILE = "HDR_MOBILE";
 
     private AnimBool showFront;
     private AnimBool showBack;
@@ -377,10 +378,9 @@ public class MasterShaderEditor : MaterialEditor
         {
             keywordsUpdated.Add(FOG_BOTTOM);
         }
-        
+
         targetMat.shaderKeywords = keywordsUpdated.ToArray();
         EditorUtility.SetDirty(targetMat);
-        
     }
 
     public void OnInspectorUpdate() {
