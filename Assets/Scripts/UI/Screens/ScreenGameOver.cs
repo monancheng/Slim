@@ -50,6 +50,7 @@ public class ScreenGameOver : ScreenItem
         GlobalEvents<OnStartGame>.Happened += OnHideGameOverScreen;
         GlobalEvents<OnGameOverScreenShow>.Happened += OnShowGameOverScreen;
         GlobalEvents<OnGameOverScreenShowActiveItems>.Happened += OnGameOverScreenShowActiveItems;
+        GlobalEvents<OnGameOverScreenHideActiveItems>.Happened += OnGameOverScreenHideActiveItems;
         GlobalEvents<OnRewardedLoaded>.Happened += IsRewardedAvailable;
         GlobalEvents<OnGiftAvailable>.Happened += OnGiftAvailable;
         GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
@@ -66,7 +67,7 @@ public class ScreenGameOver : ScreenItem
 		GlobalEvents<OnGifShared>.Happened += OnGifShared;
 //		Record.OnShareGIFEvent += OnShareGIFEvent;
     }
-
+    
     private void OnSkinAllOpened(OnSkinAllOpened obj)
     {
         _isAllSkinsOpened = true;
@@ -75,6 +76,11 @@ public class ScreenGameOver : ScreenItem
     private void OnGameOverScreenShowActiveItems(OnGameOverScreenShowActiveItems obj)
     {
         ShowActiveItems();
+    }
+    
+    private void OnGameOverScreenHideActiveItems(OnGameOverScreenHideActiveItems obj)
+    {
+        HideActiveItems();
     }
 
     private void OnShowGameOverScreen(OnGameOverScreenShow e)

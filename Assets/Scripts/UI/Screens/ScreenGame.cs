@@ -72,7 +72,7 @@ public class ScreenGame : ScreenItem
 
     public void StartGameByTouch()
     {
-        if (_gameState == GameState.WaitToStart)
+        if (_gameState == GameState.WaitToStart && InputController.GetPosition().y > 220)
         {
             GlobalEvents<OnStartGame>.Call(new OnStartGame());
         }

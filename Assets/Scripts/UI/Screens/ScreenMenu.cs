@@ -114,6 +114,7 @@ public class ScreenMenu : ScreenItem
         if (InputController.IsEscapeClicked())
             if (!_isButtonHiden)
             {
+                
                 ShowExitPanel();
             }
     }
@@ -123,6 +124,7 @@ public class ScreenMenu : ScreenItem
         UIManager.ShowUiElement("PanelExit");
         UIManager.ShowUiElement("PanelExitBtnYes");
         UIManager.ShowUiElement("PanelExitBtnNo");
+        GlobalEvents<OnGameOverScreenHideActiveItems>.Call(new OnGameOverScreenHideActiveItems());
     }
     
     public void HideExitPanel()

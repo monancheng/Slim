@@ -96,6 +96,8 @@ public struct OnCoinsAdded
 public struct OnGameOverScreenShow{}
 // Показываем активные нотификейшины на экране
 public struct OnGameOverScreenShowActiveItems{}
+// Скрываем активные нотификейшины на экране
+public struct OnGameOverScreenHideActiveItems{}
 
 // Получили нового персонажа
 public struct OnGotNewCharacter{}
