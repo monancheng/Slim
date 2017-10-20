@@ -139,14 +139,14 @@ public class ScreenGift : ScreenItem
 	
 	private void CreateGiftAnimation()
 	{
-		Debug.Log("CreateGiftAnimation");
+		D.Log("CreateGiftAnimation");
 		Instantiate(_gift);
 		Invoke("FireworksLaunch", 1.4f);
 	}
 	
 	private void OnGiftAnimationDone(OnGiftAnimationDone obj)
 	{
-		Debug.Log("OnGiftAnimationDone(OnGiftAnimationDone obj)");
+		D.Log("OnGiftAnimationDone(OnGiftAnimationDone obj)");
 		if (_giftType == 1) MakeAGift();
 		else if (_giftType == 2) MakeAGiftRandomSkin();
 		else if (_giftType == 3) MakeAGiftWord();
@@ -161,7 +161,7 @@ public class ScreenGift : ScreenItem
 	
 	private void MakeAGiftRandomSkin()
 	{
-		Debug.Log("MakeAGiftRandomSkin()");
+		D.Log("MakeAGiftRandomSkin()");
 		GlobalEvents<OnGiftShowRandomSkinAnimation>.Call(new OnGiftShowRandomSkinAnimation());
 		GlobalEvents<OnTubeCreateExample>.Call(new OnTubeCreateExample());
 	}

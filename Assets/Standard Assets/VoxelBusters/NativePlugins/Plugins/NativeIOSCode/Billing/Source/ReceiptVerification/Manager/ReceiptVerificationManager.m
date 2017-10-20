@@ -13,7 +13,7 @@
 
 // Constants
 const NSString *bundleIdentifier	= @"com.squaredino.slimring";
-const NSString *bundleVersion		= @"0";
+const NSString *bundleVersion		= @"2";
 
 @interface ReceiptVerificationManager ()
 

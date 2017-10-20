@@ -307,7 +307,7 @@ public class ScreenSkins : ScreenItem
     
     private void OnGiftShowRandomSkinAnimation(OnGiftShowRandomSkinAnimation obj)
     {
-        Debug.Log("OnGiftShowRandomSkinAnimation(OnGiftShowRandomSkinAnimation obj)");
+        D.Log("OnGiftShowRandomSkinAnimation(OnGiftShowRandomSkinAnimation obj)");
         int id = -1;
         // TEMP
         // Первым подарком дарим Спинер
@@ -332,7 +332,7 @@ public class ScreenSkins : ScreenItem
     
     private int GetRandomLockedSkin()
     {
-        Debug.Log("GetRandomAvailableSkin");
+        D.Log("GetRandomAvailableSkin");
 		
         if (_isSkinsAllGeneralOpened) return -1;
 		
@@ -349,11 +349,11 @@ public class ScreenSkins : ScreenItem
         if (availableSkins.Count > 0)
         {
             int id = Random.Range(0, availableSkins.Count + 1);
-            Debug.Log("GetRandomAvailableSkin RETURN id = " + availableSkins[id]);
+            D.Log("GetRandomAvailableSkin RETURN id = " + availableSkins[id]);
             return availableSkins[id];
         }
 
-        Debug.Log("GetRandomAvailableSkin RETURN id = " + -1);
+        D.Log("GetRandomAvailableSkin RETURN id = " + -1);
         return -1;
     }
 }
