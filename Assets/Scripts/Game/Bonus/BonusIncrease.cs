@@ -29,7 +29,6 @@ public class BonusIncrease : BonusItem
     {
         if (other.CompareTag("Player"))
         {
-            MasterAudio.PlaySoundAndForget("BonusIncrease");
             GameEvents.Send(OnBonusGrow);
             Activate();
         }

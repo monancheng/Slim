@@ -274,7 +274,7 @@ public class ScreenSkins : ScreenItem
     
     private void AreThereSkinsGeneral()
     {
-        for (var i = FacesGeneralMin; i < FacesGeneralMax; i++)
+        for (var i = FacesGeneralMin; i <= FacesGeneralMax; i++)
             if (_faceAvailable[i] == 0)
             {
                 return;
@@ -338,7 +338,7 @@ public class ScreenSkins : ScreenItem
 		
         // Создаем список со всеми доступными скинами
         List<int> availableSkins = new List<int>();
-        for (int j = FacesGeneralMin; j < FacesGeneralMax; j++)
+        for (int j = FacesGeneralMin; j <= FacesGeneralMax; j++)
         {
             if (_faceAvailable[j] == 0)
             {
@@ -348,7 +348,7 @@ public class ScreenSkins : ScreenItem
 
         if (availableSkins.Count > 0)
         {
-            int id = Random.Range(0, availableSkins.Count + 1);
+            int id = Random.Range(0, availableSkins.Count);
             D.Log("GetRandomAvailableSkin RETURN id = " + availableSkins[id]);
             return availableSkins[id];
         }

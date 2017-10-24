@@ -17,7 +17,7 @@ public class MyPlayer : MonoBehaviour
 //    [SerializeField] private ParticleSystem _psSlide;
 
     private const float MinSize = 1.0f;
-    private const float ErrorCoeff = 0.63f;
+    private const float ErrorCoeff = 0.65f;
     private const float BonusRadiusCoeff = 2.0f;
     private const float CirclePositionY = 80f;
 
@@ -37,6 +37,8 @@ public class MyPlayer : MonoBehaviour
     private Vector3 _cameraStartPosition;
 
     [SerializeField] private Color[] _colors;
+
+    private int _comboCounter;
 //    [SerializeField] private Mesh[] _meshes;
 //    private MeshFilter _mesh;
     
@@ -159,13 +161,22 @@ public class MyPlayer : MonoBehaviour
                 MasterAudio.PlaySoundAndForget("Slice");
 //                _psSlide.transform.position = new Vector3(transform.position.x, _psSlide.transform.position.y, _psSlide.transform.position.z);
 //                _psSlide.Play();
+                _comboCounter = 0;
             }
             else
             {
+                ++_comboCounter;
+                if (_comboCounter % 6 == 0)
+                {
+                    OnBonusGrow();
+                }
+                else
+                {
+                    MasterAudio.PlaySoundAndForget("GoodFit", 1f, 1f + 0.5f * (Mathf.Min(10f, _comboCounter - 1f) / 10f));
+                }
                 GameEvents.Send(OnCombo, 1/*_comboCounter*/, _currentRadius, 
                     new Vector3(transform.position.x, other.gameObject.transform.position.y, other.gameObject.transform.position.z),
                     tubeProc.height);
-                MasterAudio.PlaySoundAndForget("GoodFit");
             }
             GlobalEvents<OnPointsAdd>.Call(new OnPointsAdd {PointsCount = /*_comboCounter+*/1});
         }
@@ -197,11 +208,16 @@ public class MyPlayer : MonoBehaviour
         if (_currentRadius < _startRadius)
         {
             _currentRadius += BonusRadiusCoeff;
-        }
-        else
+            if (_currentRadius > _startRadius)
+            {
+                _currentRadius = _startRadius;
+            }
+            MasterAudio.PlaySoundAndForget("BonusIncrease");
+        } else
         {
-            _currentRadius = _startRadius;
+            MasterAudio.PlaySoundAndForget("GoodFit", 1f, 1f + 0.5f * (Mathf.Min(10f, _comboCounter - 1f) / 10f));
         }
+        
         ChangeSize();
         GameEvents.Send(OnIncreaseTubeRadius, _currentRadius/_startRadius + 0.1f);
     }
@@ -250,14 +266,15 @@ public class MyPlayer : MonoBehaviour
 
         if (InputController.IsTouchOnScreen(TouchPhase.Began))
             _startCursorPoint = Input.mousePosition;
+        
 
         if (InputController.IsTouchOnScreen(TouchPhase.Moved))
         {
             if (_startCursorPoint == Vector3.zero) _startCursorPoint = Input.mousePosition;
             
             Vector2 cursorPosition = Input.mousePosition;
-            var newX = (_startCursorPoint.x - cursorPosition.x) / 7f;
-            _currentAngle += newX;
+            var newX = (_startCursorPoint.x - cursorPosition.x)/(Screen.width*0.5f);
+            _currentAngle += newX*36f;
             float xCoeff = _startDistance * Mathf.Cos(_currentAngle * Mathf.Deg2Rad);
 //            float yCoeff = _startDistance * Mathf.Sin(_currentAngle * Mathf.Deg2Rad);
             

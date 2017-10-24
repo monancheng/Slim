@@ -79,6 +79,6 @@ public class Points : MonoBehaviour
     private void AddPointVisual()
     {
         textField.text = DefsGame.CurrentPointsCount.ToString();
-        textField.transform.localScale = new Vector3(_startScale * 1.4f, _startScale * 1.4f, 1f);
+        textField.transform.localScale = new Vector3(_startScale * 1.3f, _startScale * 1.3f, 1f);
     }
 }

@@ -4,13 +4,14 @@ using PrimitivesPro.GameObjects;
 using PrimitivesPro.Primitives;
 using UnityEngine;
 using UnityEngine.Rendering;
-using VoxelBusters.Utility;
 using Random = UnityEngine.Random;
 
 public class TubeManager : MonoBehaviour
 {
     [SerializeField] private GameObject[] _tubes;
     [SerializeField] private Color[] _colors;
+    [SerializeField] private GameObject[] _smiles;
+    private int _smileID;
     
     private const float StartSpeed = 147f;
     private const float StartRadiusMinus = 1.5f;
@@ -44,6 +45,7 @@ public class TubeManager : MonoBehaviour
     {
         _radiusAddCoeff = 5f;
         _counter = 0;
+        _smileID = 0;
         
         ColorTheme.SetFirstColor();
         CreateTubeStart();
@@ -85,6 +87,7 @@ public class TubeManager : MonoBehaviour
     {
         _radiusAddCoeff = 5f;
         _counter = 0;
+        _smileID = 0;
         CreateTubeStart();
     }
 
@@ -188,8 +191,11 @@ public class TubeManager : MonoBehaviour
         ++_increaseCounter;
         if (_increaseCounter >= 12)
         {
-            GameEvents.Send(OnCreateBonusIncrease);
-            isBonusCreated = true;
+            if (Random.value > 0.4f) 
+            {
+                GameEvents.Send(OnCreateBonusIncrease);
+                isBonusCreated = true;
+            }
             _increaseCounter = 0;
         }
 
@@ -243,7 +249,20 @@ public class TubeManager : MonoBehaviour
         var script = currentTube.AddComponent<MyTube>();
         
         script.ShapeObject = shapeObject;
-        script.CreateTubeModel(_tubes[ScreenSkins.CurrentFaceId]);
+        if (ScreenSkins.CurrentFaceId == 3)
+        {
+            _smileID = Random.Range(0, _smiles.Length);
+//            if (_counter > 0 && _counter % 10 == 0)
+//            {
+//                _smileID += 1;
+//                if (_smileID >= _smiles.Length) _smileID = 0;
+//            }
+            script.CreateTubeModel(_smiles[_smileID]);
+        }
+        else
+        {
+            script.CreateTubeModel(_tubes[ScreenSkins.CurrentFaceId]);
+        }
         script.ChangeRadius(radius/InitRadius);
         _itemList.Add(script);
         currentTube.GetComponent<Collider>().isTrigger = true;

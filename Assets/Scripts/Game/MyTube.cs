@@ -26,6 +26,7 @@ public class MyTube : MonoBehaviour
     public static event Action OnCanMove;
     public static event Action OnCanSpawnBonus;
     public static event Action <int> OnDestroy;
+    private Light _light;
 
     private void Awake()
     {
@@ -172,11 +173,27 @@ public class MyTube : MonoBehaviour
                     GameEvents.Send(OnCanMove);
                 }
             }
-            
-            
+
+//            if (_isSentMoveEvent && transform.position.y < 9.0f)
+//            {
+//                if (transform.localScale.x > 0f)
+//                {
+//                    transform.localScale = new Vector3(transform.localScale.x - _increaseScaleSpeed * Scale * 2f,
+//                        transform.localScale.y - _increaseScaleSpeed * Scale * 2f,
+//                        transform.localScale.z - _increaseScaleSpeed * Scale * 2f);
+//                    
+//                }
+//
+//                if (transform.localScale.x < 0f)
+//                    transform.localScale = Vector3.zero;
+//            }
 
             if ((_isGameOver || _isReadyToDelete) && transform.position.y < -24f)
             {
+                if (!_isGameOver&&!_isSentMoveEvent)
+                {
+                    GameEvents.Send(OnCanMove);
+                }
                 GameEvents.Send(OnDestroy, Id);
                 Destroy(gameObject);
             }   

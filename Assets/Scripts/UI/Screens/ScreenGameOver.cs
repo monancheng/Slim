@@ -205,6 +205,9 @@ public class ScreenGameOver : ScreenItem
         
         if (!_isSkinsAllGeneralOpened && DefsGame.CoinsCount >= 200)
         {
+            idNotifyOld = _activeNamesList.IndexOf("NotifyNextCharacter");
+            if (idNotifyOld != -1) _activeNamesList.RemoveAt(idNotifyOld);
+            
             _activeNamesList.Add("NotifyNewCharacter");
             // Удаляем итем ожидания, если он есть
             idNotifyOld = _activeNamesList.IndexOf("NotifyNextCharacter");
@@ -219,6 +222,9 @@ public class ScreenGameOver : ScreenItem
     {
         if (!_isSkinsAllGeneralOpened && DefsGame.CoinsCount < 200)
         {
+            int idNotifyOld = _activeNamesList.IndexOf("NotifyNewCharacter");
+            if (idNotifyOld != -1) return;
+            
             _activeNamesList.Add("NotifyNextCharacter");
         }
     }
@@ -459,11 +465,10 @@ public class ScreenGameOver : ScreenItem
         {
             if (DefsGame.CoinsCount >= 200)
             {
-                int idNotifyOld = _activeNamesList.IndexOf("NotifyNextCharacter");
-                if (idNotifyOld != -1) _activeNamesList.RemoveAt(idNotifyOld);  
                 AddNotifySkin();
-            } else
-            _activeNamesList.Add("NotifyGiftWaiting");
+            }
+            else
+                _activeNamesList.Add("NotifyGiftWaiting");
         } else if (_giftCollectedType == GiftCollectedType.Skin)
         {
             AddNotifySkin();
