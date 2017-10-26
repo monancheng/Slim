@@ -172,7 +172,7 @@ public class MyPlayer : MonoBehaviour
                 }
                 else
                 {
-                    MasterAudio.PlaySoundAndForget("GoodFit", 1f, 1f + 0.5f * (Mathf.Min(10f, _comboCounter - 1f) / 10f));
+                    MasterAudio.PlaySoundAndForget("GoodFit", 1f, 1f + 0.4f * (Mathf.Min(10f, _comboCounter - 1f) / 10f));
                 }
                 GameEvents.Send(OnCombo, 1/*_comboCounter*/, _currentRadius, 
                     new Vector3(transform.position.x, other.gameObject.transform.position.y, other.gameObject.transform.position.z),
@@ -215,7 +215,7 @@ public class MyPlayer : MonoBehaviour
             MasterAudio.PlaySoundAndForget("BonusIncrease");
         } else
         {
-            MasterAudio.PlaySoundAndForget("GoodFit", 1f, 1f + 0.5f * (Mathf.Min(10f, _comboCounter - 1f) / 10f));
+            MasterAudio.PlaySoundAndForget("GoodFit", 1f, 1f + 0.4f * (Mathf.Min(10f, _comboCounter - 1f) / 10f));
         }
         
         ChangeSize();
@@ -274,7 +274,7 @@ public class MyPlayer : MonoBehaviour
             
             Vector2 cursorPosition = Input.mousePosition;
             var newX = (_startCursorPoint.x - cursorPosition.x)/(Screen.width*0.5f);
-            _currentAngle += newX*36f;
+            _currentAngle += newX*38f;
             float xCoeff = _startDistance * Mathf.Cos(_currentAngle * Mathf.Deg2Rad);
 //            float yCoeff = _startDistance * Mathf.Sin(_currentAngle * Mathf.Deg2Rad);
             
