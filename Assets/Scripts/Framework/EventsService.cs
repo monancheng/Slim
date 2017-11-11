@@ -88,6 +88,19 @@ public struct OnCoinsAdded
     public int Total;
 }
 
+// Смотрим видео и получаем скин
+public struct OnAdsRewardedBuySkin
+{
+    public int Id;
+}
+
+
+// Купили скин за просмотр видео
+public struct OnBuySkinByRewarded
+{
+    public int Id;
+}
+
 //--------------------------------------------------------
 // NOTIFICATIONS
 //--------------------------------------------------------

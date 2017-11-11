@@ -125,7 +125,6 @@ public class BillingManager : MonoBehaviour
         GlobalEvents<OnSkinsUnlockAll>.Call(new OnSkinsUnlockAll ());
         DefsGame.IsFirstBuy = true;
         SecurePlayerPrefs.SetBool("IsFirstBuy", true);
-        DefsGame.IsSkinsAllUnlocked = true;
         SecurePlayerPrefs.SetBool("IsAllUnlocked", true);
         GlobalEvents<OnScreenCoinsHide>.Call(new OnScreenCoinsHide ());
     }

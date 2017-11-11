@@ -10,6 +10,8 @@ public class ScreenSkins : ScreenItem
     [SerializeField] private GameObject[] _skinBtns;
     [SerializeField] private GameObject _choosedSkin;
     
+    public const int CHARACTER_REWARDED_1 = 23; 
+    
     public static int CurrentFaceId;
     private const int FacesGeneralMin = 0;
     private const int FacesGeneralMax = 18;
@@ -72,9 +74,23 @@ public class ScreenSkins : ScreenItem
     {
         GlobalEvents<OnBuySkin>.Happened += OnBuySkin;
         GlobalEvents<OnBuySkinByIAP>.Happened += OnBuySkinByIAP;
+        GlobalEvents<OnBuySkinByRewarded>.Happened += OnBuySkinByRewarded;
         GlobalEvents<OnSkinsUnlockAll>.Happened += OnSkinsUnlockAll;
         GlobalEvents<OnGiftShowRandomSkinAnimation>.Happened += OnGiftShowRandomSkinAnimation;
 //        GlobalEvents<OnCoinsAdded>.Happened += OnCoinsAdded;
+    }
+
+    private void OnBuySkinByRewarded(OnBuySkinByRewarded obj)
+    {
+        switch (obj.Id)
+        {
+            case CHARACTER_REWARDED_1: OpenSkin(CHARACTER_REWARDED_1);
+                break;
+        }
+        MasterAudio.PlaySoundAndForget("GUI_Grab");
+        Hide();
+        GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
+        GlobalEvents<OnGameOverScreenShowActiveItems>.Call(new OnGameOverScreenShowActiveItems());
     }
 
     private void OnSkinsUnlockAll(OnSkinsUnlockAll obj)
@@ -163,6 +179,13 @@ public class ScreenSkins : ScreenItem
         if (id == SkinSponsor)
         {
             Application.OpenURL("http://www.ketchappstudio.com");
+            OpenSkin(id);
+            isAvailable = true;
+        } 
+        else 
+        if (id == CHARACTER_REWARDED_1)
+        {
+            GlobalEvents<OnAdsRewardedBuySkin>.Call(new OnAdsRewardedBuySkin{Id = id});
             OpenSkin(id);
             isAvailable = true;
         } 

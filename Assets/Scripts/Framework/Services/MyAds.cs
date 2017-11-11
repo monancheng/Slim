@@ -37,6 +37,15 @@ public class MyAds : MonoBehaviour
         GlobalEvents<OnAdsVideoTryShow>.Happened += OnAdsVideoTryShow;
         GlobalEvents<OnAdsVideoShowing>.Happened += OnAdsVideoShowing;
         GlobalEvents<OnAdsDisable>.Happened += OnAdsDisable;
+        GlobalEvents<OnAdsRewardedBuySkin>.Happened += OnAdsRewardedBuySkin;
+    }
+
+    private void OnAdsRewardedBuySkin(OnAdsRewardedBuySkin obj)
+    {
+        GlobalEvents<OnShowRewarded>.Call(new OnShowRewarded());
+        
+        //Temp
+        GlobalEvents<OnBuySkinByRewarded>.Call(new OnBuySkinByRewarded{Id = obj.Id});
     }
 
     private void OnAdsDisable(OnAdsDisable obj)

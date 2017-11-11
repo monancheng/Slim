@@ -11,7 +11,6 @@ public struct DefsGame
     public static int CoinsCount; // Количество очков игрока  
     
     public static bool IsFirstBuy; // Первая покупка была произведена 
-    public static bool IsSkinsAllUnlocked; // Все скины открыты
 
     public static int IS_ACHIEVEMENT_FIRST_WIN;
     public static int IS_ACHIEVEMENT_NEW_SKIN;
