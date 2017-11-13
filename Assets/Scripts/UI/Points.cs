@@ -27,7 +27,7 @@ public class Points : MonoBehaviour
 
     private void OnPointsReset(OnPointsReset obj)
     {
-        DefsGame.CurrentPointsCount = 0;
+        Statistics.CurrentPointsCount = 0;
         textField.text = "0";
         _isVisual = false;
     }
@@ -67,18 +67,18 @@ public class Points : MonoBehaviour
 
     private void AddPoint(int count)
     {
-        DefsGame.CurrentPointsCount += count;
-        if (DefsGame.GameBestScore < DefsGame.CurrentPointsCount)
+        Statistics.CurrentPointsCount += count;
+        if (Statistics.GameBestScore < Statistics.CurrentPointsCount)
         {
-            DefsGame.GameBestScore = DefsGame.CurrentPointsCount;
-            SecurePlayerPrefs.SetInt("BestScore",DefsGame.GameBestScore);
+            Statistics.GameBestScore = Statistics.CurrentPointsCount;
+            SecurePlayerPrefs.SetInt("BestScore",Statistics.GameBestScore);
         }
         _isPointAdded = true;
     }
 
     private void AddPointVisual()
     {
-        textField.text = DefsGame.CurrentPointsCount.ToString();
+        textField.text = Statistics.CurrentPointsCount.ToString();
         textField.transform.localScale = new Vector3(_startScale * 1.3f, _startScale * 1.3f, 1f);
     }
 }

@@ -7,7 +7,7 @@ public class ScreenRate : ScreenItem
 	[SerializeField] private ScreenRateBtnStar[] buttons;
 	[SerializeField] private Image smile;
 	[SerializeField] private Sprite[] smileSprites;
-	private int VoteValue;
+	private int _voteValue;
 	
 	private void Start()
 	{
@@ -27,7 +27,7 @@ public class ScreenRate : ScreenItem
 
 	private void OnRateBtnClick(int obj)
 	{
-		VoteValue = obj;
+		_voteValue = obj;
 		for (int i = 0; i < obj; i++)
 		{
 			ScreenRateBtnStar item = buttons[i];
@@ -39,7 +39,7 @@ public class ScreenRate : ScreenItem
 			item.SetCheck(false);
 		}
 
-		smile.sprite = smileSprites[VoteValue-1];
+		smile.sprite = smileSprites[_voteValue-1];
 	}
 	
 	public void Show()
@@ -58,16 +58,16 @@ public class ScreenRate : ScreenItem
 
 	public void GoToRate()
 	{
-		if (VoteValue > 3)
+		if (_voteValue > 3)
 		{
 #if UNITY_ANDROID
 			Application.OpenURL("http://squaredino.com");
 #elif UNITY_IOS
 			Application.OpenURL("http://squaredino.com");
 #endif
-			DefsGame.RateCounter = 1;
+			Statistics.RateCounter = 1;
 			PlayerPrefs.SetInt("RateCounter", 1);
-			PlayerPrefs.SetInt("RateForVersion", DefsGame.GameVersion);
+			PlayerPrefs.SetInt("RateForVersion", Statistics.GameVersion);
 		}
 //		else
 //		{

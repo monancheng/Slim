@@ -1,28 +1,26 @@
 ﻿using UnityEngine;
-
 //using VoxelBusters.NativePlugins;
 
 public class GameServicesManager : MonoBehaviour
 {
-    [HideInInspector] public string ACHIEVEMENT_COLLECTION = "COLLECTION";
-    [HideInInspector] public string ACHIEVEMENT_EXPLOSIVE = "EXPLOSIVE";
-    [HideInInspector] public string ACHIEVEMENT_FiFIELD_OF_CANDIES = "FieldOfCandies";
+    public static string ACHIEVEMENT_COLLECTION = "COLLECTION";
+    public static string ACHIEVEMENT_EXPLOSIVE = "EXPLOSIVE";
+    public static string ACHIEVEMENT_FiFIELD_OF_CANDIES = "FieldOfCandies";
 
-    [HideInInspector] public string ACHIEVEMENT_FIRST_WIN = "Beginner";
-    [HideInInspector] public string ACHIEVEMENT_GET_MAX = "GET_MAX";
+    public static string ACHIEVEMENT_FIRST_WIN = "Beginner";
+    public static string ACHIEVEMENT_GET_MAX = "GET_MAX";
 
-    [HideInInspector] public string ACHIEVEMENT_MASTER = "MASTER";
-    [HideInInspector] public string ACHIEVEMENT_MISS_CLICK = "MISS_CLICK";
-    [HideInInspector] public string ACHIEVEMENT_MULTI_PULTI = "MULTI_PULTI";
+    public static string ACHIEVEMENT_MASTER = "MASTER";
+    public static string ACHIEVEMENT_MISS_CLICK = "MISS_CLICK";
+    public static string ACHIEVEMENT_MULTI_PULTI = "MULTI_PULTI";
 
-    [HideInInspector] public string ACHIEVEMENT_NEW_SKIN = "Newskin";
-    [HideInInspector] public string ACHIEVEMENT_THREE_JUMPS = "THREE_JUMPS";
+    public static string ACHIEVEMENT_NEW_SKIN = "Newskin";
+    public static string ACHIEVEMENT_THREE_JUMPS = "THREE_JUMPS";
 
     private string GLOBAL_LEADERBOARD_ID = "First";
 
     private void Awake()
     {
-        DefsGame.GameServices = this;
         D.Log("Game Services Start()");
 
         if (!IsServiceAvailable())
@@ -234,26 +232,26 @@ public class GameServicesManager : MonoBehaviour
 
     private bool UpdateAchievementsInfo(string _achievementGID)
     {
-        if (_achievementGID == ACHIEVEMENT_FIRST_WIN && DefsGame.IS_ACHIEVEMENT_FIRST_WIN != 1)
+        if (_achievementGID == ACHIEVEMENT_FIRST_WIN && Achievements.IS_ACHIEVEMENT_FIRST_WIN != 1)
             return true;
-        if (_achievementGID == ACHIEVEMENT_NEW_SKIN && DefsGame.IS_ACHIEVEMENT_NEW_SKIN != 1)
+        if (_achievementGID == ACHIEVEMENT_NEW_SKIN && Achievements.IS_ACHIEVEMENT_NEW_SKIN != 1)
             return true;
-        if (_achievementGID == ACHIEVEMENT_MULTI_PULTI && DefsGame.IS_ACHIEVEMENT_MULTI_PULTI != 1)
+        if (_achievementGID == ACHIEVEMENT_MULTI_PULTI && Achievements.IS_ACHIEVEMENT_MULTI_PULTI != 1)
             return true;
-        if (_achievementGID == ACHIEVEMENT_MISS_CLICK && DefsGame.IS_ACHIEVEMENT_MISS_CLICK != 1)
+        if (_achievementGID == ACHIEVEMENT_MISS_CLICK && Achievements.IS_ACHIEVEMENT_MISS_CLICK != 1)
             return true;
-        if (_achievementGID == ACHIEVEMENT_GET_MAX && DefsGame.IS_ACHIEVEMENT_GET_MAX != 1)
+        if (_achievementGID == ACHIEVEMENT_GET_MAX && Achievements.IS_ACHIEVEMENT_GET_MAX != 1)
             return true;
-        if (_achievementGID == ACHIEVEMENT_THREE_JUMPS && DefsGame.IS_ACHIEVEMENT_THREE_JUMPS != 1)
+        if (_achievementGID == ACHIEVEMENT_THREE_JUMPS && Achievements.IS_ACHIEVEMENT_THREE_JUMPS != 1)
             return true;
 
-        if (_achievementGID == ACHIEVEMENT_MASTER && DefsGame.IS_ACHIEVEMENT_MASTER != 1)
+        if (_achievementGID == ACHIEVEMENT_MASTER && Achievements.IS_ACHIEVEMENT_MASTER != 1)
             return true;
-        if (_achievementGID == ACHIEVEMENT_FiFIELD_OF_CANDIES && DefsGame.IS_ACHIEVEMENT_FiFIELD_OF_CANDIES != 1)
+        if (_achievementGID == ACHIEVEMENT_FiFIELD_OF_CANDIES && Achievements.IS_ACHIEVEMENT_FiFIELD_OF_CANDIES != 1)
             return true;
-        if (_achievementGID == ACHIEVEMENT_EXPLOSIVE && DefsGame.IS_ACHIEVEMENT_EXPLOSIVE != 1)
+        if (_achievementGID == ACHIEVEMENT_EXPLOSIVE && Achievements.IS_ACHIEVEMENT_EXPLOSIVE != 1)
             return true;
-        if (_achievementGID == ACHIEVEMENT_COLLECTION && DefsGame.IS_ACHIEVEMENT_COLLECTION != 1)
+        if (_achievementGID == ACHIEVEMENT_COLLECTION && Achievements.IS_ACHIEVEMENT_COLLECTION != 1)
             return true;
 
         return false;
@@ -343,43 +341,43 @@ public class GameServicesManager : MonoBehaviour
                 if (_progress >= 100) {
                     D.Log("ACHIEVEMENT UNLOCKED progress =",_progress, "ID = ", _achievementGID);
                     if (_achievementGID == ACHIEVEMENT_FIRST_WIN) {
-                        DefsGame.IS_ACHIEVEMENT_FIRST_WIN = 1;
+                        Statistics.IS_ACHIEVEMENT_FIRST_WIN = 1;
                         PlayerPrefs.SetInt("IS_ACHIEVEMENT_FIRST_WIN", 1);
                     }else 
                             if (_achievementGID == ACHIEVEMENT_NEW_SKIN) {
-                                DefsGame.IS_ACHIEVEMENT_NEW_SKIN = 1;
+                                Statistics.IS_ACHIEVEMENT_NEW_SKIN = 1;
                                 PlayerPrefs.SetInt("IS_ACHIEVEMENT_NEW_SKIN", 1);
                             }else 
                                 if (_achievementGID == ACHIEVEMENT_MULTI_PULTI) {
-                                    DefsGame.IS_ACHIEVEMENT_MULTI_PULTI = 1;
+                                    Statistics.IS_ACHIEVEMENT_MULTI_PULTI = 1;
                                     PlayerPrefs.SetInt("IS_ACHIEVEMENT_MULTI_PULTI", 1);
                                 }else 
                                     if (_achievementGID == ACHIEVEMENT_MISS_CLICK) {
-                                        DefsGame.IS_ACHIEVEMENT_MISS_CLICK = 1;
+                                        Statistics.IS_ACHIEVEMENT_MISS_CLICK = 1;
                                         PlayerPrefs.SetInt("IS_ACHIEVEMENT_MISS_CLICK", 1);
                                     }else 
                                         if (_achievementGID == ACHIEVEMENT_GET_MAX) {
-                                            DefsGame.IS_ACHIEVEMENT_GET_MAX = 1;
+                                            Statistics.IS_ACHIEVEMENT_GET_MAX = 1;
                                             PlayerPrefs.SetInt("IS_ACHIEVEMENT_GET_MAX", 1);
                                         }else 
                                             if (_achievementGID == ACHIEVEMENT_THREE_JUMPS) {
-                                                DefsGame.IS_ACHIEVEMENT_THREE_JUMPS = 1;
+                                                Statistics.IS_ACHIEVEMENT_THREE_JUMPS = 1;
                                                 PlayerPrefs.SetInt("IS_ACHIEVEMENT_THREE_JUMPS", 1);
                                             }else 
                         if (_achievementGID == ACHIEVEMENT_MASTER) {
-                            DefsGame.IS_ACHIEVEMENT_MASTER = 1;
+                            Statistics.IS_ACHIEVEMENT_MASTER = 1;
                             PlayerPrefs.SetInt("IS_ACHIEVEMENT_MASTER", 1);
                         } else
                             if (_achievementGID == ACHIEVEMENT_FiFIELD_OF_CANDIES) {
-                                DefsGame.IS_ACHIEVEMENT_FiFIELD_OF_CANDIES = 1;
+                                Statistics.IS_ACHIEVEMENT_FiFIELD_OF_CANDIES = 1;
                                 PlayerPrefs.SetInt("IS_ACHIEVEMENT_FiFIELD_OF_CANDIES", 1);
                             }else 
                                 if (_achievementGID == ACHIEVEMENT_EXPLOSIVE) {
-                                    DefsGame.IS_ACHIEVEMENT_EXPLOSIVE = 1;
+                                    Statistics.IS_ACHIEVEMENT_EXPLOSIVE = 1;
                                     PlayerPrefs.SetInt("IS_ACHIEVEMENT_EXPLOSIVE", 1);
                                 }else 
                                     if (_achievementGID == ACHIEVEMENT_COLLECTION) {
-                                        DefsGame.IS_ACHIEVEMENT_COLLECTION = 1;
+                                        Statistics.IS_ACHIEVEMENT_COLLECTION = 1;
                                         PlayerPrefs.SetInt("IS_ACHIEVEMENT_COLLECTION", 1);
                                     }
                 }

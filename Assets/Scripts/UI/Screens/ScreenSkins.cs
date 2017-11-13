@@ -51,7 +51,7 @@ public class ScreenSkins : ScreenItem
 
         for (var i = 0; i < _faceAvailable.Length; i++)
         {
-            if (_faceAvailable[i] == 1) ++DefsGame.QUEST_CHARACTERS_Counter;
+            if (_faceAvailable[i] == 1) ++Statistics.QuestCharactersCounter;
         }
     }
 
@@ -62,8 +62,8 @@ public class ScreenSkins : ScreenItem
         AreThereSkinsGeneral();
 //        CheckAvailableSkin();
         
-        if (DefsGame.GameBestScore > 0) UIManager.ShowUiElement("LabelBestScore");
-        if (DefsGame.CoinsCount > 0)
+        if (Statistics.GameBestScore > 0) UIManager.ShowUiElement("LabelBestScore");
+        if (Statistics.CoinsCount > 0)
         {
             UIManager.ShowUiElement("LabelCoins");
 //            UIManager.ShowUiElement("ScreenMenuBtnPlus");
@@ -101,7 +101,7 @@ public class ScreenSkins : ScreenItem
             _faceAvailable[i] = 1;
         }
 
-        DefsGame.QUEST_CHARACTERS_Counter = _faceAvailable.Length;
+        Statistics.QuestCharactersCounter = _faceAvailable.Length;
         
         ChooseColorForButtons();
         AreThereSkins();
@@ -190,7 +190,7 @@ public class ScreenSkins : ScreenItem
             isAvailable = true;
         } 
         else 
-            if (DefsGame.CoinsCount >= 200 /*DefsGame.FacePrice[_id - 1]*/)
+            if (Statistics.CoinsCount >= 200 /*Statistics.FacePrice[_id - 1]*/)
             {
                 BuySkin(id);
                 isAvailable = true;
@@ -220,8 +220,14 @@ public class ScreenSkins : ScreenItem
     {
         GlobalEvents<OnBuySkin>.Call(new OnBuySkin{Id = id});
 
-        //DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_NEW_SKIN, 1);
-        //DefsGame.gameServices.ReportProgressWithGlobalID (DefsGame.gameServices.ACHIEVEMENT_COLLECTION, DefsGame.QUEST_CHARACTERS_Counter);
+//        GlobalEvents<AchievementProgress>.Call(new AchievementProgress
+//        {
+//            Id = GameServicesManager.ACHIEVEMENT_NEW_SKIN, Progress = 1
+//        });
+//        GlobalEvents<AchievementProgress>.Call(new AchievementProgress
+//        {
+//            Id = GameServicesManager.ACHIEVEMENT_COLLECTION, Progress = Statistics.QuestCharactersCounter
+//        });
         GlobalEvents<OnGotNewCharacter>.Call(new OnGotNewCharacter());
     }
 
@@ -231,8 +237,8 @@ public class ScreenSkins : ScreenItem
         CurrentFaceId = id;
         SecurePlayerPrefs.SetInt("currentFaceID", id);
         SecurePlayerPrefs.SetInt("faceAvailable_" + id, 1);
-        ++DefsGame.QUEST_CHARACTERS_Counter;
-        SecurePlayerPrefs.SetInt("QUEST_CHARACTERS_Counter", DefsGame.QUEST_CHARACTERS_Counter);
+        ++Statistics.QuestCharactersCounter;
+        SecurePlayerPrefs.SetInt("QUEST_CHARACTERS_Counter", Statistics.QuestCharactersCounter);
         ChooseColorForButtons();
         AreThereSkins();
         AreThereSkinsGeneral();
