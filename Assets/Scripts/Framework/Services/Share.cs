@@ -24,10 +24,10 @@ public class Share : MonoBehaviour
 
 	public void ShareGifClick()
     {
-        var _shareLink = "http://smarturl.it/YummMonsters";
+        var shareLink = "http://smarturl.it/YummMonsters";
 
         var shareText = "Wow! I Just Scored [" + PrefsManager.GameBestScore +
-                        "] in #SlimRing! Can You Beat Me? @Sponsor " + _shareLink;
+                        "] in #SlimRing! Can You Beat Me? @Sponsor " + shareLink;
 
 		ShareImageAtPathUsingShareSheet(shareText, _gifName + ".gif");
     }
@@ -42,26 +42,26 @@ public class Share : MonoBehaviour
 	public void ShareClick(bool isGift = false)
 	{
 		_isGift = isGift;
-		var _shareLink = "http://smarturl.it/YummMonsters";
+		var shareLink = "http://smarturl.it/YummMonsters";
 
 		var shareText = "Wow! I Just Scored [" + PrefsManager.GameBestScore +
-                        "] in #SlimRing! Can You Beat Me? @Sponsor " + _shareLink;
+                        "] in #SlimRing! Can You Beat Me? @Sponsor " + shareLink;
 
 
-		var _screenShotPath = Application.persistentDataPath + "/promo1.jpg";
+		var screenShotPath = Application.persistentDataPath + "/promo1.jpg";
 
-		if (Random.value > 0.5f) _screenShotPath = Application.persistentDataPath + "/promo2.jpg";
+		if (Random.value > 0.5f) screenShotPath = Application.persistentDataPath + "/promo2.jpg";
 
-		ShareImageAtPathUsingShareSheet(shareText, _screenShotPath);
+		ShareImageAtPathUsingShareSheet(shareText, screenShotPath);
 	}
 
-    private void ShareImageAtPathUsingShareSheet(string _shareText, string _screenShotPath)
+    private void ShareImageAtPathUsingShareSheet(string shareText, string screenShotPath)
 	{
 		// Create share sheet
 		ShareSheet shareSheet = new ShareSheet ();
 
-		shareSheet.Text = _shareText;
-		shareSheet.AttachImageAtPath (_screenShotPath);
+		shareSheet.Text = shareText;
+		shareSheet.AttachImageAtPath (screenShotPath);
 
 		// Show composer
 		NPBinding.UI.SetPopoverPointAtLastTouchPosition ();
@@ -70,8 +70,8 @@ public class Share : MonoBehaviour
 		Debug.Log ("Finished sharing");
 	}
 
-	void FinishedSharing (eShareResult _result){
-		Debug.Log("Share Result = " + _result);
+	void FinishedSharing (eShareResult result){
+		Debug.Log("Share Result = " + result);
 		if(_isGift)
 		GlobalEvents<OnGifShared>.Call (new OnGifShared ());
 	}
