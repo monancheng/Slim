@@ -62,12 +62,12 @@ public class ScreenMenu : ScreenItem
         _isButtonHiden = false;
 
         //UIManager.ShowUiElement ("MainMenu");
-        if (Statistics.GameBestScore > 0)
+        if (PrefsManager.GameBestScore > 0)
         {
             UIManager.ShowUiElement("LabelBestScore");
         }
 
-        if (Statistics.CoinsCount.GetValue() > 0)
+        if (PrefsManager.CoinsCount.GetValue() > 0)
         {
             UIManager.ShowUiElement("LabelCoins");
 //            UIManager.ShowUiElement("ScreenMenuBtnPlus");

@@ -12,7 +12,7 @@ public class Coins : MonoBehaviour
 
     private void Start()
     {
-        textField.text = Statistics.CoinsCount.ToString();
+        textField.text = PrefsManager.CoinsCount.ToString();
         _startScale = img.transform.localScale.x;
     }
 
@@ -24,10 +24,10 @@ public class Coins : MonoBehaviour
     private void OnCoinsAdd(OnCoinsAdd obj)
     {
         MasterAudio.PlaySoundAndForget("GUI_CoinTake");
-        Statistics.CoinsCount += new SecureInt(obj.Count);
-        SecurePlayerPrefs.SetInt("coinsCount", Statistics.CoinsCount.GetValue());
-        GlobalEvents<OnCoinsAdded>.Call(new OnCoinsAdded{Total = Statistics.CoinsCount.GetValue()});
-        textField.text = Statistics.CoinsCount.ToString();
+        PrefsManager.CoinsCount += new SecureInt(obj.Count);
+        SecurePlayerPrefs.SetInt("coinsCount", PrefsManager.CoinsCount.GetValue());
+        GlobalEvents<OnCoinsAdded>.Call(new OnCoinsAdded{Total = PrefsManager.CoinsCount.GetValue()});
+        textField.text = PrefsManager.CoinsCount.ToString();
         img.transform.localScale = new Vector3(_startScale * 1.4f, _startScale * 1.4f, 1f);
         UIManager.ShowUiElement("LabelCoins");
     }

@@ -13,7 +13,7 @@ public class BestScore : MonoBehaviour
     private void Start()
     {
         _startScale = img.transform.localScale.x;
-        _pointsCount = Statistics.GameBestScore;
+        _pointsCount = PrefsManager.GameBestScore;
         textField.text = _pointsCount.ToString();
     }
 
@@ -25,7 +25,7 @@ public class BestScore : MonoBehaviour
     private void OnBestScoreUpdate(OnBestScoreUpdate obj)
     {
         // Здесь только визуальная обработка. Изменение BestScore в Points
-        if (Statistics.GameBestScore > _pointsCount) Invoke("MakeAnimation", 1f);
+        if (PrefsManager.GameBestScore > _pointsCount) Invoke("MakeAnimation", 1f);
     }
 
     // Update is called once per frame
@@ -39,7 +39,7 @@ public class BestScore : MonoBehaviour
     private void MakeAnimation()
     {
         
-        _pointsCount = Statistics.GameBestScore;
+        _pointsCount = PrefsManager.GameBestScore;
         textField.text = _pointsCount.ToString();
         // Если успели активировать скрытие, то не играем анимацию получения нового рекорда
         img.transform.localScale = new Vector3(_startScale * 1.4f, _startScale * 1.4f, 1f);

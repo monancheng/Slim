@@ -181,7 +181,7 @@ public class BillingManager : MonoBehaviour
 //                            GlobalEvents<OnBuySkinByIAP>.Call(new OnBuySkinByIAP{Id = IAP_SKIN_4});
                     }
 
-                    FlurryEventsManager.SendEvent ("iap_completed_<" + _transaction.ProductIdentifier + ">", Statistics.screenCoins.prevScreenName);
+                    FlurryEventsManager.SendEvent ("iap_completed_<" + _transaction.ProductIdentifier + ">", PrefsManager.screenCoins.prevScreenName);
 
                     BillingProduct product = NPBinding.Billing.GetStoreProduct(_transaction.ProductIdentifier);
                     if (product != null)

@@ -65,9 +65,9 @@ public class ScreenRate : ScreenItem
 #elif UNITY_IOS
 			Application.OpenURL("http://squaredino.com");
 #endif
-			Statistics.RateCounter = 1;
+			PrefsManager.RateCounter = 1;
 			PlayerPrefs.SetInt("RateCounter", 1);
-			PlayerPrefs.SetInt("RateForVersion", Statistics.GameVersion);
+			PlayerPrefs.SetInt("RateForVersion", PrefsManager.GameVersion);
 		}
 //		else
 //		{

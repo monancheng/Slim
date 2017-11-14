@@ -28,32 +28,32 @@ public class ScreenGame : ScreenItem
     { 
 //        GlobalEvents<AchievementProgress>.Call(new AchievementProgress
 //        {
-//            Id = GameServicesManager.ACHIEVEMENT_FIRST_WIN, Progress = Statistics.GameBestScore
+//            Id = GameServicesManager.ACHIEVEMENT_FIRST_WIN, Progress = PrefsManager.GameBestScore
 //        });
 
-        ++Statistics.QuestGameplayCounter;
-        PlayerPrefs.SetInt("QUEST_GAMEPLAY_Counter", Statistics.QuestGameplayCounter);
+        ++PrefsManager.QuestGameplayCounter;
+        PlayerPrefs.SetInt("QUEST_GAMEPLAY_Counter", PrefsManager.QuestGameplayCounter);
 
 //        GlobalEvents<AchievementProgress>.Call(new AchievementProgress
 //        {
-//            Id = GameServicesManager.ACHIEVEMENT_MASTER, Progress = Statistics.QuestGameplayCounter
+//            Id = GameServicesManager.ACHIEVEMENT_MASTER, Progress = PrefsManager.QuestGameplayCounter
 //        });
 
-        ++Statistics.GameplayCounter;
+        ++PrefsManager.GameplayCounter;
 
-        PlayerPrefs.SetInt("QUEST_THROW_CounterCounter", Statistics.QuestThrowCounter);
+        PlayerPrefs.SetInt("QUEST_THROW_CounterCounter", PrefsManager.QuestThrowCounter);
 
 //        GlobalEvents<AchievementProgress>.Call(new AchievementProgress
 //        {
-//            Id = GameServicesManager.ACHIEVEMENT_FiFIELD_OF_CANDIES, Progress = Statistics.QuestThrowCounter
+//            Id = GameServicesManager.ACHIEVEMENT_FiFIELD_OF_CANDIES, Progress = PrefsManager.QuestThrowCounter
 //        });
 
         // Сохраняемся тут, чтобы не тормозить игру
-        PlayerPrefs.SetInt("QUEST_BOMBS_Counter", Statistics.QuestBombsCounter);
+        PlayerPrefs.SetInt("QUEST_BOMBS_Counter", PrefsManager.QuestBombsCounter);
 
 //        GlobalEvents<AchievementProgress>.Call(new AchievementProgress
 //        {
-//            Id = GameServicesManager.ACHIEVEMENT_EXPLOSIVE, Progress = Statistics.QuestBombsCounter
+//            Id = GameServicesManager.ACHIEVEMENT_EXPLOSIVE, Progress = PrefsManager.QuestBombsCounter
 //        });
         
         GlobalEvents<OnBestScoreUpdate>.Call(new OnBestScoreUpdate());
@@ -62,7 +62,7 @@ public class ScreenGame : ScreenItem
         _isScreenShareDone = false;
         _isScreenRateDone = false;
 
-        if (Statistics.GameplayCounter > 1)
+        if (PrefsManager.GameplayCounter > 1)
             GlobalEvents<OnGameOverScreenShow>.Call(new OnGameOverScreenShow());
     }
 
@@ -97,11 +97,11 @@ public class ScreenGame : ScreenItem
         
         if (Achievements.IS_ACHIEVEMENT_MISS_CLICK == 0)
         {
-            ++Statistics.QuestMissCounter;
-            PlayerPrefs.SetInt("QUEST_MISS_Counter", Statistics.QuestMissCounter);
+            ++PrefsManager.QuestMissCounter;
+            PlayerPrefs.SetInt("QUEST_MISS_Counter", PrefsManager.QuestMissCounter);
 //            GlobalEvents<AchievementProgress>.Call(new AchievementProgress
 //            {
-//                Id = GameServicesManager.ACHIEVEMENT_MISS_CLICK, Progress = Statistics.QuestMissCounter
+//                Id = GameServicesManager.ACHIEVEMENT_MISS_CLICK, Progress = PrefsManager.QuestMissCounter
 //            });
         }
 
@@ -121,10 +121,10 @@ public class ScreenGame : ScreenItem
         MasterAudio.PlaySoundAndForget("GameStart");
 //        Record.DORec();
 
-        ++Statistics.QuestThrowCounter;
+        ++PrefsManager.QuestThrowCounter;
 
         GlobalEvents<OnPointsReset>.Call(new OnPointsReset());
-//        if (Statistics.GameplayCounter == 1) GlobalEvents<OnPointsShow>.Call(new OnPointsShow());
+//        if (PrefsManager.GameplayCounter == 1) GlobalEvents<OnPointsShow>.Call(new OnPointsShow());
         _gameState = GameState.Gameplay;
     }
 
@@ -132,7 +132,7 @@ public class ScreenGame : ScreenItem
     {
         /*if (!isScreenReviveDone) {
             isScreenReviveDone = true;
-            if (PublishingService.Instance.IsRewardedVideoReady() && Statistics.currentPointsCount >= 4) {
+            if (PublishingService.Instance.IsRewardedVideoReady() && PrefsManager.currentPointsCount >= 4) {
                 UIManager.ShowUiElement ("ScreenRevive");
                 UIManager.ShowUiElement ("ScreenReviveBtnRevive");
                 UIManager.ShowUiElement ("ScreenReviveBtnBack");
@@ -144,7 +144,7 @@ public class ScreenGame : ScreenItem
 
         if (!isScreenShareDone) {
             isScreenShareDone = true;
-            if ((Statistics.currentPointsCount >= 50) && (Statistics.currentPointsCount == Statistics.gameBestScore)) {
+            if ((PrefsManager.currentPointsCount >= 50) && (PrefsManager.currentPointsCount == PrefsManager.gameBestScore)) {
                 UIManager.ShowUiElement ("ScreenShare");
                 UIManager.ShowUiElement ("ScreenShareBtnShare");
                 UIManager.ShowUiElement ("ScreenShareBtnBack");
@@ -156,10 +156,10 @@ public class ScreenGame : ScreenItem
 
         if (!isScreenRateDone) {
             isScreenRateDone = true;
-            if ((Statistics.rateCounter < 3) && (Statistics.currentPointsCount >= 100)
-                && (Statistics.gameplayCounter % 20 == 0)) {
-                ++Statistics.rateCounter;
-                PlayerPrefs.SetInt ("rateCounter", Statistics.rateCounter);
+            if ((PrefsManager.rateCounter < 3) && (PrefsManager.currentPointsCount >= 100)
+                && (PrefsManager.gameplayCounter % 20 == 0)) {
+                ++PrefsManager.rateCounter;
+                PlayerPrefs.SetInt ("rateCounter", PrefsManager.rateCounter);
                 UIManager.ShowUiElement ("ScreenRate");
                 UIManager.ShowUiElement ("ScreenRateBtnRate");
                 UIManager.ShowUiElement ("ScreenRateBtnBack");
@@ -209,10 +209,10 @@ public class ScreenGame : ScreenItem
                 break;
             case GameState.BackToMenu:
 
-//            if ((Statistics.gameBestScore == Statistics.currentPointsCount)&&(Statistics.gameBestScore != 0)) {
-//                Statistics.gameServices.SubmitScore (Statistics.gameBestScore);
+//            if ((PrefsManager.gameBestScore == PrefsManager.currentPointsCount)&&(PrefsManager.gameBestScore != 0)) {
+//                PrefsManager.gameServices.SubmitScore (PrefsManager.gameBestScore);
 //            }
-                SecurePlayerPrefs.SetInt("coinsCount", Statistics.CoinsCount.GetValue());
+                SecurePlayerPrefs.SetInt("coinsCount", PrefsManager.CoinsCount.GetValue());
 
                 GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
 

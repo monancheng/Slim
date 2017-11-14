@@ -26,7 +26,7 @@ public class Share : MonoBehaviour
     {
         var _shareLink = "http://smarturl.it/YummMonsters";
 
-        var shareText = "Wow! I Just Scored [" + Statistics.GameBestScore +
+        var shareText = "Wow! I Just Scored [" + PrefsManager.GameBestScore +
                         "] in #SlimRing! Can You Beat Me? @Sponsor " + _shareLink;
 
 		ShareImageAtPathUsingShareSheet(shareText, _gifName + ".gif");
@@ -44,7 +44,7 @@ public class Share : MonoBehaviour
 		_isGift = isGift;
 		var _shareLink = "http://smarturl.it/YummMonsters";
 
-		var shareText = "Wow! I Just Scored [" + Statistics.GameBestScore +
+		var shareText = "Wow! I Just Scored [" + PrefsManager.GameBestScore +
                         "] in #SlimRing! Can You Beat Me? @Sponsor " + _shareLink;
 
 

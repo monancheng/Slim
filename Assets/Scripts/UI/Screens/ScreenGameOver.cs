@@ -101,21 +101,21 @@ public class ScreenGameOver : ScreenItem
         }
         
         // Важность - Средняя
-        if (_activeNamesList.Count < 4 && _isGotNewCharacter && Statistics.RateCounter == 0)
+        if (_activeNamesList.Count < 4 && _isGotNewCharacter && PrefsManager.RateCounter == 0)
         {
             _activeNamesList.Add("NotifyRate");
             _isGotNewCharacter = false;
         }
         
-        if (_activeNamesList.Count < 4 && (Statistics.GameplayCounter == 5 || 
-                                           Statistics.GameplayCounter > 5 && (Statistics.GameplayCounter-5) % 5 == 0/* && _isRewardedAvailable*/))
+        if (_activeNamesList.Count < 4 && (PrefsManager.GameplayCounter == 5 || 
+                                           PrefsManager.GameplayCounter > 5 && (PrefsManager.GameplayCounter-5) % 5 == 0/* && _isRewardedAvailable*/))
         {
             _activeNamesList.Add("NotifyRewarded");
         }
         
         if (Random.value > 0.7f) AddWordTimerOrProgress();
 
-        if (_activeNamesList.Count < 4 && (Statistics.CurrentPointsCount > Statistics.GameBestScore * 0.5f
+        if (_activeNamesList.Count < 4 && (PrefsManager.CurrentPointsCount > PrefsManager.GameBestScore * 0.5f
                                            || _isGotNewCharacter
                                            || _activeNamesList.Count == 0 && ran < 0.3f
                                            || _activeNamesList.Count == 1 && ran < 0.25f
@@ -124,8 +124,8 @@ public class ScreenGameOver : ScreenItem
         {
             _activeNamesList.Add("NotifyShare");
 			UIManager.ShowUiElement ("ScreenGameOverImageShareGif");
-            if (Statistics.CoinsCount.GetValue() > 100 && Statistics.CoinsCount.GetValue() < 155)
-				_shareRewardValue = 180-Statistics.CoinsCount.GetValue();
+            if (PrefsManager.CoinsCount.GetValue() > 100 && PrefsManager.CoinsCount.GetValue() < 155)
+				_shareRewardValue = 180-PrefsManager.CoinsCount.GetValue();
             else
             {
 				if (ran < 0.5f) _shareRewardValue = 25;
@@ -154,7 +154,7 @@ public class ScreenGameOver : ScreenItem
         } 
         
         ran = Random.value;
-        if (_activeNamesList.Count < 4 && MyAds.NoAds == 0 && Statistics.QuestGameplayCounter > 10)
+        if (_activeNamesList.Count < 4 && MyAds.NoAds == 0 && PrefsManager.QuestGameplayCounter > 10)
         {
             if (ran < 0.2f) _activeNamesList.Add("NotifyNoAds"); else
             if (ran < 0.32f) _activeNamesList.Add("NotifyNoAds200"); else
@@ -162,17 +162,17 @@ public class ScreenGameOver : ScreenItem
         }
         
         
-        if (_activeNamesList.Count < 4 && !_isAllSkinsOpened && Random.value > 0.7f && Statistics.QuestGameplayCounter > 10)
+        if (_activeNamesList.Count < 4 && !_isAllSkinsOpened && Random.value > 0.7f && PrefsManager.QuestGameplayCounter > 10)
         {
             _activeNamesList.Add("NotifyTier1");
         }
         
-        if (_activeNamesList.Count < 4 && !_isAllSkinsOpened && Random.value > 0.7f && Statistics.QuestGameplayCounter > 20)
+        if (_activeNamesList.Count < 4 && !_isAllSkinsOpened && Random.value > 0.7f && PrefsManager.QuestGameplayCounter > 20)
         {
             _activeNamesList.Add("NotifyTier2");
         }
         
-        if (_activeNamesList.Count < 4 && !_isAllSkinsOpened && Statistics.IsFirstBuy && Random.value > 0.25f && Statistics.QuestGameplayCounter > 30)
+        if (_activeNamesList.Count < 4 && !_isAllSkinsOpened && PrefsManager.IsFirstBuy && Random.value > 0.25f && PrefsManager.QuestGameplayCounter > 30)
         {
             _activeNamesList.Add("NotifyUnlockAll");
         }
@@ -202,7 +202,7 @@ public class ScreenGameOver : ScreenItem
         int idNotifyOld = _activeNamesList.IndexOf("NotifyNewCharacter");
         if (idNotifyOld != -1) return false;
         
-        if (!_isSkinsAllGeneralOpened && Statistics.CoinsCount.GetValue() >= 200)
+        if (!_isSkinsAllGeneralOpened && PrefsManager.CoinsCount.GetValue() >= 200)
         {
             idNotifyOld = _activeNamesList.IndexOf("NotifyNextCharacter");
             if (idNotifyOld != -1) _activeNamesList.RemoveAt(idNotifyOld);
@@ -219,7 +219,7 @@ public class ScreenGameOver : ScreenItem
     
     private void AddNotifyNextSkin()
     {
-        if (!_isSkinsAllGeneralOpened && Statistics.CoinsCount.GetValue() < 200)
+        if (!_isSkinsAllGeneralOpened && PrefsManager.CoinsCount.GetValue() < 200)
         {
             int idNotifyOld = _activeNamesList.IndexOf("NotifyNewCharacter");
             if (idNotifyOld != -1) return;
@@ -233,22 +233,22 @@ public class ScreenGameOver : ScreenItem
         _activeNamesList.Add("NotifyGift");
         // Один из первых запусков, радуем игрока монетками
         // Если он еще не открывал персонажей, то дадим ему столько монет, сколько ему нужно для открытия персонажа
-//        if (Statistics.QUEST_CHARACTERS_Counter == 1 && Statistics.QUEST_GAMEPLAY_Counter > 3)
+//        if (PrefsManager.QUEST_CHARACTERS_Counter == 1 && PrefsManager.QUEST_GAMEPLAY_Counter > 3)
 //        {
 
         if (_isFirstGift) {
             _isFirstGift = false;
             SecurePlayerPrefs.SetBool("isFirstGift", false);
-            if (Statistics.CoinsCount.GetValue() <= 150)
+            if (PrefsManager.CoinsCount.GetValue() <= 150)
             {
-                _giftValue = 200 - Statistics.CoinsCount.GetValue();
+                _giftValue = 200 - PrefsManager.CoinsCount.GetValue();
                 return;
             }
         }
         
-        if (Statistics.CoinsCount.GetValue() > 100 && Statistics.CoinsCount.GetValue() < 155)
+        if (PrefsManager.CoinsCount.GetValue() > 100 && PrefsManager.CoinsCount.GetValue() < 155)
         {
-            _giftValue = 190 - Statistics.CoinsCount.GetValue();
+            _giftValue = 190 - PrefsManager.CoinsCount.GetValue();
             return;
         }
 
@@ -316,7 +316,7 @@ public class ScreenGameOver : ScreenItem
     private void VerifyActiveItems()
     {
         // Удаляем панельку "Доступен новый скин", если скины закончились или не хватает денег        
-        if (_isSkinsAllGeneralOpened || Statistics.CoinsCount.GetValue() < 200)
+        if (_isSkinsAllGeneralOpened || PrefsManager.CoinsCount.GetValue() < 200)
         {
             int idNotifyOld = _activeNamesList.IndexOf("NotifyNewCharacter");
             if (idNotifyOld != -1) _activeNamesList.RemoveAt(idNotifyOld);
@@ -462,7 +462,7 @@ public class ScreenGameOver : ScreenItem
         GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = true});
         if (_giftCollectedType == GiftCollectedType.Gift)
         {
-            if (Statistics.CoinsCount.GetValue() >= 200)
+            if (PrefsManager.CoinsCount.GetValue() >= 200)
             {
                 AddNotifySkin();
             }

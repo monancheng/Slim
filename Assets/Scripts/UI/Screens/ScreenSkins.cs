@@ -51,7 +51,7 @@ public class ScreenSkins : ScreenItem
 
         for (var i = 0; i < _faceAvailable.Length; i++)
         {
-            if (_faceAvailable[i] == 1) ++Statistics.QuestCharactersCounter;
+            if (_faceAvailable[i] == 1) ++PrefsManager.QuestCharactersCounter;
         }
     }
 
@@ -62,8 +62,8 @@ public class ScreenSkins : ScreenItem
         AreThereSkinsGeneral();
 //        CheckAvailableSkin();
         
-        if (Statistics.GameBestScore > 0) UIManager.ShowUiElement("LabelBestScore");
-        if (Statistics.CoinsCount.GetValue() > 0)
+        if (PrefsManager.GameBestScore > 0) UIManager.ShowUiElement("LabelBestScore");
+        if (PrefsManager.CoinsCount.GetValue() > 0)
         {
             UIManager.ShowUiElement("LabelCoins");
 //            UIManager.ShowUiElement("ScreenMenuBtnPlus");
@@ -101,7 +101,7 @@ public class ScreenSkins : ScreenItem
             _faceAvailable[i] = 1;
         }
 
-        Statistics.QuestCharactersCounter = _faceAvailable.Length;
+        PrefsManager.QuestCharactersCounter = _faceAvailable.Length;
         
         ChooseColorForButtons();
         AreThereSkins();
@@ -190,7 +190,7 @@ public class ScreenSkins : ScreenItem
             isAvailable = true;
         } 
         else 
-            if (Statistics.CoinsCount.GetValue() >= 200 /*Statistics.FacePrice[_id - 1]*/)
+            if (PrefsManager.CoinsCount.GetValue() >= 200 /*PrefsManager.FacePrice[_id - 1]*/)
             {
                 BuySkin(id);
                 isAvailable = true;
@@ -226,7 +226,7 @@ public class ScreenSkins : ScreenItem
 //        });
 //        GlobalEvents<AchievementProgress>.Call(new AchievementProgress
 //        {
-//            Id = GameServicesManager.ACHIEVEMENT_COLLECTION, Progress = Statistics.QuestCharactersCounter
+//            Id = GameServicesManager.ACHIEVEMENT_COLLECTION, Progress = PrefsManager.QuestCharactersCounter
 //        });
         GlobalEvents<OnGotNewCharacter>.Call(new OnGotNewCharacter());
     }
@@ -237,8 +237,8 @@ public class ScreenSkins : ScreenItem
         CurrentFaceId = id;
         SecurePlayerPrefs.SetInt("currentFaceID", id);
         SecurePlayerPrefs.SetInt("faceAvailable_" + id, 1);
-        ++Statistics.QuestCharactersCounter;
-        SecurePlayerPrefs.SetInt("QUEST_CHARACTERS_Counter", Statistics.QuestCharactersCounter);
+        ++PrefsManager.QuestCharactersCounter;
+        SecurePlayerPrefs.SetInt("QUEST_CHARACTERS_Counter", PrefsManager.QuestCharactersCounter);
         ChooseColorForButtons();
         AreThereSkins();
         AreThereSkinsGeneral();
