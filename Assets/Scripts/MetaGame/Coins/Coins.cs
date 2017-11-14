@@ -24,9 +24,9 @@ public class Coins : MonoBehaviour
     private void OnCoinsAdd(OnCoinsAdd obj)
     {
         MasterAudio.PlaySoundAndForget("GUI_CoinTake");
-        Statistics.CoinsCount += obj.Count;
-        SecurePlayerPrefs.SetInt("coinsCount", Statistics.CoinsCount);
-        GlobalEvents<OnCoinsAdded>.Call(new OnCoinsAdded{Total = Statistics.CoinsCount});
+        Statistics.CoinsCount += new SecureInt(obj.Count);
+        SecurePlayerPrefs.SetInt("coinsCount", Statistics.CoinsCount.GetValue());
+        GlobalEvents<OnCoinsAdded>.Call(new OnCoinsAdded{Total = Statistics.CoinsCount.GetValue()});
         textField.text = Statistics.CoinsCount.ToString();
         img.transform.localScale = new Vector3(_startScale * 1.4f, _startScale * 1.4f, 1f);
         UIManager.ShowUiElement("LabelCoins");

@@ -63,7 +63,7 @@ public class ScreenSkins : ScreenItem
 //        CheckAvailableSkin();
         
         if (Statistics.GameBestScore > 0) UIManager.ShowUiElement("LabelBestScore");
-        if (Statistics.CoinsCount > 0)
+        if (Statistics.CoinsCount.GetValue() > 0)
         {
             UIManager.ShowUiElement("LabelCoins");
 //            UIManager.ShowUiElement("ScreenMenuBtnPlus");
@@ -190,7 +190,7 @@ public class ScreenSkins : ScreenItem
             isAvailable = true;
         } 
         else 
-            if (Statistics.CoinsCount >= 200 /*Statistics.FacePrice[_id - 1]*/)
+            if (Statistics.CoinsCount.GetValue() >= 200 /*Statistics.FacePrice[_id - 1]*/)
             {
                 BuySkin(id);
                 isAvailable = true;

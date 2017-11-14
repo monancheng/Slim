@@ -67,7 +67,7 @@ public class ScreenMenu : ScreenItem
             UIManager.ShowUiElement("LabelBestScore");
         }
 
-        if (Statistics.CoinsCount > 0)
+        if (Statistics.CoinsCount.GetValue() > 0)
         {
             UIManager.ShowUiElement("LabelCoins");
 //            UIManager.ShowUiElement("ScreenMenuBtnPlus");

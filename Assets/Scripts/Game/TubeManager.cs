@@ -137,7 +137,7 @@ public class TubeManager : MonoBehaviour
 
     private void CreateTubeStart()
     {
-        if (Statistics.QuestGameplayCounter >= 1)
+        if (PrefsManager.QuestGameplayCounter >= 1)
             ColorTheme.GetNextRandomId();
 
 //        _tubeAngle = 0;

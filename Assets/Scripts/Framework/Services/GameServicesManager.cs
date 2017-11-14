@@ -341,43 +341,43 @@ public class GameServicesManager : MonoBehaviour
                 if (_progress >= 100) {
                     D.Log("ACHIEVEMENT UNLOCKED progress =",_progress, "ID = ", _achievementGID);
                     if (_achievementGID == ACHIEVEMENT_FIRST_WIN) {
-                        Statistics.IS_ACHIEVEMENT_FIRST_WIN = 1;
+                        PrefsManagerIS_ACHIEVEMENT_FIRST_WIN = 1;
                         PlayerPrefs.SetInt("IS_ACHIEVEMENT_FIRST_WIN", 1);
                     }else 
                             if (_achievementGID == ACHIEVEMENT_NEW_SKIN) {
-                                Statistics.IS_ACHIEVEMENT_NEW_SKIN = 1;
+                                PrefsManagerIS_ACHIEVEMENT_NEW_SKIN = 1;
                                 PlayerPrefs.SetInt("IS_ACHIEVEMENT_NEW_SKIN", 1);
                             }else 
                                 if (_achievementGID == ACHIEVEMENT_MULTI_PULTI) {
-                                    Statistics.IS_ACHIEVEMENT_MULTI_PULTI = 1;
+                                    PrefsManagerIS_ACHIEVEMENT_MULTI_PULTI = 1;
                                     PlayerPrefs.SetInt("IS_ACHIEVEMENT_MULTI_PULTI", 1);
                                 }else 
                                     if (_achievementGID == ACHIEVEMENT_MISS_CLICK) {
-                                        Statistics.IS_ACHIEVEMENT_MISS_CLICK = 1;
+                                        PrefsManagerIS_ACHIEVEMENT_MISS_CLICK = 1;
                                         PlayerPrefs.SetInt("IS_ACHIEVEMENT_MISS_CLICK", 1);
                                     }else 
                                         if (_achievementGID == ACHIEVEMENT_GET_MAX) {
-                                            Statistics.IS_ACHIEVEMENT_GET_MAX = 1;
+                                            PrefsManagerIS_ACHIEVEMENT_GET_MAX = 1;
                                             PlayerPrefs.SetInt("IS_ACHIEVEMENT_GET_MAX", 1);
                                         }else 
                                             if (_achievementGID == ACHIEVEMENT_THREE_JUMPS) {
-                                                Statistics.IS_ACHIEVEMENT_THREE_JUMPS = 1;
+                                                PrefsManagerIS_ACHIEVEMENT_THREE_JUMPS = 1;
                                                 PlayerPrefs.SetInt("IS_ACHIEVEMENT_THREE_JUMPS", 1);
                                             }else 
                         if (_achievementGID == ACHIEVEMENT_MASTER) {
-                            Statistics.IS_ACHIEVEMENT_MASTER = 1;
+                            PrefsManagerIS_ACHIEVEMENT_MASTER = 1;
                             PlayerPrefs.SetInt("IS_ACHIEVEMENT_MASTER", 1);
                         } else
                             if (_achievementGID == ACHIEVEMENT_FiFIELD_OF_CANDIES) {
-                                Statistics.IS_ACHIEVEMENT_FiFIELD_OF_CANDIES = 1;
+                                PrefsManagerIS_ACHIEVEMENT_FiFIELD_OF_CANDIES = 1;
                                 PlayerPrefs.SetInt("IS_ACHIEVEMENT_FiFIELD_OF_CANDIES", 1);
                             }else 
                                 if (_achievementGID == ACHIEVEMENT_EXPLOSIVE) {
-                                    Statistics.IS_ACHIEVEMENT_EXPLOSIVE = 1;
+                                    PrefsManagerIS_ACHIEVEMENT_EXPLOSIVE = 1;
                                     PlayerPrefs.SetInt("IS_ACHIEVEMENT_EXPLOSIVE", 1);
                                 }else 
                                     if (_achievementGID == ACHIEVEMENT_COLLECTION) {
-                                        Statistics.IS_ACHIEVEMENT_COLLECTION = 1;
+                                        PrefsManagerIS_ACHIEVEMENT_COLLECTION = 1;
                                         PlayerPrefs.SetInt("IS_ACHIEVEMENT_COLLECTION", 1);
                                     }
                 }

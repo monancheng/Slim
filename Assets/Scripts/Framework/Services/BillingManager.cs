@@ -106,7 +106,7 @@ public class BillingManager : MonoBehaviour
         BuyItem(NPSettings.Billing.Products[IAP_COINS_1]);
         */
         GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 200});
-        Statistics.IsFirstBuy = true;
+        PrefsManager.IsFirstBuy = true;
         SecurePlayerPrefs.GetBool("IsFirstBuy", true);
     }
 
@@ -114,7 +114,7 @@ public class BillingManager : MonoBehaviour
     {
 //        BuyItem(NPSettings.Billing.Products[IAP_COINS_2]);
         GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 1000});
-        Statistics.IsFirstBuy = true;
+        PrefsManager.IsFirstBuy = true;
         SecurePlayerPrefs.GetBool("IsFirstBuy", true);
     }
     
@@ -123,7 +123,7 @@ public class BillingManager : MonoBehaviour
         //        BuyItem(NPSettings.Billing.Products[IAP_COINS_2]);
         GlobalEvents<OnAdsDisable>.Call(new OnAdsDisable ());
         GlobalEvents<OnSkinsUnlockAll>.Call(new OnSkinsUnlockAll ());
-        Statistics.IsFirstBuy = true;
+        PrefsManager.IsFirstBuy = true;
         SecurePlayerPrefs.SetBool("IsFirstBuy", true);
         SecurePlayerPrefs.SetBool("IsAllUnlocked", true);
         GlobalEvents<OnScreenCoinsHide>.Call(new OnScreenCoinsHide ());
@@ -133,7 +133,7 @@ public class BillingManager : MonoBehaviour
     {
 //        BuyItem(NPSettings.Billing.Products[id]);
         GlobalEvents<OnBuySkinByIAP>.Call(new OnBuySkinByIAP{Id = id});
-        Statistics.IsFirstBuy = true;
+        PrefsManager.IsFirstBuy = true;
         SecurePlayerPrefs.GetBool("IsFirstBuy", true);
     }
 

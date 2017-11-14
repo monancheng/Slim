@@ -1,5 +1,6 @@
 ﻿using DarkTonic.MasterAudio;
 using DoozyUI;
+using PrefsEditor;
 using UnityEngine;
 
 public class ScreenGame : ScreenItem
@@ -210,9 +211,8 @@ public class ScreenGame : ScreenItem
 
 //            if ((Statistics.gameBestScore == Statistics.currentPointsCount)&&(Statistics.gameBestScore != 0)) {
 //                Statistics.gameServices.SubmitScore (Statistics.gameBestScore);
-//                PlayerPrefs.SetInt ("BestScore", Statistics.gameBestScore);
 //            }
-                PlayerPrefs.SetInt("coinsCount", Statistics.CoinsCount);
+                SecurePlayerPrefs.SetInt("coinsCount", Statistics.CoinsCount.GetValue());
 
                 GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
 

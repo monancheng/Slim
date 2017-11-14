@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 public class Words : MonoBehaviour {
 	public static event Action <string> OnWordSetChar;
 	public static event Action <string> OnUpdateText;
-	
+	[Tooltip("Элемент меню, отображающий слово")]
 	[SerializeField] private Text _text;
 	
 	private readonly string[] _words = {"HELLO", "WORLD", "BEST", "LUCK", "PEACE", "FRIEND", "SURPRISE", "DINOSAUR"};// 0 - Available, 1 - Active, 2 - Used
