@@ -2,8 +2,8 @@
 
 public struct SecureInt
 {
-    private int _value;
-    private int _offset;
+    private readonly int _value;
+    private readonly int _offset;
 
     public SecureInt(int value)
     {
