@@ -21,10 +21,6 @@ public class Statistics : MonoBehaviour {
 	
 	// Use this for initialization
 	void Awake () {
-		SecurePlayerPrefs.PassPhrase = "squaredino.com";
-		SecurePlayerPrefs.UseSecurePrefs = true;
-		SecurePlayerPrefs.AutoConvertUnsecurePrefs = true;
-        
 		IsFirstBuy = SecurePlayerPrefs.GetBool("IsFirstBuy");
 		GameBestScore = SecurePlayerPrefs.GetInt("BestScore");
 //      gameBestScore = 0;

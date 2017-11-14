@@ -21,10 +21,10 @@ public class MyAds : MonoBehaviour
 
     private void Start()
     {
-        _rewardDate = DateTime.UtcNow;
+        _rewardDate = UnbiasedTime.Instance.Now();
         _isRewardedWaitTimer = true;
 
-        _videoDate = DateTime.UtcNow;
+        _videoDate = UnbiasedTime.Instance.Now();
         _isVideoWaitTimer = true;
         _isVideoAdCalcNext = true;
         _isFirstTimeVideo = true;
@@ -83,7 +83,7 @@ public class MyAds : MonoBehaviour
     
     private void OnAdsRewardedShowing(OnAdsRewardedShowing e)
     {
-        _rewardDate = DateTime.UtcNow;
+        _rewardDate = UnbiasedTime.Instance.Now();
         _rewardDate = _rewardDate.AddMinutes(2);
         _isRewardedWaitTimer = true;
         GlobalEvents<OnRewardedWaitTimer>.Call(new OnRewardedWaitTimer {IsWait = true}); 
@@ -94,7 +94,7 @@ public class MyAds : MonoBehaviour
 
     private void StartWaitingVideo()
     {
-        _videoDate = DateTime.UtcNow;
+        _videoDate = UnbiasedTime.Instance.Now();
         _videoDate = _videoDate.AddMinutes(2);
         _videoAdCounter = 1;
         _isVideoAdCalcNext = true;
@@ -110,7 +110,7 @@ public class MyAds : MonoBehaviour
     {
         if (_isRewardedWaitTimer)
         {
-            TimeSpan difference = _rewardDate.Subtract(DateTime.UtcNow);
+            TimeSpan difference = _rewardDate.Subtract(UnbiasedTime.Instance.Now());
             if (difference.TotalSeconds <= 0f)
             {
                 _isRewardedWaitTimer = false;
@@ -120,7 +120,7 @@ public class MyAds : MonoBehaviour
         
         if (_isVideoWaitTimer)
         {
-            TimeSpan difference = _videoDate.Subtract(DateTime.UtcNow);
+            TimeSpan difference = _videoDate.Subtract(UnbiasedTime.Instance.Now());
             if (difference.TotalSeconds <= 0f)
             {
                 _isVideoWaitTimer = false;

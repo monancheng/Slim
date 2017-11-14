@@ -21,7 +21,7 @@ public class WordTimer : MonoBehaviour {
 
 			if (strTime == "")
 			{
-				_nextDate = DateTime.UtcNow;
+				_nextDate = UnbiasedTime.Instance.Now();
 			}
 			else
 			{
@@ -30,7 +30,7 @@ public class WordTimer : MonoBehaviour {
 				_nextDate = DateTime.FromBinary(_timeOld);
 			}
 
-			var currentDate = DateTime.UtcNow;
+			var currentDate = UnbiasedTime.Instance.Now();
 			var difference = _nextDate.Subtract(currentDate);
 			if (difference.TotalSeconds <= 0f)
 			{
@@ -73,7 +73,7 @@ public class WordTimer : MonoBehaviour {
 	{
 		if (_isWaitTime)
 		{
-			var currentDate = DateTime.UtcNow;
+			var currentDate = UnbiasedTime.Instance.Now();
 			var difference = _nextDate.Subtract(currentDate);
 			if (difference.TotalSeconds <= 0f)
 			{
@@ -103,7 +103,7 @@ public class WordTimer : MonoBehaviour {
 	private void StartTimer()
 	{
 		_isWaitTime = true;
-		_nextDate = DateTime.UtcNow;
+		_nextDate = UnbiasedTime.Instance.Now();
 		_nextDate = _nextDate.AddMinutes(1);
 		
 		SecurePlayerPrefs.SetInt("isNeedToWaitWord", 1);

@@ -31,7 +31,7 @@ public class ScreenGame : ScreenItem
 //        });
 
         ++Statistics.QuestGameplayCounter;
-//        PlayerPrefs.SetInt("QUEST_GAMEPLAY_Counter", Statistics.QUEST_GAMEPLAY_Counter);
+        PlayerPrefs.SetInt("QUEST_GAMEPLAY_Counter", Statistics.QuestGameplayCounter);
 
 //        GlobalEvents<AchievementProgress>.Call(new AchievementProgress
 //        {
