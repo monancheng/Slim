@@ -68,9 +68,11 @@ public class ScreenSkins : ScreenItem
             UIManager.ShowUiElement("LabelCoins");
 //            UIManager.ShowUiElement("ScreenMenuBtnPlus");
         }
+
+        AddEvents();
     }
 
-    private void OnEnable()
+    private void AddEvents()
     {
         GlobalEvents<OnBuySkin>.Happened += OnBuySkin;
         GlobalEvents<OnBuySkinByIAP>.Happened += OnBuySkinByIAP;

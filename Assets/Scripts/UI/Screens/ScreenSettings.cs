@@ -8,7 +8,7 @@ public class ScreenSettings : ScreenItem
         InitUi();
     }
 
-    public void Show()
+    public override void Show()
     {
         base.Show();
   

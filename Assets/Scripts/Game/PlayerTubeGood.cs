@@ -9,7 +9,7 @@ public class PlayerTubeGood : PlayerTubeBad
 	/// <param name="comboCounter"></param>
 	public void GoodAnimation(int comboCounter)
     {
-        transform.DOScale(1.1f + 0.20f * comboCounter, .20f).SetRelative();
+        transform.DOScale(1.20f + 0.25f * comboCounter, .20f).SetRelative();
     }
 
     private void Update()
@@ -24,6 +24,7 @@ public class PlayerTubeGood : PlayerTubeBad
         else
         {
             Destroy(gameObject);
+            return;
         }
         if (transform.position.y < -10f) Destroy(gameObject);
     }

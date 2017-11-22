@@ -10,10 +10,7 @@ public class ScreenCoins : ScreenItem
     private void Start()
     {
         InitUi();
-    }
-    
-    private void OnEnable()
-    {
+        
         GlobalEvents<OnGiveReward>.Happened += GetReward;
         GlobalEvents<OnRewardedLoaded>.Happened += OnRewardedAvailable;
         GlobalEvents<OnShowScreenCoins>.Happened += OnShowScreenCoins;
@@ -81,7 +78,7 @@ public class ScreenCoins : ScreenItem
         }
     }
 
-    public void Show()
+    public override void Show()
     {
         _isVisible = true;
         ShowButtons();

@@ -22,6 +22,11 @@ public class ScreenGame : ScreenItem
     {
         InitUi();
         _gameState = GameState.Init;
+        
+        GlobalEvents<OnGameOver>.Happened += OnGameOver;
+        GlobalEvents<OnStartGame>.Happened += OnStartGame;
+        GlobalEvents<OnGiveReward>.Happened += GetReward;
+        GlobalEvents<OnGifSaved>.Happened += OnGifSaved;
     }
 
     private void Init()
@@ -64,14 +69,6 @@ public class ScreenGame : ScreenItem
 
         if (PrefsManager.GameplayCounter > 1)
             GlobalEvents<OnGameOverScreenShow>.Call(new OnGameOverScreenShow());
-    }
-
-    private void OnEnable()
-    {
-        GlobalEvents<OnGameOver>.Happened += OnGameOver;
-        GlobalEvents<OnStartGame>.Happened += OnStartGame;
-        GlobalEvents<OnGiveReward>.Happened += GetReward;
-        GlobalEvents<OnGifSaved>.Happened += OnGifSaved;
     }
 
     public void StartGameByTouch()
@@ -262,7 +259,7 @@ public class ScreenGame : ScreenItem
 
     public void Rate()
     {
-        UIManager.HideUiElement("ScreenRate");
+        UIManager.HideUiElement("ScreenRateMr");
         UIManager.HideUiElement("ScreenRateBtnRate");
         UIManager.HideUiElement("ScreenRateBtnBack");
         MasterAudio.PlaySoundAndForget("GUI_Grab");
@@ -288,7 +285,7 @@ public class ScreenGame : ScreenItem
 
     public void RateClose()
     {
-        UIManager.HideUiElement("ScreenRate");
+        UIManager.HideUiElement("ScreenRateMe");
         UIManager.HideUiElement("ScreenRateBtnRate");
         UIManager.HideUiElement("ScreenRateBtnBack");
         EndCurrentGame();

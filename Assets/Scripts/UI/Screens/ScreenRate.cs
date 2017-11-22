@@ -12,10 +12,7 @@ public class ScreenRate : ScreenItem
 	private void Start()
 	{
 		InitUi();
-	}
-
-	void OnEnable ()
-	{
+		
 		ScreenRateBtnStar.OnRateBtnClick += OnRateBtnClick;
 		GlobalEvents<OnRateScreenShow>.Happened += OnRateScreenShow;
 	}
@@ -42,9 +39,10 @@ public class ScreenRate : ScreenItem
 		smile.sprite = smileSprites[_voteValue-1];
 	}
 	
-	public void Show()
+	public override void Show()
 	{
 		GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = false});
+		UIManager.ShowUiElement("ScreenRateMe");
 		UIManager.ShowUiElement("ScreenRateBackground");
 		UIManager.ShowUiElement("ScreenRatePanel");
 		UIManager.ShowUiElement("ScreenRateBtnBack");
@@ -73,6 +71,7 @@ public class ScreenRate : ScreenItem
 //		{
 //			ShareMail();
 //		}
+		UIManager.HideUiElement("ScreenRateMe");
 		UIManager.HideUiElement("ScreenRateBtnRate");
 		UIManager.HideUiElement("ScreenRatePanel");
 		UIManager.HideUiElement("ScreenRateBtnBack");

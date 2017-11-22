@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class GiftTimer : MonoBehaviour
 {
     private int _hideDelayCounter;
-    private readonly int[] _hideDelayArr = {25, 40, 60, 60, 60, 120, 120, 180};
+    private readonly int[] _hideDelayArr = {5, 5, 5, 60, 60, 120, 120, 180};
     [SerializeField] private  Text _timeText;
     private DateTime _startDateTime;
     private bool _isWaitGiftTime;

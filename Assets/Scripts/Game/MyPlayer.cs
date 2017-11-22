@@ -11,9 +11,11 @@ public class MyPlayer : MonoBehaviour
     public static event Action<float> OnTubeCreate;
     public static event Action OnTubeMove;
     public static event Action<int, float, Vector3, float> OnCombo;
+    public static event Action<float, Vector3, float> OnCrash;
+    public static event Action<float, Vector3, float> OnSlim;
     public static event Action<float> OnIncreaseTubeRadius;
     public static event Action<Color> OnChangeColor;
-    [SerializeField] protected ParticleSystem _psSlice;
+//    [SerializeField] protected ParticleSystem _psSlice;
 
     private const float MinSize = 1.0f;
     private const float ErrorCoeff = 0.65f;
@@ -157,6 +159,9 @@ public class MyPlayer : MonoBehaviour
             {
                 ChangeSize();
                 CreateCutTube(cutSize);
+                GameEvents.Send(OnSlim, _currentRadius, 
+                    new Vector3(transform.position.x, other.gameObject.transform.position.y, other.gameObject.transform.position.z),
+                    tubeProc.height);
                 MasterAudio.PlaySoundAndForget("Slice");
                 
                 _comboCounter = 0;
@@ -181,9 +186,12 @@ public class MyPlayer : MonoBehaviour
         else
         
         {
-            _psSlice.transform.position = new Vector3(transform.position.x, transform.position.y + 16f, transform.position.z);
-            _psSlice.gameObject.SetActive(true);
-            _psSlice.Play();
+//            _psSlice.transform.position = new Vector3(transform.position.x, transform.position.y + 16f, transform.position.z);
+//            _psSlice.gameObject.SetActive(true);
+//            _psSlice.Play();
+//            GameEvents.Send(OnCrash, _currentRadius, 
+//                new Vector3(transform.position.x, other.gameObject.transform.position.y, other.gameObject.transform.position.z),
+//                tubeProc.height);
             GetComponent<Renderer>().material.SetColor("_Color", new Color(1.0f, 0.0f / 255f, 0f / 255f));
             _isMoveToExit = true;
             GlobalEvents<OnGameOver>.Call(new OnGameOver());
@@ -242,10 +250,10 @@ public class MyPlayer : MonoBehaviour
         go.GetComponent<Renderer>().receiveShadows = false;
         go.GetComponent<Renderer>().material.SetColor("_Color", new Color(255f / 255.0f, 201f / 255f, 104f / 255f, 0.8f));
         go.transform.position = transform.position + new Vector3(0,7f,0);
-        go.AddComponent<PlayerTubeBad>().Ps = _psSlice.gameObject;
-//        _psSlice.transform.position = new Vector3(transform.position.x, transform.position.y + _psSlice.transform.position.y, transform.position.z);
-        _psSlice.gameObject.SetActive(true);
-        _psSlice.Play();
+        go.AddComponent<PlayerTubeBad>();
+//        go.AddComponent<PlayerTubeBad>().Ps = _psSlice.gameObject;
+//        _psSlice.gameObject.SetActive(true);
+//        _psSlice.Play();
     }
 
     private void Update()

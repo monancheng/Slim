@@ -18,10 +18,6 @@ public class ScreenGift : ScreenItem
 	private void Start()
 	{
 		InitUi();
-	}
-	
-	private void OnEnable()
-	{
 		GlobalEvents<OnBtnGiftClick>.Happened += OnBtnGiftClick;
 		GlobalEvents<OnBtnWordClick>.Happened += OnBtnWordClick;
 		GlobalEvents<OnBtnGetRandomSkinClick>.Happened += OnBtnGetRandomSkinClick;
@@ -36,7 +32,6 @@ public class ScreenGift : ScreenItem
 		if (_isWaitRewardGift)
 		{
 			_isWaitRewardGift = false;
-			GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
 			GlobalEvents<OnBtnGiftClick>.Call(new OnBtnGiftClick {CoinsCount = 25, IsResetTimer = true});
 			isFirstTime = false;
 		}
@@ -50,11 +45,13 @@ public class ScreenGift : ScreenItem
 
 	private void OnHideGiftScreen(OnHideGiftScreen obj)
 	{
+		D.Log("OnHideGiftScreen()");
 		// Предлагаем Еще один подарок
 		if (isFirstTime)
 		{
 			isFirstTime = false;
 			
+			UIManager.ShowUiElement("ScreenGift");
 			UIManager.ShowUiElement("ScreenGameOverBtnBack");
 			UIElement element = null;
 			if (_giftType == 1)
@@ -109,6 +106,7 @@ public class ScreenGift : ScreenItem
 
 	private void OnBtnGiftClick(OnBtnGiftClick obj)
 	{
+		D.Log("OnBtnGiftClick");
 		isFirstTime = true;
 		_coinsCount = obj.CoinsCount;
 		_isResetTimer = obj.IsResetTimer;
@@ -139,7 +137,7 @@ public class ScreenGift : ScreenItem
 	
 	private void CreateGiftAnimation()
 	{
-		D.Log("CreateGiftAnimation");
+		D.Log("CREATE_GIF_ANIMATION");
 		Instantiate(_gift);
 		Invoke("FireworksLaunch", 1.4f);
 	}
@@ -155,6 +153,7 @@ public class ScreenGift : ScreenItem
 
 	private void MakeAGift()
 	{
+		D.Log("MakeAGift()");
 		GlobalEvents<OnGiftResetTimer>.Call(new OnGiftResetTimer{IsResetTimer = _isResetTimer});
 		GlobalEvents<OnCoinsAddToScreen>.Call(new OnCoinsAddToScreen{CoinsCount = _coinsCount});
 	}
@@ -199,6 +198,7 @@ public class ScreenGift : ScreenItem
 
 	public void OnBtnGiftExtra()
 	{
+		D.Log("OnBtnGiftExtra.Click()");
 		Hide();
 		GlobalEvents<OnShowRewarded>.Call(new OnShowRewarded());
 		_isWaitRewardGift = true;

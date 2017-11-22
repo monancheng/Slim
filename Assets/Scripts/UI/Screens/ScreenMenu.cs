@@ -9,10 +9,7 @@ public class ScreenMenu : ScreenItem
     {
         InitUi();
         ShowButtons();
-    }
-
-    private void OnEnable()
-    {
+        
         GlobalEvents<OnStartGame>.Happened += OnStartGame;
         GlobalEvents<OnShowMenu>.Happened += OnShowMenu;
         GlobalEvents<OnHideMenu>.Happened += OnHideMenu;

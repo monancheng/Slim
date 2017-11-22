@@ -42,10 +42,7 @@ public class ScreenGameOver : ScreenItem
     {
         _isFirstGift = SecurePlayerPrefs.GetBool("isFirstGift", true);
         InitUi();
-    }
-    
-    private void OnEnable()
-    {
+        
         // Глобальные
         GlobalEvents<OnStartGame>.Happened += OnHideGameOverScreen;
         GlobalEvents<OnGameOverScreenShow>.Happened += OnShowGameOverScreen;
@@ -64,8 +61,8 @@ public class ScreenGameOver : ScreenItem
         // Внутренние
         GlobalEvents<OnGotNewCharacter>.Happened += OnGotNewCharacter;
         GlobalEvents<OnGiftCollected>.Happened += OnGiftCollected;
-		GlobalEvents<OnGifShared>.Happened += OnGifShared;
-//		Record.OnShareGIFEvent += OnShareGIFEvent;
+        GlobalEvents<OnGifShared>.Happened += OnGifShared;
+//		Record.OnShareGIFEvent += OnShareGIFEvent;я
     }
     
     private void OnSkinAllOpened(OnSkinAllOpened obj)
@@ -603,7 +600,7 @@ public class ScreenGameOver : ScreenItem
         HideActiveItems();
         int id = _activeNamesList.IndexOf("NotifyGift"); 
         if (id != -1) _activeNamesList.RemoveAt(id);
-            
+        
         GlobalEvents<OnBtnGiftClick>.Call(new OnBtnGiftClick{CoinsCount = _giftValue, IsResetTimer = true});
         _giftValue = 0;
         GlobalEvents<OnHideMenu>.Call(new OnHideMenu());
