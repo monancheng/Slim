@@ -13,8 +13,7 @@ public class MyPlayer : MonoBehaviour
     public static event Action<int, float, Vector3, float> OnCombo;
     public static event Action<float> OnIncreaseTubeRadius;
     public static event Action<Color> OnChangeColor;
-
-//    [SerializeField] private ParticleSystem _psSlide;
+    [SerializeField] protected ParticleSystem _psSlice;
 
     private const float MinSize = 1.0f;
     private const float ErrorCoeff = 0.65f;
@@ -159,8 +158,7 @@ public class MyPlayer : MonoBehaviour
                 ChangeSize();
                 CreateCutTube(cutSize);
                 MasterAudio.PlaySoundAndForget("Slice");
-//                _psSlide.transform.position = new Vector3(transform.position.x, _psSlide.transform.position.y, _psSlide.transform.position.z);
-//                _psSlide.Play();
+                
                 _comboCounter = 0;
             }
             else
@@ -183,6 +181,9 @@ public class MyPlayer : MonoBehaviour
         else
         
         {
+            _psSlice.transform.position = new Vector3(transform.position.x, transform.position.y + 16f, transform.position.z);
+            _psSlice.gameObject.SetActive(true);
+            _psSlice.Play();
             GetComponent<Renderer>().material.SetColor("_Color", new Color(1.0f, 0.0f / 255f, 0f / 255f));
             _isMoveToExit = true;
             GlobalEvents<OnGameOver>.Call(new OnGameOver());
@@ -240,8 +241,11 @@ public class MyPlayer : MonoBehaviour
         go.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
         go.GetComponent<Renderer>().receiveShadows = false;
         go.GetComponent<Renderer>().material.SetColor("_Color", new Color(255f / 255.0f, 201f / 255f, 104f / 255f, 0.8f));
-        go.transform.position = transform.position;
-        go.AddComponent<PlayerTubeBad>();
+        go.transform.position = transform.position + new Vector3(0,7f,0);
+        go.AddComponent<PlayerTubeBad>().Ps = _psSlice.gameObject;
+//        _psSlice.transform.position = new Vector3(transform.position.x, transform.position.y + _psSlice.transform.position.y, transform.position.z);
+        _psSlice.gameObject.SetActive(true);
+        _psSlice.Play();
     }
 
     private void Update()

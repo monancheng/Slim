@@ -9,7 +9,7 @@ public class PlayerTubeGood : PlayerTubeBad
 	/// <param name="comboCounter"></param>
 	public void GoodAnimation(int comboCounter)
     {
-        transform.DOScale(1.1f + 0.15f * comboCounter, .20f).SetRelative();
+        transform.DOScale(1.1f + 0.20f * comboCounter, .20f).SetRelative();
     }
 
     private void Update()

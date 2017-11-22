@@ -60,7 +60,7 @@ public class ComboTubeManager : MonoBehaviour
 
     private void CreateGoodTube(float radius)
     {
-        BaseObject shapeObject = Tube.Create(radius, radius + 1.0f, 0.4f, 23, 1, 0.0f, false,
+        BaseObject shapeObject = Tube.Create(radius, radius * 1.25f, 0.4f, 23, 1, 0.0f, false,
             NormalsType.Vertex,
             PivotPosition.Center);
 

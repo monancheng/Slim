@@ -13,7 +13,7 @@ public class TubeManager : MonoBehaviour
     [SerializeField] private GameObject[] _smiles;
     private int _smileID;
     
-    private const float StartSpeed = 147f;
+    private const float StartSpeed = 150f;
     private const float StartRadiusMinus = 1.5f;
     public static float CurrentSpeed = StartSpeed;
     public static event Action <float> OnTubesSpeedScale;
