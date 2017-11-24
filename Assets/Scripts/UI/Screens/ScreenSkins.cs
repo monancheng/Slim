@@ -247,7 +247,7 @@ public class ScreenSkins : ScreenItem
         GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = id});
     }
     
-    public void Show()
+    public override void Show()
     {
         GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
         

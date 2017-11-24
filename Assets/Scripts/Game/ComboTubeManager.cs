@@ -31,7 +31,7 @@ public class ComboTubeManager : MonoBehaviour
     
     private void OnCrash(float radius, Vector3 pos, float height)
     {
-        _comboEffectCounter = 1;
+        _comboEffectCounter = 2;
         _comboEffectRadius = radius;
         _comboEffectPosition = new Vector3(pos.x, pos.y - height * 0.5f + 0.1f, pos.z);
         _comboEffectPositionY = _comboEffectPosition.y;
@@ -41,7 +41,7 @@ public class ComboTubeManager : MonoBehaviour
     
     private void OnSlim(float radius, Vector3 pos, float height)
     {
-        _comboEffectCounter = 1;
+        _comboEffectCounter = 2;
         _comboEffectRadius = radius;
         _comboEffectPosition = new Vector3(pos.x, pos.y - height * 0.5f + 0.1f, pos.z);
         _comboEffectPositionY = _comboEffectPosition.y;

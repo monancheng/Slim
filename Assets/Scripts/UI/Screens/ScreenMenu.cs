@@ -96,7 +96,7 @@ public class ScreenMenu : ScreenItem
         GlobalEvents<OnHideMenuButtons>.Call(new OnHideMenuButtons());
     }
 
-    public void Show()
+    public override void Show()
     {
         GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
     }

@@ -133,19 +133,19 @@ public class ScreenGameOver : ScreenItem
         
         // Важность - Низкая
         ran = Random.value;
-        if (_giftValue == 0 && _activeNamesList.Count < 4  && (_activeNamesList.Count == 0 && ran > 0.6f
-                                                               || _activeNamesList.Count == 1 && ran > 0.65f
-                                                               || _activeNamesList.Count == 2 && ran > 0.70f
-                                                               || _activeNamesList.Count == 3 && ran > 0.75f))
+        if (_giftValue == 0 && _activeNamesList.Count < 4  && (_activeNamesList.Count == 0 && ran > 0.7f
+                                                               || _activeNamesList.Count == 1 && ran > 0.75f
+                                                               || _activeNamesList.Count == 2 && ran > 0.80f
+                                                               || _activeNamesList.Count == 3 && ran > 0.85f))
         {
             AddNotifyGiftWaiting();
         }
         
         ran = Random.value;
-        if (_activeNamesList.Count < 4 && (_activeNamesList.Count == 0 && ran > 0.65f
-                                        || _activeNamesList.Count == 1 && ran > 0.70f
-                                        || _activeNamesList.Count == 2 && ran > 0.75f
-                                        || _activeNamesList.Count == 3 && ran > 0.80f))
+        if (_activeNamesList.Count < 4 && (_activeNamesList.Count == 0 && ran > 0.70f
+                                        || _activeNamesList.Count == 1 && ran > 0.75f
+                                        || _activeNamesList.Count == 2 && ran > 0.80f
+                                        || _activeNamesList.Count == 3 && ran > 0.85f))
         {
             AddNotifyNextSkin();
         } 

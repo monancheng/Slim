@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class ScreenRate : ScreenItem
 {
-	[SerializeField] private ScreenRateBtnStar[] buttons;
+	[SerializeField] private ScreenRateBtnStar[] starButtons;
 	[SerializeField] private Image smile;
 	[SerializeField] private Sprite[] smileSprites;
 	private int _voteValue;
@@ -27,12 +27,12 @@ public class ScreenRate : ScreenItem
 		_voteValue = obj;
 		for (int i = 0; i < obj; i++)
 		{
-			ScreenRateBtnStar item = buttons[i];
+			ScreenRateBtnStar item = starButtons[i];
 			item.SetCheck(true);
 		}
-		for (int i = obj; i < buttons.Length; i++)
+		for (int i = obj; i < starButtons.Length; i++)
 		{
-			ScreenRateBtnStar item = buttons[i];
+			ScreenRateBtnStar item = starButtons[i];
 			item.SetCheck(false);
 		}
 
@@ -46,11 +46,14 @@ public class ScreenRate : ScreenItem
 		UIManager.ShowUiElement("ScreenRateBackground");
 		UIManager.ShowUiElement("ScreenRatePanel");
 		UIManager.ShowUiElement("ScreenRateBtnBack");
+		UIManager.HideUiElement("ScreenRateBtnRate");
 	}
 
 	public override void Hide()
 	{
-		base.Hide();
+//		base.Hide();
+		UIManager.HideUiElement("ScreenRateMe");
+		UIManager.HideUiElement("ScreenRatePanelThanks");
 		GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = true});
 	}
 
@@ -71,7 +74,6 @@ public class ScreenRate : ScreenItem
 //		{
 //			ShareMail();
 //		}
-		UIManager.HideUiElement("ScreenRateMe");
 		UIManager.HideUiElement("ScreenRateBtnRate");
 		UIManager.HideUiElement("ScreenRatePanel");
 		UIManager.HideUiElement("ScreenRateBtnBack");

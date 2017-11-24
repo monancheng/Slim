@@ -13,7 +13,7 @@ public class TubeManager : MonoBehaviour
     [SerializeField] private GameObject[] _smiles;
     private int _smileID;
     
-    private const float StartSpeed = 150f;
+    private const float StartSpeed = 151f;
     private const float StartRadiusMinus = 1.5f;
     public static float CurrentSpeed = StartSpeed;
     public static event Action <float> OnTubesSpeedScale;
@@ -311,16 +311,16 @@ public class TubeManager : MonoBehaviour
 
     private void IncreaseSpeed()
     {
-        if (CurrentSpeed < 158f) _acceleration = 3.1f; else
-        if (CurrentSpeed < 163f) _acceleration = 2.5f; else
-        if (CurrentSpeed < 168f) _acceleration = 1.8f; else
-        if (CurrentSpeed < 173f) _acceleration = 1.4f; else
-        if (CurrentSpeed < 178f) _acceleration = 1.2f; else
-        if (CurrentSpeed < 183f) _acceleration = 1.1f; else
-        if (CurrentSpeed < 188f) _acceleration = 1.0f; else
-        if (CurrentSpeed < 193f) _acceleration = 0.90f; else
-        if (CurrentSpeed < 198f) _acceleration = 0.85f; else
-        if (CurrentSpeed < 203f) _acceleration = 0.80f; else
+        if (CurrentSpeed < 159f) _acceleration = 3.2f; else
+        if (CurrentSpeed < 164f) _acceleration = 2.6f; else
+        if (CurrentSpeed < 169f) _acceleration = 1.9f; else
+        if (CurrentSpeed < 174f) _acceleration = 1.5f; else
+        if (CurrentSpeed < 179f) _acceleration = 1.3f; else
+        if (CurrentSpeed < 184f) _acceleration = 1.2f; else
+        if (CurrentSpeed < 189f) _acceleration = 1.1f; else
+        if (CurrentSpeed < 194f) _acceleration = 0.95f; else
+        if (CurrentSpeed < 199f) _acceleration = 0.90f; else
+        if (CurrentSpeed < 204f) _acceleration = 0.85f; else
             _acceleration = 0.5f;
         CurrentSpeed += _acceleration;
         if (CurrentSpeed > MaxSpeed) CurrentSpeed = MaxSpeed;

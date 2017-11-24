@@ -17,7 +17,7 @@ public class GameServicesManager : MonoBehaviour
     public static string ACHIEVEMENT_NEW_SKIN = "Newskin";
     public static string ACHIEVEMENT_THREE_JUMPS = "THREE_JUMPS";
 
-    private string GLOBAL_LEADERBOARD_ID = "First";
+//    private string GLOBAL_LEADERBOARD_ID = "First";
 
     private void Awake()
     {

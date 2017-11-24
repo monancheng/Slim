@@ -150,6 +150,7 @@ public class MyTube : MonoBehaviour
             {
                 GameEvents.Send(OnDestroy, Id);
                 Destroy(gameObject);
+                return;
             }
         }
         

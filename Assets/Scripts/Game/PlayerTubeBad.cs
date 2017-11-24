@@ -6,7 +6,11 @@ public class PlayerTubeBad : MonoBehaviour
     private void Update()
     {
         Move();
-        if (transform.position.y < -24f) Destroy(gameObject);
+        if (transform.position.y < -24f)
+        {
+            Destroy(gameObject);
+            return;
+        }
         var color = gameObject.GetComponent<MeshRenderer>().material.color;
         if (color.a > 0f)
         {
@@ -17,6 +21,7 @@ public class PlayerTubeBad : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
     }
 
