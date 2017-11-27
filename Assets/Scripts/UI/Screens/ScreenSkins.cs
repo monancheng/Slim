@@ -16,12 +16,12 @@ public class ScreenSkins : ScreenItem
     private const int FacesGeneralMin = 0;
     private const int FacesGeneralMax = 18;
     private const int FacesSocialStartId = FacesGeneralMax+1;
-    private const int FacesPaybleStartId = FacesSocialStartId + 4;
+    private const int FacesPaybleStartId = FacesSocialStartId + 0;
 
-    private const int SkinFacebook = FacesSocialStartId;
-    private const int SkinTwitter = FacesSocialStartId + 1;
-    private const int SkinInstagram = FacesSocialStartId + 2;
-    private const int SkinSponsor = FacesSocialStartId + 3;
+    private const int SkinFacebook = 101;//FacesSocialStartId;
+    private const int SkinTwitter = 101;//FacesSocialStartId + 1;
+    private const int SkinInstagram = 101;//FacesSocialStartId + 2;
+    private const int SkinSponsor = 101;//FacesSocialStartId + 3;
     
     private const int IapSkin1 = FacesPaybleStartId;
     private const int IapSkin2 = FacesPaybleStartId + 1;

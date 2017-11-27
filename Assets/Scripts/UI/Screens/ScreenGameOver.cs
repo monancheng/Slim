@@ -104,11 +104,11 @@ public class ScreenGameOver : ScreenItem
             _isGotNewCharacter = false;
         }
         
-        if (_activeNamesList.Count < 4 && (PrefsManager.GameplayCounter == 5 || 
-                                           PrefsManager.GameplayCounter > 5 && (PrefsManager.GameplayCounter-5) % 5 == 0/* && _isRewardedAvailable*/))
-        {
-            _activeNamesList.Add("NotifyRewarded");
-        }
+//        if (_activeNamesList.Count < 4 && (PrefsManager.GameplayCounter == 5 || 
+//                                           PrefsManager.GameplayCounter > 5 && (PrefsManager.GameplayCounter-5) % 5 == 0/* && _isRewardedAvailable*/))
+//        {
+//            _activeNamesList.Add("NotifyRewarded");
+//        }
         
         if (Random.value > 0.7f) AddWordTimerOrProgress();
 
@@ -150,13 +150,13 @@ public class ScreenGameOver : ScreenItem
             AddNotifyNextSkin();
         } 
         
-        ran = Random.value;
-        if (_activeNamesList.Count < 4 && MyAds.NoAds == 0 && PrefsManager.QuestGameplayCounter > 10)
-        {
-            if (ran < 0.2f) _activeNamesList.Add("NotifyNoAds"); else
-            if (ran < 0.32f) _activeNamesList.Add("NotifyNoAds200"); else
-            if (ran < 0.4f) _activeNamesList.Add("NotifyNoAds500");
-        }
+//        ran = Random.value;
+//        if (_activeNamesList.Count < 4 && MyAds.NoAds == 0 && PrefsManager.QuestGameplayCounter > 10)
+//        {
+//            if (ran < 0.2f) _activeNamesList.Add("NotifyNoAds"); else
+//            if (ran < 0.32f) _activeNamesList.Add("NotifyNoAds200"); else
+//            if (ran < 0.4f) _activeNamesList.Add("NotifyNoAds500");
+//        }
         
         
         if (_activeNamesList.Count < 4 && !_isAllSkinsOpened && Random.value > 0.7f && PrefsManager.QuestGameplayCounter > 10)

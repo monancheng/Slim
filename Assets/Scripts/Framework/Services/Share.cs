@@ -27,7 +27,7 @@ public class Share : MonoBehaviour
         var shareLink = "http://smarturl.it/YummMonsters";
 
         var shareText = "Wow! I Just Scored [" + PrefsManager.GameBestScore +
-                        "] in #SlimRing! Can You Beat Me? @Sponsor " + shareLink;
+                        "] in #SlimRing! Can You Beat Me? @Voodoo " + shareLink;
 
 		ShareImageAtPathUsingShareSheet(shareText, _gifName + ".gif");
     }
@@ -45,7 +45,7 @@ public class Share : MonoBehaviour
 		var shareLink = "http://smarturl.it/YummMonsters";
 
 		var shareText = "Wow! I Just Scored [" + PrefsManager.GameBestScore +
-                        "] in #SlimRing! Can You Beat Me? @Sponsor " + shareLink;
+                        "] in #SlimRing! Can You Beat Me? @Voodoo " + shareLink;
 
 
 		var screenShotPath = Application.persistentDataPath + "/promo1.jpg";

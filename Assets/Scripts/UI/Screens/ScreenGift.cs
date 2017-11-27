@@ -47,40 +47,40 @@ public class ScreenGift : ScreenItem
 	{
 		D.Log("OnHideGiftScreen()");
 		// Предлагаем Еще один подарок
-		if (isFirstTime)
-		{
-			isFirstTime = false;
-			
-			UIManager.ShowUiElement("ScreenGift");
-			UIManager.ShowUiElement("ScreenGameOverBtnBack");
-			UIElement element = null;
-			if (_giftType == 1)
-			{
-				UIManager.ShowUiElement("NotifyGiftExtra");
-				element = GetUIElement("NotifyGiftExtra");
-			}
-			else
-			if (_giftType == 2)
-			{
-				UIManager.ShowUiElement("NotifyGiftExtra");
-				element = GetUIElement("NotifyGiftExtra");
-			}
-			else
-			if (_giftType == 3)
-			{
-				UIManager.ShowUiElement("ScreenGiftWordTimer");
-				UIManager.ShowUiElement("NotifyWordExtra");
-				element = GetUIElement("NotifyWordExtra");
-			}
-			
-			if (element)
-			{
-				element.customStartAnchoredPosition = new Vector3(0f, _centerPointY, 0f);
-				element.useCustomStartAnchoredPosition = true;
-			}
-			
-			return;
-		} 
+//		if (isFirstTime)
+//		{
+//			isFirstTime = false;
+//			
+//			UIManager.ShowUiElement("ScreenGift");
+//			UIManager.ShowUiElement("ScreenGameOverBtnBack");
+//			UIElement element = null;
+//			if (_giftType == 1)
+//			{
+//				UIManager.ShowUiElement("NotifyGiftExtra");
+//				element = GetUIElement("NotifyGiftExtra");
+//			}
+//			else
+//			if (_giftType == 2)
+//			{
+//				UIManager.ShowUiElement("NotifyGiftExtra");
+//				element = GetUIElement("NotifyGiftExtra");
+//			}
+//			else
+//			if (_giftType == 3)
+//			{
+//				UIManager.ShowUiElement("ScreenGiftWordTimer");
+//				UIManager.ShowUiElement("NotifyWordExtra");
+//				element = GetUIElement("NotifyWordExtra");
+//			}
+//			
+//			if (element)
+//			{
+//				element.customStartAnchoredPosition = new Vector3(0f, _centerPointY, 0f);
+//				element.useCustomStartAnchoredPosition = true;
+//			}
+//			
+//			return;
+//		} 
 		
 		GlobalEvents<OnHideTubes>.Call(new OnHideTubes());
 		GlobalEvents<OnGiftCollected>.Call(new OnGiftCollected());
