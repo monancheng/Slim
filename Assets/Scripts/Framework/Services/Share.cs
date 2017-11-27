@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using VoxelBusters.NativePlugins;
+//using VoxelBusters.NativePlugins;
 
 public class Share : MonoBehaviour
 {
@@ -57,22 +57,22 @@ public class Share : MonoBehaviour
 
     private void ShareImageAtPathUsingShareSheet(string shareText, string screenShotPath)
 	{
-		// Create share sheet
-		ShareSheet shareSheet = new ShareSheet ();
-
-		shareSheet.Text = shareText;
-		shareSheet.AttachImageAtPath (screenShotPath);
-
-		// Show composer
-		NPBinding.UI.SetPopoverPointAtLastTouchPosition ();
-		NPBinding.Sharing.ShowView (shareSheet, FinishedSharing);
-
-		Debug.Log ("Finished sharing");
+//		// Create share sheet
+//		ShareSheet shareSheet = new ShareSheet ();
+//
+//		shareSheet.Text = shareText;
+//		shareSheet.AttachImageAtPath (screenShotPath);
+//
+//		// Show composer
+//		NPBinding.UI.SetPopoverPointAtLastTouchPosition ();
+//		NPBinding.Sharing.ShowView (shareSheet, FinishedSharing);
+//
+//		Debug.Log ("Finished sharing");
 	}
 
-	void FinishedSharing (eShareResult result){
-		Debug.Log("Share Result = " + result);
-		if(_isGift)
-		GlobalEvents<OnGifShared>.Call (new OnGifShared ());
-	}
+//	void FinishedSharing (eShareResult result){
+//		Debug.Log("Share Result = " + result);
+//		if(_isGift)
+//		GlobalEvents<OnGifShared>.Call (new OnGifShared ());
+//	}
 }

@@ -270,6 +270,14 @@ public struct OnIAPsBuySkin
     public int Id;
 }
 
+public struct OnIAPsBuyTier1{}
+
+public struct OnIAPsBuyTier2{}
+
+public struct OnIAPsBuyNoAds{}
+
+public struct OnIAPsBuyUnlockAll{}
+
 //--------------------------------------------------------
 //							Achievements
 //--------------------------------------------------------
