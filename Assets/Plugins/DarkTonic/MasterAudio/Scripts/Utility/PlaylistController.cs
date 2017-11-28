@@ -699,6 +699,7 @@ namespace DarkTonic.MasterAudio {
 
             if (!_scheduledSongOffsetByAudioSource.ContainsKey(_activeAudio)) {
                 _activeAudio.Play();
+                AudioUtil.ClipPlayed(_activeAudio.clip, GameObj);
             } else if (_songPauseTime.HasValue && _currentSchedSongDspStartTime.HasValue) {
                 var unpauseTime = AudioSettings.dspTime;
                 var timePaused = unpauseTime - _songPauseTime.Value;
@@ -715,6 +716,7 @@ namespace DarkTonic.MasterAudio {
 
             if (!_scheduledSongOffsetByAudioSource.ContainsKey(_transitioningAudio)) {
                 _transitioningAudio.Play();
+                AudioUtil.ClipPlayed(_transitioningAudio.clip, GameObj);
             } else if (_songPauseTime.HasValue && _currentSchedSongDspStartTime.HasValue) {
                 var unpauseTime = AudioSettings.dspTime;
                 var timePaused = unpauseTime - _songPauseTime.Value;
@@ -748,6 +750,12 @@ namespace DarkTonic.MasterAudio {
             _currentSchedSongDspStartTime = null;
             _currentSchedSongDspEndTime = null;
             _currentSong = null;
+
+			switch (PlaylistState) {
+				case PlaylistStates.NotInScene:
+				case PlaylistStates.Stopped:
+					return; // no need to stop anything.
+			}
 
             if (!onlyFadingClip) {
                 CeaseAudioSource(_activeAudio);
@@ -1461,7 +1469,9 @@ namespace DarkTonic.MasterAudio {
                     }
 
                     _audioClip.Play(); // need to play before setting time or it sometimes resets back to zero.
-					CheckIfPlaylistStarted();
+                    AudioUtil.ClipPlayed(_activeAudio.clip, GameObj);
+
+                    CheckIfPlaylistStarted();
 					_songsPlayedFromPlaylist++;
                     break;
                 case AudioPlayType.Schedule:
@@ -1676,7 +1686,7 @@ namespace DarkTonic.MasterAudio {
             var songName = source.clip == null ? string.Empty : source.clip.name;
             source.Stop();
 
-            AudioUtil.UnloadNonPreloadedAudioData(source.clip);
+            AudioUtil.UnloadNonPreloadedAudioData(source.clip, GameObj);
 
             AudioResourceOptimizer.UnloadPlaylistSongIfUnused(ControllerName, source.clip);
             source.clip = null;

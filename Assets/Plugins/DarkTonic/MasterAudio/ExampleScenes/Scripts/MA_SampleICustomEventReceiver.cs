@@ -27,6 +27,9 @@ public class MA_SampleICustomEventReceiver : MonoBehaviour, ICustomEventReceiver
 
     // ReSharper disable once UnusedMember.Local
     void OnDisable() {
+        if (MasterAudio.AppIsShuttingDown) {
+            return;
+        }
         UnregisterReceiver();
     }
 

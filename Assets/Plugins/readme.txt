@@ -24,19 +24,9 @@ Simple demo included. It have two timers: one naive using `DateTime.Now` and the
 is using `UnbiasedTime.Instance.Now()`. Timers are implemented by remembering timestamp of timespan end in PlayerPrefs 
 so they keep counting even if app is backgrounded or closed. Launch it on your mobile device, tap +60 seconds several times, then go to
 settings and increment current device time by few minutes. One timer will advance forward, while the other will keep
-it's speed unchanged measuring real time. 
-
+it's speed unchanged measuring real time.
 
 ### Caution
 
 It is advised to use timestamp server to get real world time and fallback to `UnbiasedTime.Instance.Now()` only 
-when offline. 
-
-
-### ntp server sync
-
-Package contains implementation for network time protocol (ntp). It requires .NET sockets which is a pro-only feature on mobile. 
-The script `UnbiasedTime/UnbiasedTime_UnityPro.txt` uses ntp when available and fallback to offline method in case of errors. 
-To enable this feature, just rename the `UnbiasedTime_UnityPro.txt` to `UnbiasedTime.cs` - it requires Unity3d Pro on mobile platforms, 
-but works for desktop and editor. 
-
+when offline.

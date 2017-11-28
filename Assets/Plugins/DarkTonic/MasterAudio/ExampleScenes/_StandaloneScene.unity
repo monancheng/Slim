@@ -185,6 +185,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weight: 1
+  probabilityToPlay: 100
   useLocalization: 0
   useRandomPitch: 0
   randomPitchMode: 0
@@ -465,6 +466,8 @@ MonoBehaviour:
       startPlaylist: 1
       fadeVolume: 0
       fadeTime: 3
+      stopAfterFade: 0
+      restoreVolumeAfterFade: 0
       targetVolMode: 0
       clipName: lead
       variationType: 1
@@ -517,6 +520,8 @@ MonoBehaviour:
       startPlaylist: 1
       fadeVolume: 0
       fadeTime: 1
+      stopAfterFade: 0
+      restoreVolumeAfterFade: 0
       targetVolMode: 0
       clipName: '[None]'
       variationType: 1
@@ -569,6 +574,8 @@ MonoBehaviour:
       startPlaylist: 1
       fadeVolume: 0
       fadeTime: .200000003
+      stopAfterFade: 0
+      restoreVolumeAfterFade: 0
       targetVolMode: 0
       clipName: '[None]'
       variationType: 1
@@ -717,6 +724,8 @@ MonoBehaviour:
       startPlaylist: 1
       fadeVolume: 0
       fadeTime: 1
+      stopAfterFade: 0
+      restoreVolumeAfterFade: 0
       targetVolMode: 0
       clipName: '[None]'
       variationType: 1
@@ -769,6 +778,8 @@ MonoBehaviour:
       startPlaylist: 1
       fadeVolume: 0
       fadeTime: 1
+      stopAfterFade: 0
+      restoreVolumeAfterFade: 0
       targetVolMode: 0
       clipName: '[None]'
       variationType: 1
@@ -821,6 +832,8 @@ MonoBehaviour:
       startPlaylist: 1
       fadeVolume: 0
       fadeTime: 1
+      stopAfterFade: 0
+      restoreVolumeAfterFade: 0
       targetVolMode: 0
       clipName: '[None]'
       variationType: 1
@@ -969,6 +982,8 @@ MonoBehaviour:
       startPlaylist: 1
       fadeVolume: 0
       fadeTime: 3
+      stopAfterFade: 0
+      restoreVolumeAfterFade: 0
       targetVolMode: 0
       clipName: '[None]'
       variationType: 1
@@ -1021,6 +1036,8 @@ MonoBehaviour:
       startPlaylist: 1
       fadeVolume: 0
       fadeTime: 1
+      stopAfterFade: 0
+      restoreVolumeAfterFade: 0
       targetVolMode: 0
       clipName: '[None]'
       variationType: 1
@@ -2032,10 +2049,18 @@ MonoBehaviour:
   syncGroupNum: 0
   initializedEventExpanded: 0
   initializedCustomEvent: 
+  crossfadeStartedExpanded: 0
+  crossfadeStartedCustomEvent: 
   songChangedEventExpanded: 0
   songChangedCustomEvent: 
   songEndedEventExpanded: 0
   songEndedCustomEvent: 
+  songLoopedEventExpanded: 0
+  songLoopedCustomEvent: 
+  playlistStartedEventExpanded: 0
+  playlistStartedCustomEvent: 
+  playlistEndedEventExpanded: 0
+  playlistEndedCustomEvent: 
   _frames: 0
 --- !u!1 &1072715563
 GameObject:
@@ -2177,7 +2202,15 @@ MonoBehaviour:
   showCustomEvents: 0
   bulkVariationMode: 0
   customEventsToCreate: []
+  customEventCategories:
+  - CatName: '[Uncategorized]'
+    IsExpanded: 1
+    IsEditing: 0
+    IsTemporary: 0
+    ProspectiveName: '[Uncategorized]'
   newEventName: my event
+  newCustomEventCategoryName: New Category
+  addToCustomEventCategoryName: New Category
   showMusicDucking: 0
   musicDuckingSounds: []
   groupBuses: []
@@ -2402,7 +2435,7 @@ MonoBehaviour:
   isMuted: 0
   soundPlayedEventActive: 0
   soundPlayedCustomEvent: 
-  frames: 30
+  frames: 758
 --- !u!1 &1406340885
 GameObject:
   m_ObjectHideFlags: 0
@@ -2501,6 +2534,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe737f362f2da5d4ebabefe8c9165162, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  probabilityToPlay: 100
   useLocalization: 0
   useRandomPitch: 0
   randomPitchMode: 0
@@ -2637,6 +2671,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weight: 7
+  probabilityToPlay: 100
   useLocalization: 0
   useRandomPitch: 0
   randomPitchMode: 0
@@ -2805,6 +2840,7 @@ MonoBehaviour:
       customStartTime: 0
       customStartTimeMax: 0
       lastKnownTimePoint: 0
+      wasLastKnownTimePointSet: 0
       songIndex: 0
       songStartedEventExpanded: 0
       songStartedCustomEvent: 
@@ -2823,6 +2859,7 @@ MonoBehaviour:
       customStartTime: 0
       customStartTimeMax: 0
       lastKnownTimePoint: 0
+      wasLastKnownTimePointSet: 0
       songIndex: 0
       songStartedEventExpanded: 0
       songStartedCustomEvent: 
@@ -2860,12 +2897,13 @@ MonoBehaviour:
   visualAdvancedExpanded: 1
   logAdvancedExpanded: 0
   showFadingSettings: 0
-  stopZeroVolumeVariations: 0
   stopZeroVolumeGroups: 0
   stopZeroVolumeBuses: 0
   stopZeroVolumePlaylists: 0
+  stopOldestBusFadeTime: .300000012
   resourceAdvancedExpanded: 0
   useClipAgePriority: 0
+  logOutOfVoices: 1
   LogSounds: 0
   logCustomEvents: 0
   disableLogging: 0
@@ -2885,31 +2923,45 @@ MonoBehaviour:
   hideGroupsWithNoActiveVars: 0
   newEventName: PlayerStoppedMoving
   showCustomEvents: 0
+  newCustomEventCategoryName: New Category
+  addToCustomEventCategoryName: New Category
   customEvents:
   - EventName: PlayerOffscreen
     ProspectiveName: PlayerOffscreen
+    IsEditing: 0
     eventExpanded: 0
     eventReceiveMode: 0
     distanceThreshold: 0
     eventRcvFilterMode: 0
     filterModeQty: 0
     frameLastFired: 0
+    categoryName: 
   - EventName: PlayerMoved
     ProspectiveName: PlayerMoved
+    IsEditing: 0
     eventExpanded: 0
     eventReceiveMode: 0
     distanceThreshold: 0
     eventRcvFilterMode: 0
     filterModeQty: 0
     frameLastFired: 0
+    categoryName: 
   - EventName: PlayerStoppedMoving
     ProspectiveName: PlayerStoppedMoving
+    IsEditing: 0
     eventExpanded: 0
     eventReceiveMode: 0
     distanceThreshold: 0
     eventRcvFilterMode: 0
     filterModeQty: 0
     frameLastFired: 0
+    categoryName: 
+  customEventCategories:
+  - CatName: '[Uncategorized]'
+    IsExpanded: 1
+    IsEditing: 0
+    IsTemporary: 0
+    ProspectiveName: '[Uncategorized]'
   frames: 0
   showUnityMixerGroupAssignment: 1
 --- !u!1 &1818551059
@@ -3186,6 +3238,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weight: 7
+  probabilityToPlay: 100
   useLocalization: 0
   useRandomPitch: 0
   randomPitchMode: 0
@@ -3197,7 +3250,7 @@ MonoBehaviour:
   randomVolumeMax: 0
   audLocation: 2
   resourceFileName: King
-  internetFileUrl: https://dl.dropboxusercontent.com/u/40293802/arrow.wav
+  internetFileUrl: http://www.dtdevtools.com/downloads/masteraudio/audio/arrow.wav
   internetFileLoadStatus: 0
   fxTailTime: .920000017
   original_pitch: 0

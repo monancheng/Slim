@@ -29,7 +29,7 @@ public class MasterAudioInspector : Editor {
     private bool _isValid = true;
 
     // ReSharper disable once InconsistentNaming
-    public List<MasterAudioGroup> groups = new List<MasterAudioGroup>();
+    public List<MasterAudioGroup> groups;
 
     private List<string> _groupTemplateNames = new List<string>();
     private List<string> _audioSourceTemplateNames = new List<string>();
@@ -56,10 +56,15 @@ public class MasterAudioInspector : Editor {
 
     #region Change Persisting Code
     public void OnEnable() {
+#if UNITY_2017_1_OR_NEWER
+        EditorApplication.playModeStateChanged -= PlayModeStateChanged;
+        EditorApplication.playModeStateChanged += PlayModeStateChanged;
+#else
         // subtract delegate so we don't get more than one.
         // ReSharper disable once DelegateSubtraction
         EditorApplication.playmodeStateChanged -= PlaymodeStateChanged;
         EditorApplication.playmodeStateChanged += PlaymodeStateChanged;
+#endif
     }
 
     private static void AddAllChangePersistingObjects() {
@@ -92,6 +97,16 @@ public class MasterAudioInspector : Editor {
         allChangePersisters.Add(context);
         context.SetContext(trans);
     }
+
+#if UNITY_2017_1_OR_NEWER
+	/// <summary>
+    /// This is the new one for Unity 2017. Old one deprecated
+    /// </summary>
+    /// <param name="state"></param>
+    private static void PlayModeStateChanged(PlayModeStateChange state) {
+        PlaymodeStateChanged();
+    }
+#endif
 
     private static void PlaymodeStateChanged() {
         if (EditorApplication.isPlaying || EditorApplication.isPaused) {
@@ -131,7 +146,7 @@ public class MasterAudioInspector : Editor {
 
         allChangePersisters.Clear();
     }
-    #endregion
+#endregion
 
     public override void OnInspectorGUI() {
         EditorGUI.indentLevel = 0;
@@ -571,16 +586,16 @@ public class MasterAudioInspector : Editor {
                 _persistChanges = newSave;
             }
 
-            var newIgnore = EditorGUILayout.Toggle(new GUIContent("Ignore Time Scale", "Turn this option on only if you need to use EventSounds Start event at zero timescale or DelayBetweenSongs"), _sounds.ignoreTimeScale);
+            var newIgnore = EditorGUILayout.Toggle(new GUIContent("Ignore Time Scale", "Turn this option on only if you need to use DelayBetweenSongs"), _sounds.ignoreTimeScale);
             if (newIgnore != _sounds.ignoreTimeScale) {
                 AudioUndoHelper.RecordObjectPropertyForUndo(ref _isDirty, _sounds, "toggle Ignore Time Scale");
                 _sounds.ignoreTimeScale = newIgnore;
             }
 
             if (SpatializerHelper.SpatializerOptionExists) {
-                var newSpatialize = EditorGUILayout.Toggle(new GUIContent("Use Spatializer", "Turn this on if you have selected OculusSpatializer for the Spatializer Plugin on the AudioManager settings screen. All Sound Group Audio Sources will automatically turn on 'Spatialize'."), _sounds.useSpatializer);
+                var newSpatialize = EditorGUILayout.Toggle(new GUIContent("Use Spatializer (VR)", "Turn this on if you have selected OculusSpatializer for the Spatializer Plugin on the AudioManager settings screen. All Sound Group Audio Sources will automatically turn on 'Spatialize'."), _sounds.useSpatializer);
                 if (newSpatialize != _sounds.useSpatializer) {
-                    AudioUndoHelper.RecordObjectPropertyForUndo(ref _isDirty, _sounds, "toggle Save Runtime Changes");
+                    AudioUndoHelper.RecordObjectPropertyForUndo(ref _isDirty, _sounds, "toggle Use Spatializer (VR)");
                     _sounds.useSpatializer = newSpatialize;
                 }
             }
@@ -604,6 +619,10 @@ public class MasterAudioInspector : Editor {
 
                 var evalTimes = new List<string>();
                 foreach (var t in _reevaluatePriorityTimes) {
+                    if (t == 1) {
+                        evalTimes.Add(t + ".0 seconds");
+                        continue;
+                    }
                     evalTimes.Add(t + " seconds");
                 }
 
@@ -772,6 +791,31 @@ public class MasterAudioInspector : Editor {
             DTGUIHelper.StartGroupHeader();
 
             EditorGUILayout.BeginHorizontal();
+            var newAmb = DTGUIHelper.Foldout(_sounds.ambientAdvancedExpanded, "Ambient Sound Settings");
+            if (newAmb != _sounds.ambientAdvancedExpanded) {
+                AudioUndoHelper.RecordObjectPropertyForUndo(ref _isDirty, _sounds, "toggle Ambient Sound Settings");
+                _sounds.ambientAdvancedExpanded = newAmb;
+            }
+            DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/AdvancedSettings.htm#AmbientSoundSettings");
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.EndVertical();
+
+            if (_sounds.ambientAdvancedExpanded) {
+                EditorGUI.indentLevel = 0;
+
+                var newRecalcs = EditorGUILayout.IntSlider("Max Pos. Recalcs / Frame", _sounds.ambientMaxRecalcsPerFrame, 1, 32);
+                if (newRecalcs != _sounds.ambientMaxRecalcsPerFrame) {
+                    AudioUndoHelper.RecordObjectPropertyForUndo(ref _isDirty, _sounds, "change Max Pos. Recalcs / Frame");
+                    _sounds.ambientMaxRecalcsPerFrame = newRecalcs;
+                }
+            }
+            EditorGUILayout.EndVertical();
+            DTGUIHelper.AddSpaceForNonU5(2);
+
+            EditorGUI.indentLevel = 1;
+            DTGUIHelper.StartGroupHeader();
+
+            EditorGUILayout.BeginHorizontal();
             var newVisual = DTGUIHelper.Foldout(_sounds.visualAdvancedExpanded, "Visual Settings");
             if (newVisual != _sounds.visualAdvancedExpanded) {
                 AudioUndoHelper.RecordObjectPropertyForUndo(ref _isDirty, _sounds, "toggle Visual Settings");
@@ -805,6 +849,38 @@ public class MasterAudioInspector : Editor {
                 }
             }
             EditorGUILayout.EndVertical();
+            DTGUIHelper.AddSpaceForNonU5(2);
+
+            EditorGUI.indentLevel = 1;
+            DTGUIHelper.StartGroupHeader();
+
+            EditorGUILayout.BeginHorizontal();
+            var newListener = DTGUIHelper.Foldout(_sounds.listenerAdvancedExpanded, "Audio Listener Settings");
+            if (newListener != _sounds.listenerAdvancedExpanded) {
+                AudioUndoHelper.RecordObjectPropertyForUndo(ref _isDirty, _sounds, "toggle Audio Listener Settings");
+                _sounds.listenerAdvancedExpanded = newListener;
+            }
+            DTGUIHelper.AddHelpIcon("http://www.dtdevtools.com/docs/masteraudio/AdvancedSettings.htm#AudioListenerSettings");
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.EndVertical();
+
+            EditorGUI.indentLevel = 0;
+            if (_sounds.listenerAdvancedExpanded) {
+                var newFollowType = (MasterAudio.VariationFollowerType)EditorGUILayout.EnumPopup(new GUIContent("Variation Update Method", "You may want to change this to Fixed Update if your Audio Listener is on a physics object, to eliminate audio glitches."), _sounds.variationFollowerType);
+                if (newFollowType != _sounds.variationFollowerType) {
+                    AudioUndoHelper.RecordObjectPropertyForUndo(ref _isDirty, _sounds, "change Variation Update Method");
+                    _sounds.variationFollowerType = newFollowType;
+                }
+
+                var newRB = EditorGUILayout.Toggle("Follower Has RigidBody", _sounds.listenerFollowerHasRigidBody);
+                if (newRB != _sounds.listenerFollowerHasRigidBody) {
+                    AudioUndoHelper.RecordObjectPropertyForUndo(ref _isDirty, _sounds, "toggle Listener Follower RigidBody");
+                    _sounds.listenerFollowerHasRigidBody = newRB;
+                }
+                DTGUIHelper.ShowColorWarning("This single non-gravity RigidBody is necessary for Ambient Sounds script to work.");
+            }
+
+            EditorGUILayout.EndVertical();
 
             EditorGUI.indentLevel = 1;
             DTGUIHelper.AddSpaceForNonU5(2);
@@ -821,13 +897,13 @@ public class MasterAudioInspector : Editor {
             if (_sounds.showFadingSettings) {
                 EditorGUI.indentLevel = 0;
 
-				var newFade = EditorGUILayout.Slider("Bus Stop Oldest Fade Time", _sounds.stopOldestBusFadeTime, 0f, 1f);
-				if (newFade != _sounds.stopOldestBusFadeTime) {
-					AudioUndoHelper.RecordObjectPropertyForUndo(ref _isDirty, _sounds, "change Bus Stop Oldest Fade Time");
-					_sounds.stopOldestBusFadeTime = newFade;
-				}
+                var newFade = EditorGUILayout.Slider("Bus Stop Oldest Fade Time", _sounds.stopOldestBusFadeTime, 0f, 1f);
+                if (newFade != _sounds.stopOldestBusFadeTime) {
+                    AudioUndoHelper.RecordObjectPropertyForUndo(ref _isDirty, _sounds, "change Bus Stop Oldest Fade Time");
+                    _sounds.stopOldestBusFadeTime = newFade;
+                }
 
-				DTGUIHelper.ShowLargeBarAlert("Fading to zero volume on the following causes their audio to stop (if checked).");
+                DTGUIHelper.ShowColorWarning("If checked, fading to zero volume on the following causes their audio to stop.");
 
                 var newStop = EditorGUILayout.Toggle("Buses", _sounds.stopZeroVolumeBuses);
                 if (newStop != _sounds.stopZeroVolumeBuses) {
@@ -905,7 +981,7 @@ public class MasterAudioInspector : Editor {
                 }
 
                 if (!_sounds.disableLogging) {
-					newLog = EditorGUILayout.Toggle("Log Sounds", _sounds.LogSounds);
+                    newLog = EditorGUILayout.Toggle("Log Sounds", _sounds.LogSounds);
                     if (newLog != _sounds.LogSounds) {
                         AudioUndoHelper.RecordObjectPropertyForUndo(ref _isDirty, _sounds, "toggle Log Sounds");
                         if (Application.isPlaying) {
@@ -914,22 +990,22 @@ public class MasterAudioInspector : Editor {
                         _sounds.LogSounds = newLog;
                     }
 
-					newLog = EditorGUILayout.Toggle("Log No Voices Left", _sounds.logOutOfVoices);
-					if (newLog != _sounds.logOutOfVoices) {
-						AudioUndoHelper.RecordObjectPropertyForUndo(ref _isDirty, _sounds, "toggle Log No Voices Left");
-						if (Application.isPlaying) {
-							MasterAudio.LogOutOfVoices = _sounds.logOutOfVoices;
-						}
-						_sounds.logOutOfVoices = newLog;
-					}
+                    newLog = EditorGUILayout.Toggle("Log No Voices Left", _sounds.logOutOfVoices);
+                    if (newLog != _sounds.logOutOfVoices) {
+                        AudioUndoHelper.RecordObjectPropertyForUndo(ref _isDirty, _sounds, "toggle Log No Voices Left");
+                        if (Application.isPlaying) {
+                            MasterAudio.LogOutOfVoices = _sounds.logOutOfVoices;
+                        }
+                        _sounds.logOutOfVoices = newLog;
+                    }
 
-					newLog = EditorGUILayout.Toggle("Log Custom Events", _sounds.logCustomEvents);
+                    newLog = EditorGUILayout.Toggle("Log Custom Events", _sounds.logCustomEvents);
                     if (newLog != _sounds.logCustomEvents) {
                         AudioUndoHelper.RecordObjectPropertyForUndo(ref _isDirty, _sounds, "toggle Log Custom Events");
                         _sounds.logCustomEvents = newLog;
                     }
                 } else {
-                    DTGUIHelper.ShowLargeBarAlert("Logging is disabled.");
+                    DTGUIHelper.ShowColorWarning("Logging is disabled.");
                 }
             }
             EditorGUILayout.EndVertical();
@@ -1402,7 +1478,7 @@ public class MasterAudioInspector : Editor {
                         GUI.color = DTGUIHelper.DragAreaColor;
                         EditorGUILayout.BeginVertical();
                         var dragArea = GUILayoutUtility.GetRect(0f, 35f, GUILayout.ExpandWidth(true));
-						GUI.Box(dragArea, MasterAudio.DragAudioTip + " to create Groups!");
+                        GUI.Box(dragArea, MasterAudio.DragAudioTip + " to create Groups!");
 
                         GUI.color = Color.white;
 
@@ -2074,6 +2150,7 @@ public class MasterAudioInspector : Editor {
                         return obj.soundType == grpName;
                     });
                     AudioUndoHelper.DestroyForUndo(groupToDelete);
+                    MasterAudio.RescanGroupsNow();
                 }
 
                 if (Application.isPlaying) {
@@ -2913,7 +2990,7 @@ public class MasterAudioInspector : Editor {
                         GUI.color = DTGUIHelper.DragAreaColor;
 
                         var dragArea = GUILayoutUtility.GetRect(0f, 35f, GUILayout.ExpandWidth(true));
-						GUI.Box(dragArea, MasterAudio.DragAudioTip + " to add to playlist!");
+                        GUI.Box(dragArea, MasterAudio.DragAudioTip + " to add to playlist!");
 
                         GUI.color = Color.white;
 
@@ -4299,6 +4376,8 @@ public class MasterAudioInspector : Editor {
         groupTrans.parent = _sounds.transform;
         groupTrans.gameObject.layer = _sounds.gameObject.layer;
 
+        MasterAudio.RescanGroupsNow();
+
         return grp;
     }
 
@@ -4502,7 +4581,11 @@ public class MasterAudioInspector : Editor {
     }
 
     private void ScanGroups() {
-        groups.Clear();
+        if (groups != null && !MasterAudio.ShouldRescanGroups) {
+            return;
+        }
+
+        groups = new List<MasterAudioGroup>();
 
         var names = new List<string>();
 
@@ -4542,6 +4625,9 @@ public class MasterAudioInspector : Editor {
                 return g1.name.CompareTo(g2.name);
             });
         }
+
+        // done rescanning, don't do it next frame hopefully.
+        MasterAudio.DoneRescanningGroups();
     }
 
     private List<string> GroupNameList {

@@ -32,13 +32,28 @@ public class MasterAudioEventBackend : MinimalBackend<object, string> {
     }
 
     public class LinkedGroupNode {
+        public List<string> parentLinkedGroups { get; set; }
         public string groupName;
-        public LinkedGroupNode(string groupName) { this.groupName = groupName; }
+        public bool hasLinkedGroupLoop;
+        public string linkedGroupLoopName;
+
+        public LinkedGroupNode(string groupName, List<string> parentLinkedGroups)
+        {
+            this.groupName = groupName;
+            this.parentLinkedGroups = new List<string>(parentLinkedGroups);
+        }
     }
 
     public class EndLinkedGroupNode {
+        public List<string> parentLinkedGroups { get; set; }
         public string groupName;
-        public EndLinkedGroupNode(string groupName) { this.groupName = groupName; }
+        public bool hasLinkedGroupLoop;
+        public string linkedGroupLoopName;
+
+        public EndLinkedGroupNode(string groupName, List<string> parentLinkedGroups) {
+            this.groupName = groupName;
+            this.parentLinkedGroups = new List<string>(parentLinkedGroups);
+        }
     }
 
     public class EventGroupData {
@@ -154,16 +169,71 @@ public class MasterAudioEventBackend : MinimalBackend<object, string> {
             yield return new Relation<object, string>(asAmbientSound, new AmbientSoundNode(asAmbientSound.AmbientSoundGroup), "Ambient Sound");
         }
 
+        var asEndLinkedGroupNode = entity as EndLinkedGroupNode;
+        if (asEndLinkedGroupNode != null) {
+            foreach (var linkedGroupName in GetStartLinkedGroups(asEndLinkedGroupNode.groupName)) {
+                if (asEndLinkedGroupNode.parentLinkedGroups.Contains(linkedGroupName)) {
+                    asEndLinkedGroupNode.hasLinkedGroupLoop = true;
+                    asEndLinkedGroupNode.linkedGroupLoopName = linkedGroupName;
+                    continue;
+                }
+
+                yield return
+                    new Relation<object, string>(asEndLinkedGroupNode, new LinkedGroupNode(linkedGroupName, asEndLinkedGroupNode.parentLinkedGroups),
+                        GetGroupLinkLabel(asEndLinkedGroupNode.groupName, false));
+            }
+
+            foreach (var endLinkedGroupName in GetStopLinkedGroups(asEndLinkedGroupNode.groupName)) {
+                if (asEndLinkedGroupNode.parentLinkedGroups.Contains(endLinkedGroupName)) {
+                    asEndLinkedGroupNode.hasLinkedGroupLoop = true;
+                    asEndLinkedGroupNode.linkedGroupLoopName = endLinkedGroupName;
+                    continue;
+                }
+
+                yield return
+                    new Relation<object, string>(asEndLinkedGroupNode, new EndLinkedGroupNode(endLinkedGroupName, asEndLinkedGroupNode.parentLinkedGroups),
+                        GetGroupLinkLabel(asEndLinkedGroupNode.groupName, true));
+            }
+            yield break;
+        }
+
+        var asLinkedGroupNode = entity as LinkedGroupNode;
+        if (asLinkedGroupNode != null) {
+            foreach (var linkedGroupName in GetStartLinkedGroups(asLinkedGroupNode.groupName)) {
+                if (asLinkedGroupNode.parentLinkedGroups.Contains(linkedGroupName)) {
+                    asLinkedGroupNode.hasLinkedGroupLoop = true;
+                    asLinkedGroupNode.linkedGroupLoopName = linkedGroupName;
+                    continue;
+                }
+
+                yield return
+                    new Relation<object, string>(asLinkedGroupNode, new LinkedGroupNode(linkedGroupName, asLinkedGroupNode.parentLinkedGroups),
+                        GetGroupLinkLabel(asLinkedGroupNode.groupName, false));
+            }
+            foreach (var startLinkedGroupName in GetStopLinkedGroups(asLinkedGroupNode.groupName)) {
+                if (asLinkedGroupNode.parentLinkedGroups.Contains(startLinkedGroupName)) {
+                    asLinkedGroupNode.hasLinkedGroupLoop = true;
+                    asLinkedGroupNode.linkedGroupLoopName = startLinkedGroupName;
+                    continue;
+                }
+
+                yield return
+                    new Relation<object, string>(asLinkedGroupNode, new EndLinkedGroupNode(startLinkedGroupName, asLinkedGroupNode.parentLinkedGroups),
+                        GetGroupLinkLabel(asLinkedGroupNode.groupName, true));
+            }
+            yield break;
+        }
+
         var asAmbientSoundNode = entity as AmbientSoundNode;
         if (asAmbientSoundNode != null) {
             foreach (var linkedGroupName in GetStartLinkedGroups(asAmbientSoundNode._groupName)) {
                 yield return
-                    new Relation<object, string>(asAmbientSoundNode, new LinkedGroupNode(linkedGroupName),
+                    new Relation<object, string>(asAmbientSoundNode, new LinkedGroupNode(linkedGroupName, new List<string> { asAmbientSoundNode._groupName }),
                         GetGroupLinkLabel(asAmbientSoundNode._groupName, false));
             }
             foreach (var endLinkedGroupName in GetStopLinkedGroups(asAmbientSoundNode._groupName)) {
                 yield return
-                    new Relation<object, string>(asAmbientSoundNode, new EndLinkedGroupNode(endLinkedGroupName),
+                    new Relation<object, string>(asAmbientSoundNode, new EndLinkedGroupNode(endLinkedGroupName, new List<string> { asAmbientSoundNode._groupName }),
                         GetGroupLinkLabel(asAmbientSoundNode._groupName, true));
             }
             yield break;
@@ -193,12 +263,12 @@ public class MasterAudioEventBackend : MinimalBackend<object, string> {
             if (asAction.currentSoundFunctionType == MasterAudio.EventSoundFunctionType.PlaySound) {
                 foreach (var linkedGroupName in GetStartLinkedGroups(asAction.soundType)) {
                     yield return
-                        new Relation<object, string>(asAction, new LinkedGroupNode(linkedGroupName),
+                        new Relation<object, string>(asAction, new LinkedGroupNode(linkedGroupName, new List<string> { asAction.soundType }),
                             GetGroupLinkLabel(asAction.soundType, true));
                 }
                 foreach (var endLinkedGroupName in GetStopLinkedGroups(asAction.soundType)) {
                     yield return
-                        new Relation<object, string>(asAction, new EndLinkedGroupNode(endLinkedGroupName),
+                        new Relation<object, string>(asAction, new EndLinkedGroupNode(endLinkedGroupName, new List<string> { asAction.soundType }),
                             GetGroupLinkLabel(asAction.soundType, false));
                 }
             }
@@ -285,6 +355,13 @@ public class MasterAudioEventBackend : MinimalBackend<object, string> {
                             new MechanimEventCustomEvent(asStateEvents.timedCustomEvent, "Anim-Timed"),
                             "plays on animation timeline");
                     }
+
+                    if (!string.IsNullOrEmpty(asStateEvents.MultiTimedEvent) && !FilterCustomEvent(asStateEvents.MultiTimedEvent)) {
+                        yield return new Relation<object, string>(
+                            asAnimState,
+                            new MechanimEventCustomEvent(asStateEvents.MultiTimedEvent, "Multi Anim-Timed"),
+                            "plays on animation timeline");
+                    }
                 }
             }
             yield break;
@@ -294,12 +371,12 @@ public class MasterAudioEventBackend : MinimalBackend<object, string> {
         if (asMechanimEventSound != null) {
             foreach (var linkedGroupName in GetStartLinkedGroups(asMechanimEventSound.group)) {
                 yield return
-                    new Relation<object, string>(asMechanimEventSound, new LinkedGroupNode(linkedGroupName),
+                    new Relation<object, string>(asMechanimEventSound, new LinkedGroupNode(linkedGroupName, new List<string> { asMechanimEventSound.group }),
                         GetGroupLinkLabel(asMechanimEventSound.group, true));
             }
             foreach (var linkedGroupName in GetStopLinkedGroups(asMechanimEventSound.group)) {
                 yield return
-                    new Relation<object, string>(asMechanimEventSound, new EndLinkedGroupNode(linkedGroupName),
+                    new Relation<object, string>(asMechanimEventSound, new EndLinkedGroupNode(linkedGroupName, new List<string> { asMechanimEventSound.group }),
                         GetGroupLinkLabel(asMechanimEventSound.group, false));
             }
 
@@ -425,12 +502,20 @@ public class MasterAudioEventBackend : MinimalBackend<object, string> {
 
         var asLinkedGroupNode = entity as LinkedGroupNode;
         if (asLinkedGroupNode != null) {
-            return new GUIContent("Play 'Start' Linked\nGroup: " + asLinkedGroupNode.groupName);
+            var label = "Play 'Start' Linked\nGroup: " + asLinkedGroupNode.groupName;
+            if (asLinkedGroupNode.hasLinkedGroupLoop) {
+                label += "\n-Linked Group Loop to '" + asLinkedGroupNode.linkedGroupLoopName + "'-";
+            }
+            return new GUIContent(label);
         }
 
         var asStopLinkedGroupNode = entity as EndLinkedGroupNode;
         if (asStopLinkedGroupNode != null) {
-            return new GUIContent("Play 'Stop' Linked\nGroup: " + asStopLinkedGroupNode.groupName);
+            var label = "Play 'Stop' Linked\nGroup: " + asStopLinkedGroupNode.groupName;
+            if (asStopLinkedGroupNode.hasLinkedGroupLoop) {
+                label += "\n-Linked Group Loop to '" + asStopLinkedGroupNode.linkedGroupLoopName + "'-";
+            }
+            return new GUIContent(label);
         }
 
         var asAnimator = entity as Animator;
@@ -564,6 +649,15 @@ public class MasterAudioEventBackend : MinimalBackend<object, string> {
                 return;
             }
 
+            var asStopLinkedGroup = single as EndLinkedGroupNode;
+            if (asStopLinkedGroup != null) {
+                var groupTransform = MasterAudio.FindGroupTransform(asStopLinkedGroup.groupName);
+                if (groupTransform != null) {
+                    Selection.activeObject = groupTransform;
+                }
+                return;
+            }
+
 #if UNITY_4_5 || UNITY_4_6 || UNITY_4_7
 #else
             var asAnimatorState = single as AnimatorState;
@@ -684,7 +778,7 @@ public class MasterAudioEventBackend : MinimalBackend<object, string> {
     }
 
     static IEnumerable<string> GetCustomEvents(MechanimStateCustomEvents behaviour) {
-        var customEvents = new[] { behaviour.enterCustomEvent, behaviour.exitCustomEvent, behaviour.timedCustomEvent };
+        var customEvents = new[] { behaviour.enterCustomEvent, behaviour.exitCustomEvent, behaviour.timedCustomEvent, behaviour.MultiTimedEvent };
         return customEvents.Where(name => !string.IsNullOrEmpty(name) && !FilterCustomEvent(name));
     }
 

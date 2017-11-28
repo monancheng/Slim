@@ -22,7 +22,8 @@ namespace DarkTonic.MasterAudio {
         public int voiceLimit = -1;
         public bool stopOldest = false;
         public bool isExisting = false; // for Dynamic Sound Group - referenced Buses
-        public bool isUsingOcclusion = false;
+		public bool isTemporary = false;
+		public bool isUsingOcclusion = false;
 
 #if UNITY_5 || UNITY_2017
         public AudioMixerGroup mixerChannel = null;

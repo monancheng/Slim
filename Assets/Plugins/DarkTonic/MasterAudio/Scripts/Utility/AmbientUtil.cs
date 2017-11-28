@@ -11,6 +11,7 @@ namespace DarkTonic.MasterAudio {
 
         private static Transform _followerHolder;
         private static ListenerFollower _listenerFollower;
+        private static Rigidbody _listenerFollowerRB;
 
         public static void InitFollowerHolder() {
             var h = FollowerHolder;
@@ -34,7 +35,9 @@ namespace DarkTonic.MasterAudio {
             return true;
         }
 
-        public static Transform InitAudioSourceFollower(Transform transToFollow, string followerName, string soundGroupName, bool willFollowSource) {
+        public static Transform InitAudioSourceFollower(Transform transToFollow, string followerName, string soundGroupName, bool willFollowSource, bool willPositionOnClosestColliderPoint, 
+            bool useTopCollider, bool useChildColliders) {
+
             if (ListenerFollower == null || FollowerHolder == null) {
                 return null;
             }
@@ -60,7 +63,7 @@ namespace DarkTonic.MasterAudio {
 			follower.gameObject.layer = FollowerHolder.gameObject.layer;
 			var followerScript = follower.gameObject.AddComponent<TransformFollower>();
 
-            followerScript.StartFollowing(transToFollow, soundGroupName, triggerRadius, willFollowSource);
+            followerScript.StartFollowing(transToFollow, soundGroupName, triggerRadius, willFollowSource, willPositionOnClosestColliderPoint, useTopCollider, useChildColliders);
             return follower.transform;
         }
 
@@ -86,8 +89,14 @@ namespace DarkTonic.MasterAudio {
                     _listenerFollower = follower.gameObject.AddComponent<ListenerFollower>();
                 }
 
-                var rb = follower.gameObject.AddComponent<Rigidbody>();
-                rb.useGravity = false;
+                if (MasterAudio.Instance.listenerFollowerHasRigidBody) {
+                    var rb = follower.gameObject.GetComponent<Rigidbody>();
+                    if (rb == null) {
+                        rb = follower.gameObject.AddComponent<Rigidbody>();
+                    }
+                    rb.useGravity = false;
+                    _listenerFollowerRB = rb;
+                } 
 
                 return _listenerFollower;
             }
@@ -120,6 +129,10 @@ namespace DarkTonic.MasterAudio {
 
         public static bool HasListenerFollower {
             get { return _listenerFollower != null; }
+        }
+
+        public static bool HasListenerFolowerRigidBody {
+            get { return _listenerFollowerRB != null; }
         }
     }
 }

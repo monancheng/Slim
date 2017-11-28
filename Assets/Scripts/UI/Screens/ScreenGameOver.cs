@@ -201,14 +201,10 @@ public class ScreenGameOver : ScreenItem
         
         if (!_isSkinsAllGeneralOpened && PrefsManager.CoinsCount.GetValue() >= 200)
         {
-            idNotifyOld = _activeNamesList.IndexOf("NotifyNextCharacter");
-            if (idNotifyOld != -1) _activeNamesList.RemoveAt(idNotifyOld);
-            
-            _activeNamesList.Add("NotifyNewCharacter");
+             _activeNamesList.Add("NotifyNewCharacter");
             // Удаляем итем ожидания, если он есть
             idNotifyOld = _activeNamesList.IndexOf("NotifyNextCharacter");
-            if (idNotifyOld != -1) 
-                _activeNamesList.RemoveAt(idNotifyOld); 
+            if (idNotifyOld != -1) _activeNamesList.RemoveAt(idNotifyOld); 
             return true;
         }
         return false;
@@ -318,6 +314,15 @@ public class ScreenGameOver : ScreenItem
             int idNotifyOld = _activeNamesList.IndexOf("NotifyNewCharacter");
             if (idNotifyOld != -1) _activeNamesList.RemoveAt(idNotifyOld);
         }
+        
+        if (PrefsManager.CoinsCount.GetValue() >= 200)
+        {
+            int idNotifyOld = _activeNamesList.IndexOf("NotifyNextCharacter");
+            if (idNotifyOld != -1)
+            {
+                AddNotifySkin();
+            }
+        }
     }
 
     public void ShowActiveItems()
@@ -329,9 +334,9 @@ public class ScreenGameOver : ScreenItem
         {
             GlobalEvents<OnNoGameOverButtons>.Call(new OnNoGameOverButtons());
             return;
-        } 
+        }
         
-//        UIManager.ShowUiElement("ScreenGameOver");
+        //        UIManager.ShowUiElement("ScreenGameOver");
         for (int i = 0; i < _activeNamesList.Count; i++)
         {
             var element = GetUIElement(_activeNamesList[i]);
@@ -340,7 +345,7 @@ public class ScreenGameOver : ScreenItem
                 UIManager.ShowUiElement(_activeNamesList[i]);
             }
         }
-        
+
         _isVisual = true;
     }
 
@@ -399,11 +404,12 @@ public class ScreenGameOver : ScreenItem
         
         int idNotifyOld = _activeNamesList.IndexOf("NotifyGiftWaiting");
         if (!_isGiftAvailable || !_isVisual || idNotifyOld == -1) return;
-        
-        AddNotifyGift();
-            
+
         var element = GetUIElement(_activeNamesList[idNotifyOld]);
         UIManager.HideUiElement(_activeNamesList[idNotifyOld]);
+        _activeNamesList.RemoveAt(idNotifyOld);
+        AddNotifyGift();
+        
         var element2 = GetUIElement("NotifyGift");
         if (element&&element2)
         {
@@ -414,7 +420,7 @@ public class ScreenGameOver : ScreenItem
             element2.inAnimations.move.startDelay = element.inAnimations.move.startDelay;
             element2.outAnimations.move.startDelay = element.outAnimations.move.startDelay;
         }
-        _activeNamesList.RemoveAt(idNotifyOld);
+        
         
         UIManager.ShowUiElement("NotifyGift");
     }
@@ -428,11 +434,13 @@ public class ScreenGameOver : ScreenItem
         int idNotifyOld = _activeNamesList.IndexOf("NotifyNextCharacter");
         if (!_isVisual || idNotifyOld == -1) return;
 
-        if (obj.Total >= 200)
+        if (toNextSkin == 0)
         {
+            var element = GetUIElement(_activeNamesList[idNotifyOld]);
+            UIManager.HideUiElement(_activeNamesList[idNotifyOld]);
+            _activeNamesList.RemoveAt(idNotifyOld); 
+            
             if (AddNotifySkin()) {
-                var element = GetUIElement(_activeNamesList[idNotifyOld]);
-                UIManager.HideUiElement(_activeNamesList[idNotifyOld]);
                 var element2 = GetUIElement("NotifyNewCharacter");
                 if (element)
                 {
@@ -444,8 +452,7 @@ public class ScreenGameOver : ScreenItem
                     element2.useCustomStartAnchoredPosition = true;
                 }
                 UIManager.ShowUiElement("NotifyNewCharacter");
-            }
-            _activeNamesList.RemoveAt(idNotifyOld);   
+            } 
         } 
     }
 
@@ -464,7 +471,9 @@ public class ScreenGameOver : ScreenItem
                 AddNotifySkin();
             }
             else
+            {
                 _activeNamesList.Add("NotifyGiftWaiting");
+            }
         } else if (_giftCollectedType == GiftCollectedType.Skin)
         {
             AddNotifySkin();

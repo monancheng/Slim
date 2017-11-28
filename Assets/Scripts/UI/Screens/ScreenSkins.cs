@@ -16,7 +16,7 @@ public class ScreenSkins : ScreenItem
     private const int FacesGeneralMin = 0;
     private const int FacesGeneralMax = 18;
     private const int FacesSocialStartId = FacesGeneralMax+1;
-    private const int FacesPaybleStartId = FacesSocialStartId + 0;
+    private const int FacesPaybleStartId = FacesSocialStartId + 4;
 
     private const int SkinFacebook = 101;//FacesSocialStartId;
     private const int SkinTwitter = 101;//FacesSocialStartId + 1;
@@ -43,7 +43,7 @@ public class ScreenSkins : ScreenItem
         CurrentFaceId = SecurePlayerPrefs.GetInt("currentFaceID");
 //      CurrentFaceId = 0;
         _isFirstGift = SecurePlayerPrefs.GetBool("isFirstSkinGift", true);
-        //        for (var i = 0; i < FaceAvailable.Length; i++)
+//        for (var i = 0; i < _faceAvailable.Length; i++)
 //            SecurePlayerPrefs.SetInt("faceAvailable_" + i, 1);
         
         for (var i = 1; i < _faceAvailable.Length; i++)
@@ -125,13 +125,13 @@ public class ScreenSkins : ScreenItem
     {
         switch (obj.Id)
         {
-            case IapsManager.IAP_SKIN_1: OpenSkin(IapSkin1);
+            case BillingManager.iapTierSkin1: OpenSkin(IapSkin1);
                 break;
-            case IapsManager.IAP_SKIN_2: OpenSkin(IapSkin2);
+            case BillingManager.iapTierSkin2: OpenSkin(IapSkin2);
                 break;
-            case IapsManager.IAP_SKIN_3: OpenSkin(IapSkin3);
+            case BillingManager.iapTierSkin3: OpenSkin(IapSkin3);
                 break;
-            case IapsManager.IAP_SKIN_4: OpenSkin(IapSkin4);
+            case BillingManager.iapTierSkin4: OpenSkin(IapSkin4);
                 break;
         }
         MasterAudio.PlaySoundAndForget("GUI_Grab");
@@ -180,7 +180,7 @@ public class ScreenSkins : ScreenItem
         } else 
         if (id == SkinSponsor)
         {
-            Application.OpenURL("http://www.ketchappstudio.com");
+            Application.OpenURL("http://www.squaredino.com");
             OpenSkin(id);
             isAvailable = true;
         } 
@@ -212,10 +212,27 @@ public class ScreenSkins : ScreenItem
 
     public void BuyPayableSkin(int id)
     {
-        if (id == 1) GlobalEvents<OnIAPsBuySkin>.Call(new OnIAPsBuySkin{Id = IapsManager.IAP_SKIN_1}); else
-        if (id == 2) GlobalEvents<OnIAPsBuySkin>.Call(new OnIAPsBuySkin{Id = IapsManager.IAP_SKIN_2}); else
-        if (id == 3) GlobalEvents<OnIAPsBuySkin>.Call(new OnIAPsBuySkin{Id = IapsManager.IAP_SKIN_3}); else
-        if (id == 4) GlobalEvents<OnIAPsBuySkin>.Call(new OnIAPsBuySkin{Id = IapsManager.IAP_SKIN_4}); 
+        if (_faceAvailable[id + IapSkin1 - 1] == 1)
+        {
+            CurrentFaceId = id;
+            GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = id});
+            SecurePlayerPrefs.SetInt("currentFaceID", CurrentFaceId);
+            ChooseColorForButtons();
+            MasterAudio.PlaySoundAndForget("GUI_Grab");
+            Hide();
+            GlobalEvents<OnShowMenu>.Call(new OnShowMenu());
+            GlobalEvents<OnGameOverScreenShowActiveItems>.Call(new OnGameOverScreenShowActiveItems());
+        }
+        else
+        {
+            if (id == 1) GlobalEvents<OnIAPsBuySkin>.Call(new OnIAPsBuySkin {Id = BillingManager.iapTierSkin1});
+            else if (id == 2)
+                GlobalEvents<OnIAPsBuySkin>.Call(new OnIAPsBuySkin {Id = BillingManager.iapTierSkin2});
+            else if (id == 3)
+                GlobalEvents<OnIAPsBuySkin>.Call(new OnIAPsBuySkin {Id = BillingManager.iapTierSkin3});
+            else if (id == 4)
+                GlobalEvents<OnIAPsBuySkin>.Call(new OnIAPsBuySkin {Id = BillingManager.iapTierSkin4});
+        }
     }
 
     private void BuySkin(int id)

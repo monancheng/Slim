@@ -162,7 +162,7 @@ public class ScreenGift : ScreenItem
 	{
 		D.Log("MakeAGiftRandomSkin()");
 		GlobalEvents<OnGiftShowRandomSkinAnimation>.Call(new OnGiftShowRandomSkinAnimation());
-		GlobalEvents<OnTubeCreateExample>.Call(new OnTubeCreateExample());
+//		GlobalEvents<OnTubeCreateExample>.Call(new OnTubeCreateExample());
 	}
 	
 	private void MakeAGiftWord()

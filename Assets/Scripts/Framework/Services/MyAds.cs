@@ -13,6 +13,7 @@ public class MyAds : MonoBehaviour
     private DateTime _videoDate;
     private bool _isVideoWaitTimer;
     private bool _isFirstTimeVideo;
+    public static int noAds;
 
     private void Awake()
     {

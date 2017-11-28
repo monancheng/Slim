@@ -1,5 +1,4 @@
 using System;
-using Facebook.Unity;
 using PrefsEditor;
 using UnityEngine;
 
@@ -27,62 +26,9 @@ public class PrefsManager : MonoBehaviour
         SecurePlayerPrefs.PassPhrase = "squaredino.com";
         SecurePlayerPrefs.UseSecurePrefs = true;
         OnLoadStatistics();
-        
-        FB.Init(OnInitComplete, OnHideUnity);
-        Debug.Log("FB.Init() called with " + FB.AppId);
-        
-        // Код с сайта - https://developers.facebook.com/docs/unity/reference/current/FB.ActivateApp
-//        if (FB.IsInitialized) {
-//            FB.ActivateApp();
-//        } else {
-//            //Handle FB.Init
-//            FB.Init( () => {
-//                FB.ActivateApp();
-//            });
-//        }
     }
     
-    private void OnInitComplete()
-    {
-        Debug.Log("Success - Check log for details");
-        Debug.Log("Success Response: OnInitComplete Called");
-        Debug.Log(string.Format(
-            "OnInitCompleteCalled IsLoggedIn='{0}' IsInitialized='{1}'",
-            FB.IsLoggedIn,
-            FB.IsInitialized));
-        if (AccessToken.CurrentAccessToken != null)
-        {
-            Debug.Log(AccessToken.CurrentAccessToken.ToString());
-        }
-        
-        FB.ActivateApp();
-    }
-
-    private void OnHideUnity(bool isGameShown)
-    {
-        Debug.Log("Success - Check log for details");
-        Debug.Log(string.Format("Success Response: OnHideUnity Called {0}\n", isGameShown));
-        Debug.Log("Is game shown: " + isGameShown);
-    }
     
-    // Unity will call OnApplicationPause(false) when an app is resumed
-// from the background
-    void OnApplicationPause (bool pauseStatus)
-    {
-        // Check the pauseStatus to see if we are in the foreground
-        // or background
-        if (!pauseStatus) {
-            //app resume
-            if (FB.IsInitialized) {
-                FB.ActivateApp();
-            } else {
-                //Handle FB.Init
-                FB.Init( () => {
-                    FB.ActivateApp();
-                });
-            }
-        }
-    }
     
     private void OnLoadStatistics()
     {

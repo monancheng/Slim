@@ -408,6 +408,7 @@ namespace DarkTonic.MasterAudio {
             }
 
             VarAudio.Play();
+            AudioUtil.ClipPlayed(VarAudio.clip, GrpVariation.GameObj);
 
             if (GrpVariation.useRandomStartTime) {
                 var offset = Random.Range(GrpVariation.randomStartMinPercent, GrpVariation.randomStartMaxPercent) * 0.01f * VarAudio.clip.length;
@@ -557,6 +558,7 @@ namespace DarkTonic.MasterAudio {
             _framesPlayed = 0;
 
             DoneWithOcclusion();
+            MasterAudio.RegisterUpdaterForUpdates(this);
         }
 
         // ReSharper disable once UnusedMember.Local
@@ -568,6 +570,7 @@ namespace DarkTonic.MasterAudio {
             _framesPlayed = 0;
 
             DoneWithOcclusion();
+            MasterAudio.UnregisterUpdaterForUpdates(this);
         }
 
         public void UpdateCachedObjects() {
@@ -584,8 +587,10 @@ namespace DarkTonic.MasterAudio {
             _listenerThisFrame = MasterAudio.ListenerTrans;
         }
 
-        // ReSharper disable once UnusedMember.Local
-        private void LateUpdate() {
+        /// <summary>
+        /// This method will be called by MasterAudio.cs either during LateUpdate (default) or FixedUpdate, however you've configured it in Advanced Settings.
+        /// </summary>
+        public void ManualUpdate() {
             UpdateCachedObjects();
 
             _framesPlayed++;

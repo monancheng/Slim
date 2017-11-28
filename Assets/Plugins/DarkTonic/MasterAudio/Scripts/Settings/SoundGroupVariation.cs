@@ -568,7 +568,7 @@ namespace DarkTonic.MasterAudio {
                 AudioResourceOptimizer.UnloadClipIfUnused(_resFileName);
             }
 
-            AudioUtil.UnloadNonPreloadedAudioData(VarAudio.clip);
+            AudioUtil.UnloadNonPreloadedAudioData(VarAudio.clip, GameObj);
         }
 
         private void PlayEndLinkedGroups() {

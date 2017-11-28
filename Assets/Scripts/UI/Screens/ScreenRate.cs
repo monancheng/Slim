@@ -62,9 +62,9 @@ public class ScreenRate : ScreenItem
 		if (_voteValue > 3)
 		{
 #if UNITY_ANDROID
-			Application.OpenURL("http://squaredino.com");
+			Application.OpenURL("market://details?id=com.crazylabs.nopixels");
 #elif UNITY_IOS
-			Application.OpenURL("http://squaredino.com");
+			Application.OpenURL("itms-apps://itunes.apple.com/app/id1288514456");
 #endif
 			PrefsManager.RateCounter = 1;
 			PlayerPrefs.SetInt("RateCounter", 1);
