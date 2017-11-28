@@ -212,10 +212,11 @@ public class ScreenSkins : ScreenItem
 
     public void BuyPayableSkin(int id)
     {
-        if (_faceAvailable[id + IapSkin1 - 1] == 1)
+        int realId = id + IapSkin1 - 1;
+        if (_faceAvailable[realId] == 1)
         {
-            CurrentFaceId = id;
-            GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = id});
+            CurrentFaceId = realId;
+            GlobalEvents<OnChangeSkin>.Call(new OnChangeSkin{Id = realId});
             SecurePlayerPrefs.SetInt("currentFaceID", CurrentFaceId);
             ChooseColorForButtons();
             MasterAudio.PlaySoundAndForget("GUI_Grab");

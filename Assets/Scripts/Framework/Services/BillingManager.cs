@@ -61,8 +61,8 @@ public class BillingManager : MonoBehaviour
         {  
             // Inject code to display received products
             foreach (BillingProduct _product in _regProductsList) {
-                D.Log("Product Identifier = "         + _product.ProductIdentifier);
-                D.Log("Product Description = "        + _product.Description);
+                Debug.Log("Product Identifier = "         + _product.ProductIdentifier);
+                Debug.Log("Product Description = "        + _product.Description);
             }
         }
     }
