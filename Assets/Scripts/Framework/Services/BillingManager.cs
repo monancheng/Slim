@@ -44,6 +44,7 @@ public class BillingManager : MonoBehaviour
 
     public void RequestBillingProducts ()
     {
+        GlobalEvents<OnDebugLog>.Call(new OnDebugLog {message = "RequestBillingProducts()"});
         NPBinding.Billing.RequestForBillingProducts(NPSettings.Billing.Products);
         // At this point you can display an activity indicator to inform user that task is in progress
     }
@@ -51,16 +52,18 @@ public class BillingManager : MonoBehaviour
     private void OnDidFinishProductsRequest (BillingProduct[] _regProductsList, string _error)
     {
         // Hide activity indicator
-
+        
         // Handle response
         if (_error != null)
         {        
             // Something went wrong
+            GlobalEvents<OnDebugLog>.Call(new OnDebugLog {message = "RequestBillingProducts() - ERROR " + _error});
         }
         else 
         {  
             // Inject code to display received products
             foreach (BillingProduct _product in _regProductsList) {
+                GlobalEvents<OnDebugLog>.Call(new OnDebugLog {message = "RequestBillingProducts() - Product Identifier = " + _product.ProductIdentifier});
                 Debug.Log("Product Identifier = "         + _product.ProductIdentifier);
                 Debug.Log("Product Description = "        + _product.Description);
             }
@@ -69,14 +72,14 @@ public class BillingManager : MonoBehaviour
 
     public void BuyItem (BillingProduct _product)
     {
-        
+        GlobalEvents<OnDebugLog>.Call(new OnDebugLog {message = "BuyItem() - Product Identifier = " + _product.ProductIdentifier});
         if (NPBinding.Billing.IsProductPurchased(_product))
         {
             // Show alert message that item is already purchased
-
+            GlobalEvents<OnDebugLog>.Call(new OnDebugLog {message = "BuyItem() - Almoust Purshased - Product Identifier = " + _product.ProductIdentifier});
             return;
         }
-
+        GlobalEvents<OnDebugLog>.Call(new OnDebugLog {message = "BuyItem() - Try Purchase - Product Identifier = " + _product.ProductIdentifier});
         // Call method to make purchase
         NPBinding.Billing.BuyProduct(_product);
 
@@ -121,6 +124,7 @@ public class BillingManager : MonoBehaviour
             {
                 if (_transaction.TransactionState == eBillingTransactionState.PURCHASED)
                 {
+                    GlobalEvents<OnDebugLog>.Call(new OnDebugLog {message = "OnDidFinishTransaction() - Product Identifier = " + _transaction.ProductIdentifier});
                     // Your code to handle purchased products
                     if (_transaction.ProductIdentifier == NPSettings.Billing.Products[iapTier1].ProductIdentifier) {
                         GlobalEvents<OnCoinsAdd>.Call(new OnCoinsAdd {Count = 200});
@@ -154,14 +158,16 @@ public class BillingManager : MonoBehaviour
                     return;
                 } else {
                     NPBinding.UI.ShowAlertDialogWithSingleButton("Purchase failed", "", "Ok", _buttonPressed => {});
+                    GlobalEvents<OnDebugLog>.Call(new OnDebugLog {message = "Purchase failed"});
                 }
             }
             NPBinding.UI.ShowAlertDialogWithSingleButton("Purchase failed", "", "Ok", _buttonPressed => {});
+            GlobalEvents<OnDebugLog>.Call(new OnDebugLog {message = "Purchase failed"});
             return;
         }
 
         NPBinding.UI.ShowAlertDialogWithSingleButton("Purchase failed", "Check your Internet connection or try later!", "Ok", _buttonPressed => {});
-
+        GlobalEvents<OnDebugLog>.Call(new OnDebugLog {message = "Purchase failed-Check your Internet connection or try later!"});
     }
 
     public void BtnRestoreIaps()

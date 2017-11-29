@@ -293,4 +293,13 @@ public struct AchievementProgress
 
 public struct OnTubeCreateExample{}
 
+//--------------------------------------------------------
+//							Drbug
+//--------------------------------------------------------
+
+public struct OnDebugLog
+{
+    public string message;
+}
+
 

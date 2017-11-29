@@ -13,9 +13,15 @@ public class TubeManager : MonoBehaviour
     [SerializeField] private GameObject[] _smiles;
     private int _smileID;
     
-    private const float StartSpeed = 151f;
-    private const float StartRadiusMinus = 1.5f;
-    public static float CurrentSpeed = StartSpeed;
+    public float StartSpeed = 151f;
+    public float MaxSpeed = 229f;
+    public float AccelerationStart = 3.2f;
+    private float _acceleration;
+    public float DeccelerationStart = .95f;
+    private float _decceleration;
+    public float StartRadiusMinus = 1.5f;
+    
+    public static float CurrentSpeed;
     public static event Action <float> OnTubesSpeedScale;
     public static event Action OnCreateCoin;
 	public static event Action OnCreateBonusIncrease;
@@ -27,8 +33,7 @@ public class TubeManager : MonoBehaviour
     private const float OuterRadius = 14f;
     public static readonly float InitRadius = 7f;
     
-    private const float MaxSpeed = 229f;
-    private float _acceleration = 2.9f;
+    
     
     private int _counter;
     private bool _isWantBonusTube;
@@ -43,6 +48,7 @@ public class TubeManager : MonoBehaviour
 
     private void Start()
     {
+        CurrentSpeed = StartSpeed;
         _radiusAddCoeff = 5f;
         _counter = 0;
         _smileID = 0;
@@ -130,6 +136,8 @@ public class TubeManager : MonoBehaviour
 
     private void StartGame(OnStartGame obj)
     {
+        _acceleration = AccelerationStart;
+        _decceleration = DeccelerationStart;
         CurrentSpeed = StartSpeed;
 		_coinCounter = 2;
         GameEvents.Send(OnTubesSpeedScale, CurrentSpeed/MaxSpeed);
@@ -311,20 +319,27 @@ public class TubeManager : MonoBehaviour
 
     private void IncreaseSpeed()
     {
-        if (CurrentSpeed < 159f) _acceleration = 3.2f; else
-        if (CurrentSpeed < 164f) _acceleration = 2.6f; else
-        if (CurrentSpeed < 169f) _acceleration = 1.9f; else
-        if (CurrentSpeed < 174f) _acceleration = 1.5f; else
-        if (CurrentSpeed < 179f) _acceleration = 1.3f; else
-        if (CurrentSpeed < 184f) _acceleration = 1.2f; else
-        if (CurrentSpeed < 189f) _acceleration = 1.1f; else
-        if (CurrentSpeed < 194f) _acceleration = 0.95f; else
-        if (CurrentSpeed < 199f) _acceleration = 0.90f; else
-        if (CurrentSpeed < 204f) _acceleration = 0.85f; else
-            _acceleration = 0.5f;
+        DecAcceleration();
+//        if (CurrentSpeed < 159f) _acceleration = 3.2f; else
+//        if (CurrentSpeed < 164f) _acceleration = 2.6f; else
+//        if (CurrentSpeed < 169f) _acceleration = 1.9f; else
+//        if (CurrentSpeed < 174f) _acceleration = 1.5f; else
+//        if (CurrentSpeed < 179f) _acceleration = 1.3f; else
+//        if (CurrentSpeed < 184f) _acceleration = 1.2f; else
+//        if (CurrentSpeed < 189f) _acceleration = 1.1f; else
+//        if (CurrentSpeed < 194f) _acceleration = 0.95f; else
+//        if (CurrentSpeed < 199f) _acceleration = 0.90f; else
+//        if (CurrentSpeed < 204f) _acceleration = 0.85f; else
+//            _acceleration = 0.5f;
         CurrentSpeed += _acceleration;
         if (CurrentSpeed > MaxSpeed) CurrentSpeed = MaxSpeed;
         GameEvents.Send(OnTubesSpeedScale, CurrentSpeed/MaxSpeed);
+    }
+
+    private void DecAcceleration()
+    {
+        _acceleration *= _decceleration;
+        if (CurrentSpeed >= 204f) _acceleration = .5f;
     }
 
     private Shader GetShader()
