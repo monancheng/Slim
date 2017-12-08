@@ -2,26 +2,6 @@ MASTER AUDIO PLUGIN - By DarkTonic, Inc. (c) 2012-2017
 
 - Code by Brian Hunsaker
 
--V 4.1.5    - Fixed issue: When "save runtime changes" is on, Custom Events, Playlists, Duck Groups and Buses in DGSC's no longer stay in the Master Audio game object after hitting stop.
-			- Fixed bug: Relations Inspector didn't show linked groups of linked groups.
-			- Fixed warning on Unity_2017 having to do with "Save Runtime Changes".
-			- Fixed bug where Mechanim Timed Custom Event wouldn't play timed event unless other unrelated checkbox was checked.
-		    - Fixed bug where only 1 of an Audio Clip with "Preload Audio Data" could be played inside a single Sound Group at once.
-			- Added MasterAudio.DeleteGroupVariation to API.
-			- Added "Max Pos. Recalcs / Frame" for Ambient Sounds under Advanced Settings, for use with the new Use Closest Collider Position option.
-			- Added a setting in Advanced Settings to turn off the non-gravity RigidBody on ListenerFollower if you don't use Ambient Sounds script.
-			- Added logic to not rescan Groups in Master Audio Inspector unless the list of groups has changed.
-			- Updated Playmaker Custom Action "Master Audio Play Sound With Event" to have all the options that the Play Sound action has.
-			- Added "Use Closest Collider Position" checkbox to Ambient Sound script (Unity 5.6 and up only). This will reposition the Audio Source for the caller every frame to the closest point on the collider of the caller, if one exists. This overrides the "Follow Caller" option.
-			- Added the ability to choose top collider, child colliders or both with the Use Closest Collider Position option.
-			- Added the alternate "File Player Prefs" for XBox and made it the default for XBox platform. So now you can do Persistent Settings and other Player Pref dependent code on XBox as well.
-		    - Add a new setting under Audio Listener Settings on Advanced Settings, called Variation Update Method. Defaults to Late Update, but you can change it to Fixed Update if your Audio Listener is on a Physics (gravity rigidbody) object, so audio glitches will be eliminated.
-
--V 4.1.4	- Fixed bug: Firing a Custom Event from a DynamicSoundGroupCreator didn't work when changing to a new Scene where that DGSC lives.
-			- Potential breaking change: Updated Playmaker Custom Action "Fire Custom Event" to allow use of a variable for the Game Object. If you were using this action, your previous "origin" will be lost since the variable type is now different. You will need to set it again.
-			- Added ability to MechanimStateSounds to be able to retrigger the "timed to animation sounds" every time the animation loops but the Mechanim State is not exited.
-			- Added all the timed to animation functionality of MechanimStateSounds to MechanimStateCustomEvents script.
-
 -V 4.1.3    - Fixed bug: with Loop Playlist off, last Resource file doesn't get unloaded at end. No code to detect this.
 			- You now can drag a folder containing 1 or more Audio Clips into the "Drag Audio Clips here" boxes. It can contain other things too - only the Audio Clips will be processed in bulk.
 		    - Added code to restore a slider's value during Awake if it has been used in Event Sounds to set Persistent volumes (music / mixer / group / bus). Now you don't have to write that code.

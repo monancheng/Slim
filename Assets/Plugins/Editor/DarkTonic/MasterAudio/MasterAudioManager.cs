@@ -5,10 +5,6 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-#if UNITY_XBOXONE
-    using PlayerPrefs = DarkTonic.MasterAudio.FilePlayerPrefs;
-#endif
-
 // ReSharper disable once CheckNamespace
 public class MasterAudioManager : EditorWindow {
     private Vector2 _scrollPos = Vector2.zero;

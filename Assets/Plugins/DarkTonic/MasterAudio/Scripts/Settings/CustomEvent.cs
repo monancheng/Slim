@@ -15,8 +15,7 @@ namespace DarkTonic.MasterAudio {
         public float distanceThreshold = 1f;
         public MasterAudio.EventReceiveFilter eventRcvFilterMode = MasterAudio.EventReceiveFilter.All;
         public int filterModeQty = 1;
-		public bool isTemporary = false;
-		public int frameLastFired = -1;
+        public int frameLastFired = -1;
         public string categoryName = MasterAudio.NoCategory;
         // ReSharper restore InconsistentNaming
 

@@ -3,8 +3,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.voxelbusters.androidnativeplugin" android:versionCode="1" android:versionName="1.0">
   <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="26" />
   <application>
-    <!--Billing : Activity used for purchase view-->
-    <activity android:name="com.voxelbusters.nativeplugins.features.billing.serviceprovider.google.GoogleBillingActivity" android:theme="@style/FloatingActivityTheme" />
     <!--Sharing-->
     <activity android:name="com.voxelbusters.nativeplugins.features.sharing.SharingActivity" android:theme="@style/FloatingActivityTheme" />
     <!--UI  : Generic helper activity for launching Dialogs-->
@@ -15,16 +13,8 @@
     <provider android:name="com.voxelbusters.nativeplugins.extensions.FileProviderExtended" android:authorities="com.squaredino.slimring.fileprovider" android:exported="false" android:grantUriPermissions="true">
       <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/nativeplugins_file_paths" />
     </provider>
-    <!--Billing : Amazon Billing Receiver-->
-    <receiver android:name="com.amazon.device.iap.ResponseReceiver">
-      <intent-filter>
-        <action android:name="com.amazon.inapp.purchasing.NOTIFY" android:permission="com.amazon.inapp.purchasing.Permission.NOTIFY" />
-      </intent-filter>
-    </receiver>
   </application>
   <!--Permissions-->
-  <!--Billing-->
-  <uses-permission android:name="com.android.vending.BILLING" />
   <!--Notifications : Badge Permission for Samsung Devices-->
   <uses-permission android:name="com.sec.android.provider.badge.permission.READ" />
   <uses-permission android:name="com.sec.android.provider.badge.permission.WRITE" />

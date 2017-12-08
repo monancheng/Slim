@@ -1,7 +1,9 @@
-﻿using DarkTonic.MasterAudio;
+﻿using System.Collections.Generic;
+using DarkTonic.MasterAudio;
 using DoozyUI;
 using PrefsEditor;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 public class ScreenGame : ScreenItem
 {
@@ -76,6 +78,8 @@ public class ScreenGame : ScreenItem
         if (_gameState == GameState.WaitToStart && InputController.GetPosition().y > 220)
         {
             GlobalEvents<OnStartGame>.Call(new OnStartGame());
+            Analytics.CustomEvent("StartGameByTouch",
+                new Dictionary<string, object> {{"sessions", PrefsManager.GameplayCounter}});
         }
     }
 
@@ -108,6 +112,8 @@ public class ScreenGame : ScreenItem
     public void StartGame()
     {
         GlobalEvents<OnStartGame>.Call(new OnStartGame());
+        Analytics.CustomEvent("MainManuBtnPlayClick",
+            new Dictionary<string, object> {{"sessions", PrefsManager.GameplayCounter}});
     }
 
     private void OnStartGame(OnStartGame e)

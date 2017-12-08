@@ -1,6 +1,8 @@
-﻿using DoozyUI;
+﻿using System.Collections.Generic;
+using DoozyUI;
 using PrefsEditor;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 public class Points : MonoBehaviour
@@ -72,6 +74,8 @@ public class Points : MonoBehaviour
         {
             PrefsManager.GameBestScore = PrefsManager.CurrentPointsCount;
             SecurePlayerPrefs.SetInt("BestScore",PrefsManager.GameBestScore);
+            Analytics.CustomEvent("HighScore",
+            new Dictionary<string, object> {{"sessions", PrefsManager.GameplayCounter},{"score", PrefsManager.GameBestScore}});
         }
         _isPointAdded = true;
     }

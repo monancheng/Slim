@@ -6,16 +6,12 @@ using UnityEngine;
 namespace DarkTonic.MasterAudio {
     // ReSharper disable once CheckNamespace
     public class MechanimStateSounds : StateMachineBehaviour {
-        [Header("Select For Sounds To Follow Object")]
+        [Header("Select for sounds to follow Object")]
         public bool SoundFollowsObject = false;
-
-        [Tooltip("Select for sounds to retrigger each time animation loops without exiting state")]
-        [Header("Retrigger Sounds Each Time Anim Loops w/o Exiting State")]
-        public bool RetriggerWhenStateLoops = false;
 
         [Tooltip("Play a Sound Group when state is Entered")]
         [Header("Enter Sound Group")]
-        public bool playEnterSound = false;
+        public bool playEnterSound = true;
         public bool stopEnterSoundOnExit = false;
         [SoundGroup]
         public string enterSoundGroup = MasterAudio.NoGroupName;
@@ -25,7 +21,7 @@ namespace DarkTonic.MasterAudio {
 
         [Tooltip("Play a Sound Group when state is Exited")]
         [Header("Exit Sound Group")]
-        public bool playExitSound = false;
+        public bool playExitSound = true;
         [SoundGroup]
         public string exitSoundGroup = MasterAudio.NoGroupName;
         [Tooltip("Random Variation plays if blank, otherwise name a Variation from the above Sound Group to play.")]
@@ -90,10 +86,8 @@ namespace DarkTonic.MasterAudio {
         private bool playMultiSound3 = true;
         private bool playMultiSound4 = true;
         private Transform _actorTrans;
-        private int _lastRepetition = -1;
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-            _lastRepetition = 0;
             _actorTrans = ActorTrans(animator);
 
             if (!playEnterSound) {
@@ -119,44 +113,32 @@ namespace DarkTonic.MasterAudio {
         }
 
         override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-            var animRepetition = (int)stateInfo.normalizedTime;
-            var animTime = stateInfo.normalizedTime - animRepetition;
-
-            if (!playAnimTimeSound) {
-                goto multisounds;
-            }
-
             #region Timed to Anim
 
-            if (!playSoundStart && RetriggerWhenStateLoops) {
-                // change back to true if "re-trigger" checked and anim has looped.
-                if (_lastRepetition >= 0 && animRepetition > _lastRepetition) {
-                    playSoundStart = true;
-                }
-            }
+            if (playAnimTimeSound) {
+                if (playSoundStart) {
+                    if (stateInfo.normalizedTime > whenToStartSound) {
+                        playSoundStart = false;
 
-            if (playSoundStart) {
-                if (animTime > whenToStartSound) {
-                    playSoundStart = false;
-
-                    //If user selects useStopTime and the stop time is less then start time, they will hear no sound
-                    if (useStopTime && whenToStopSound < whenToStartSound) {
-                        Debug.LogError("Stop time must be greater than start time when Use Stop Time is selected.");
-                        goto outside;
-                    }
-
-                    var varName = GetVariationName(timedVariationName);
-                    if (SoundFollowsObject) {
-                        if (varName == null) {
-                            MasterAudio.PlaySound3DFollowTransformAndForget(TimedSoundGroup, _actorTrans);
-                        } else {
-                            MasterAudio.PlaySound3DFollowTransformAndForget(TimedSoundGroup, _actorTrans, 1f, null, 0f, varName);
+                        //If user selects useStopTime and the stop time is less then start time, they will hear no sound
+                        if (useStopTime && whenToStopSound < whenToStartSound) {
+                            Debug.LogError("Stop time must be greater than start time when Use Stop Time is selected.");
+                            goto outside;
                         }
-                    } else {
-                        if (varName == null) {
-                            MasterAudio.PlaySound3DAtTransformAndForget(TimedSoundGroup, _actorTrans);
+
+                        var varName = GetVariationName(timedVariationName);
+                        if (SoundFollowsObject) {
+                            if (varName == null) {
+                                MasterAudio.PlaySound3DFollowTransformAndForget(TimedSoundGroup, _actorTrans);
+                            } else {
+                                MasterAudio.PlaySound3DFollowTransformAndForget(TimedSoundGroup, _actorTrans, 1f, null, 0f, varName);
+                            }
                         } else {
-                            MasterAudio.PlaySound3DAtTransformAndForget(TimedSoundGroup, _actorTrans, 1f, null, 0f, varName);
+                            if (varName == null) {
+                                MasterAudio.PlaySound3DAtTransformAndForget(TimedSoundGroup, _actorTrans);
+                            } else {
+                                MasterAudio.PlaySound3DAtTransformAndForget(TimedSoundGroup, _actorTrans, 1f, null, 0f, varName);
+                            }
                         }
                     }
                 }
@@ -164,12 +146,12 @@ namespace DarkTonic.MasterAudio {
 
             outside:
 
-            if (useStopTime) {
-                if (playSoundStop) {
-                    if (animTime > whenToStartSound) {
+			if (playAnimTimeSound && useStopTime) {
+				if (playSoundStop) {
+                    if (stateInfo.normalizedTime > whenToStartSound) {
                         if (!stopAnimTimeSoundOnExit) {
                             //Sound will stop upon exit instead of relying on animation time
-                            if (animTime > whenToStopSound) {
+                            if (stateInfo.normalizedTime > whenToStopSound) {
                                 playSoundStop = false;
                                 MasterAudio.StopSoundGroupOfTransform(_actorTrans, TimedSoundGroup);
                             }
@@ -177,48 +159,18 @@ namespace DarkTonic.MasterAudio {
                     }
                 }
             }
-
             #endregion
-
-            multisounds:
-
-            if (!playMultiAnimTimeSounds) {
-                goto afterMulti;
-            }
 
             #region Play Multiple Sounds Timed To Anim
 
-            if (RetriggerWhenStateLoops) {
-                if (!playMultiSound1) {
-                    // change back to true if "re-trigger" checked and anim has looped.
-                    if (_lastRepetition >= 0 && animRepetition > _lastRepetition) {
-                        playMultiSound1 = true;
-                    }
-                }
-                if (!playMultiSound2) {
-                    // change back to true if "re-trigger" checked and anim has looped.
-                    if (_lastRepetition >= 0 && animRepetition > _lastRepetition) {
-                        playMultiSound2 = true;
-                    }
-                }
-                if (!playMultiSound3) {
-                    // change back to true if "re-trigger" checked and anim has looped.
-                    if (_lastRepetition >= 0 && animRepetition > _lastRepetition) {
-                        playMultiSound3 = true;
-                    }
-                }
-                if (!playMultiSound4) {
-                    // change back to true if "re-trigger" checked and anim has looped.
-                    if (_lastRepetition >= 0 && animRepetition > _lastRepetition) {
-                        playMultiSound4 = true;
-                    }
-                }
+            if (!playMultiAnimTimeSounds) {
+                return;
             }
 
             var multiVarName = GetVariationName(multiTimedVariationName);
 
             if (playMultiSound1) {
-                if (animTime > whenToStartMultiSound1 && numOfMultiSoundsToPlay >= 1) {
+                if (stateInfo.normalizedTime > whenToStartMultiSound1 && numOfMultiSoundsToPlay >= 1) {
                     playMultiSound1 = false;
                     if (SoundFollowsObject) {
                         if (multiVarName == null) {
@@ -239,7 +191,7 @@ namespace DarkTonic.MasterAudio {
             }
 
             if (playMultiSound2) {
-                if (animTime > whenToStartMultiSound2 && numOfMultiSoundsToPlay >= 2) {
+                if (stateInfo.normalizedTime > whenToStartMultiSound2 && numOfMultiSoundsToPlay >= 2) {
                     playMultiSound2 = false;
                     if (SoundFollowsObject) {
                         if (multiVarName == null) {
@@ -258,7 +210,7 @@ namespace DarkTonic.MasterAudio {
             }
 
             if (playMultiSound3) {
-                if (animTime > whenToStartMultiSound3 && numOfMultiSoundsToPlay >= 3) {
+                if (stateInfo.normalizedTime > whenToStartMultiSound3 && numOfMultiSoundsToPlay >= 3) {
                     playMultiSound3 = false;
                     if (SoundFollowsObject) {
                         if (multiVarName == null) {
@@ -277,7 +229,7 @@ namespace DarkTonic.MasterAudio {
             }
 
             if (playMultiSound4) {
-                if (animTime > whenToStartMultiSound4 && numOfMultiSoundsToPlay >= 4) {
+                if (stateInfo.normalizedTime > whenToStartMultiSound4 && numOfMultiSoundsToPlay >= 4) {
                     playMultiSound4 = false;
                     if (SoundFollowsObject) {
                         if (multiVarName == null) {
@@ -296,10 +248,6 @@ namespace DarkTonic.MasterAudio {
             }
 
             #endregion
-
-            afterMulti:
-
-            _lastRepetition = animRepetition;
         }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {

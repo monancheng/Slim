@@ -1,10 +1,5 @@
 ﻿using UnityEngine;
 
-#if UNITY_XBOXONE
-    using PlayerPrefs = DarkTonic.MasterAudio.FilePlayerPrefs;
-#endif
-
-
 // ReSharper disable once CheckNamespace
 namespace DarkTonic.MasterAudio {
     /// <summary>

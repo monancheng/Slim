@@ -185,7 +185,7 @@ namespace DarkTonic.MasterAudio {
                     continue; // already exists.
                 }
 
-                if (!MasterAudio.CreateBus(aBus.busName, errorOnDuplicates, true)) {
+                if (!MasterAudio.CreateBus(aBus.busName, errorOnDuplicates)) {
                     continue;
                 }
 
@@ -261,25 +261,27 @@ namespace DarkTonic.MasterAudio {
                     continue;
                 }
 
-                MasterAudio.AddSoundGroupToDuckList(aDuck.soundType, aDuck.riseVolStart, aDuck.duckedVolumeCut, aDuck.unduckTime, true);
+                MasterAudio.AddSoundGroupToDuckList(aDuck.soundType, aDuck.riseVolStart, aDuck.duckedVolumeCut, aDuck.unduckTime);
             }
 
 			for (var i = 0; i < customEventCategories.Count; i++) {
 				var aCat = customEventCategories[i];
-				MasterAudio.CreateCustomEventCategoryIfNotThere(aCat.CatName, true);
+				var newCat = MasterAudio.CreateCustomEventCategoryIfNotThere(aCat.CatName);
+				if (newCat != null) {
+					newCat.IsTemporary = true;
+				}
 			}
 
             // ReSharper disable once ForCanBeConvertedToForeach
             for (var i = 0; i < customEventsToCreate.Count; i++) {
                 var anEvent = customEventsToCreate[i];
-				MasterAudio.CreateCustomEvent(anEvent.EventName, anEvent.eventReceiveMode, anEvent.distanceThreshold, anEvent.eventRcvFilterMode, anEvent.filterModeQty, anEvent.categoryName, true, errorOnDuplicates);
+				MasterAudio.CreateCustomEvent(anEvent.EventName, anEvent.eventReceiveMode, anEvent.distanceThreshold, anEvent.eventRcvFilterMode, anEvent.filterModeQty, anEvent.categoryName, errorOnDuplicates);
             }
 
             // ReSharper disable once ForCanBeConvertedToForeach
             for (var i = 0; i < musicPlaylists.Count; i++) {
                 var aPlaylist = musicPlaylists[i];
-				aPlaylist.isTemporary = true;
-				MasterAudio.CreatePlaylist(aPlaylist, errorOnDuplicates);
+                MasterAudio.CreatePlaylist(aPlaylist, errorOnDuplicates);
             }
 
             MasterAudio.SilenceOrUnsilenceGroupsFromSoloChange(); // to make sure non-soloed things get muted
@@ -287,13 +289,9 @@ namespace DarkTonic.MasterAudio {
             _hasCreated = true;
 
             if (itemsCreatedEventExpanded) {
-				FireEvents();
+                MasterAudio.FireCustomEvent(itemsCreatedCustomEvent, _trans);
             }
         }
-
-		private void FireEvents() {
-            MasterAudio.FireCustomEventNextFrame(itemsCreatedCustomEvent, _trans);
-		}
 
         /*! \cond PRIVATE */
         public void PopulateGroupData() {

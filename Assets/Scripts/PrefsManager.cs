@@ -46,7 +46,7 @@ public class PrefsManager : MonoBehaviour
 
         QuestGameplayCounter = PlayerPrefs.GetInt("QUEST_GAMEPLAY_Counter", 0);
         // TEMP
-        QuestGameplayCounter = 0;
+//        QuestGameplayCounter = 0;
         
         QuestThrowCounter = PlayerPrefs.GetInt("QUEST_THROW_Counter", 0);
         QuestBombsCounter = PlayerPrefs.GetInt("QUEST_BOMBS_Counter", 0);

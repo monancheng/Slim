@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class Coin : MonoBehaviour
@@ -25,13 +24,13 @@ public class Coin : MonoBehaviour
     {
         if (_isShowAnimation)
         {
-            transform.localScale = new Vector3(transform.localScale.x + 0.125f, transform.localScale.y + 0.125f, 1f);
+            transform.localScale = new Vector3(transform.localScale.x + 0.128f, transform.localScale.y + 0.128f, 1f);
             if (transform.localScale.x >= 1.35f)
             {
                 _isShowAnimation = false;
             }
             transform.position = new Vector3(transform.position.x + _velocity * Mathf.Cos(_moveAngle),
-                transform.position.y + _velocity * Mathf.Sin(_moveAngle), 1f);
+                transform.position.y + _velocity * Mathf.Sin(_moveAngle), transform.position.z);
         }
         else if (_isMoveToTarget)
         {
@@ -61,7 +60,7 @@ public class Coin : MonoBehaviour
 
             if (_velocity < VelocityMax) _velocity += 0.5f;
             transform.position = new Vector3(transform.position.x + _velocity * Mathf.Cos(_moveAngle),
-                transform.position.y + _velocity * Mathf.Sin(_moveAngle), 1f);
+                transform.position.y + _velocity * Mathf.Sin(_moveAngle), transform.position.z);
 
             if (Vector2.Distance(transform.position, _targetPos) <= VelocityMax)
             {
@@ -75,16 +74,16 @@ public class Coin : MonoBehaviour
 
     public void MoveToEnd()
     {
-        Invoke("MoveToEndInvoked", 0f);
+        Invoke("MoveToEndInvoked", 0.0f);
     }
 
     private void MoveToEndInvoked()
     {
-        float x = Mathf.Sin(Random.Range(-100, 100));
-        float y = Mathf.Cos(Random.Range(-100, 100));
-        transform.position = new Vector3(x, y, 0f);
+        float x = Mathf.Sin(Random.Range(-3f, 3f))*2f;
+        float y = Mathf.Cos(Random.Range(-3f, 3f))*2f;
+        transform.position = Camera.main.WorldToScreenPoint(new Vector3(x, y+23f, 1f));
         _targetPos = new Vector3(ParentObj.transform.position.x, ParentObj.transform.position.y, transform.position.z);
-        _velocity = 5.0f + Random.value * 5.0f;
+        _velocity = 10.0f + Random.value * 5.0f;
         if (Random.value < 0.5f) _moveAngle = Random.value * 180f * Mathf.Deg2Rad;
         else _moveAngle = -Random.value * 180f * Mathf.Deg2Rad;
 

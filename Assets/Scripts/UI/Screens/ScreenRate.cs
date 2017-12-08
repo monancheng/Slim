@@ -1,5 +1,8 @@
-﻿using DoozyUI;
+﻿using System;
+using System.Collections.Generic;
+using DoozyUI;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 public class ScreenRate : ScreenItem
@@ -20,6 +23,30 @@ public class ScreenRate : ScreenItem
 	private void OnRateScreenShow(OnRateScreenShow obj)
 	{
 		Show();
+		Analytics.CustomEvent("SettingsRateClick",
+			new Dictionary<string, object> {{"sessions", PrefsManager.GameplayCounter}});
+	}
+	
+	public void RateClick()
+	{
+#if UNITY_ANDROID
+			Application.OpenURL("market://details?id=com.crazylabs.nopixels");
+#elif UNITY_IOS
+			if (VersionState())
+			{
+				iOSReviewRequest.Request();
+			}
+			else
+			{
+				Application.OpenURL("itms-apps://itunes.apple.com/app/id1288514456");
+			}
+#endif
+			PrefsManager.RateCounter = 1;
+			PlayerPrefs.SetInt("RateCounter", 1);
+			PlayerPrefs.SetInt("RateForVersion", PrefsManager.GameVersion);
+		
+		Analytics.CustomEvent("RateFeedbackClick",
+			new Dictionary<string, object> {{"sessions", PrefsManager.GameplayCounter},{"value", _voteValue}});
 	}
 
 	private void OnRateBtnClick(int obj)
@@ -42,18 +69,18 @@ public class ScreenRate : ScreenItem
 	public override void Show()
 	{
 		GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = false});
-		UIManager.ShowUiElement("ScreenRateMe");
-		UIManager.ShowUiElement("ScreenRateBackground");
-		UIManager.ShowUiElement("ScreenRatePanel");
-		UIManager.ShowUiElement("ScreenRateBtnBack");
-		UIManager.HideUiElement("ScreenRateBtnRate");
+//		UIManager.ShowUiElement("ScreenRateMe");
+//		UIManager.ShowUiElement("ScreenRateBackground");
+//		UIManager.ShowUiElement("ScreenRatePanel");
+//		UIManager.ShowUiElement("ScreenRateBtnBack");
+//		UIManager.HideUiElement("ScreenRateBtnRate");
+		RateClick();
 	}
 
 	public override void Hide()
 	{
-//		base.Hide();
-		UIManager.HideUiElement("ScreenRateMe");
-		UIManager.HideUiElement("ScreenRatePanelThanks");
+//		UIManager.HideUiElement("ScreenRateMe");
+//		UIManager.HideUiElement("ScreenRatePanelThanks");
 		GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = true});
 	}
 
@@ -64,7 +91,14 @@ public class ScreenRate : ScreenItem
 #if UNITY_ANDROID
 			Application.OpenURL("market://details?id=com.crazylabs.nopixels");
 #elif UNITY_IOS
-			Application.OpenURL("itms-apps://itunes.apple.com/app/id1288514456");
+			if (VersionState())
+			{
+				iOSReviewRequest.Request();
+			}
+			else
+			{
+				Application.OpenURL("itms-apps://itunes.apple.com/app/id1288514456");
+			}
 #endif
 			PrefsManager.RateCounter = 1;
 			PlayerPrefs.SetInt("RateCounter", 1);
@@ -78,6 +112,35 @@ public class ScreenRate : ScreenItem
 		UIManager.HideUiElement("ScreenRatePanel");
 		UIManager.HideUiElement("ScreenRateBtnBack");
 		UIManager.ShowUiElement("ScreenRatePanelThanks");
+		
+		Analytics.CustomEvent("RateFeedbackClick",
+			new Dictionary<string, object> {{"sessions", PrefsManager.GameplayCounter},{"value", _voteValue}});
+	}
+	
+	public static bool VersionState()
+	{
+		var str = SystemInfo.operatingSystem;
+		string tmp = String.Empty;
+		bool point = false;
+		for (int i = 0; i < str.Length; i++)
+		{
+			if (Char.IsDigit(str[i]))
+			{
+				tmp += str[i];
+				continue;
+			}
+			if (str[i] == '.')
+			{
+				if (!point)
+				{
+					tmp += str[i];
+					point = true;
+				}
+				else break;
+			}
+		}
+		if (Convert.ToSingle(tmp) >= 10.3f) return true;
+		return false;
 	}
 	
 //	private void ShareMail()

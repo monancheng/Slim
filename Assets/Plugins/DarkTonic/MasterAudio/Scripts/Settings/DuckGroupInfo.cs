@@ -11,7 +11,6 @@ namespace DarkTonic.MasterAudio {
         public float riseVolStart = .5f;
         public float unduckTime = 1f;
         public float duckedVolumeCut = -6f;
-		public bool isTemporary = false;
         // ReSharper restore InconsistentNaming
     }
 }

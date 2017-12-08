@@ -99,45 +99,21 @@ namespace DarkTonic.MasterAudio {
             return !source.isPlaying && GetAudioPlayedPercentage(source) > 0f;
         }
 
-        public static void ClipPlayed(AudioClip clip, GameObject actor) {
-            if (AudioClipWillPreload(clip)) {
-                return;
-            }
-
-            AudioLoaderOptimizer.AddNonPreloadedPlayingClip(clip, actor);
-        }
-
         /*! \cond PRIVATE */
 #if UNITY_5 || UNITY_2017
-        public static void UnloadNonPreloadedAudioData(AudioClip clip, GameObject actor) {
-            if (clip == null) {
-				return;
-			}
-
-			if (AudioClipWillPreload(clip)) {
-				return;
-			}
-
-            AudioLoaderOptimizer.RemoveNonPreloadedPlayingClip(clip, actor);
-
-            if (AudioLoaderOptimizer.IsAnyOfNonPreloadedClipPlaying(clip)) {
-				return;
-			}
-
-			clip.UnloadAudioData(); // restore memory
+        public static void UnloadNonPreloadedAudioData(AudioClip clip) {
+            if (clip != null && !clip.preloadAudioData) {
+                clip.UnloadAudioData(); // restore memory
+            }
         }
 #else
-        public static void UnloadNonPreloadedAudioData(AudioClip clip, GameObject actor) {
+        public static void UnloadNonPreloadedAudioData(AudioClip clip) {
             // do nothing
         }
 #endif
 
 #if UNITY_5 || UNITY_2017
         public static bool AudioClipWillPreload(AudioClip clip) {
-            if (clip == null) {
-                return false;
-            }
-
             return clip.preloadAudioData;
         }
 #else

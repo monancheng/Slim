@@ -159,20 +159,20 @@ public class ScreenGameOver : ScreenItem
 //        }
         
         
-        if (_activeNamesList.Count < 4 && !_isAllSkinsOpened && Random.value > 0.7f && PrefsManager.QuestGameplayCounter > 10)
-        {
-            _activeNamesList.Add("NotifyTier1");
-        }
-        
-        if (_activeNamesList.Count < 4 && !_isAllSkinsOpened && Random.value > 0.7f && PrefsManager.QuestGameplayCounter > 20)
-        {
-            _activeNamesList.Add("NotifyTier2");
-        }
-        
-        if (_activeNamesList.Count < 4 && !_isAllSkinsOpened && PrefsManager.IsFirstBuy && Random.value > 0.25f && PrefsManager.QuestGameplayCounter > 30)
-        {
-            _activeNamesList.Add("NotifyUnlockAll");
-        }
+//        if (_activeNamesList.Count < 4 && !_isAllSkinsOpened && Random.value > 0.7f && PrefsManager.QuestGameplayCounter > 10)
+//        {
+//            _activeNamesList.Add("NotifyTier1");
+//        }
+//        
+//        if (_activeNamesList.Count < 4 && !_isAllSkinsOpened && Random.value > 0.7f && PrefsManager.QuestGameplayCounter > 20)
+//        {
+//            _activeNamesList.Add("NotifyTier2");
+//        }
+//        
+//        if (_activeNamesList.Count < 4 && !_isAllSkinsOpened && PrefsManager.IsFirstBuy && Random.value > 0.25f && PrefsManager.QuestGameplayCounter > 30)
+//        {
+//            _activeNamesList.Add("NotifyUnlockAll");
+//        }
 
         // Перемешиваем элементы списка, чтобы они располагались рандомно по оси У
         ShuffleItems();

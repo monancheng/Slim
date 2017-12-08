@@ -3,6 +3,7 @@ using DarkTonic.MasterAudio;
 using DoozyUI;
 using PrefsEditor;
 using UnityEngine;
+using UnityEngine.Analytics;
 using Random = UnityEngine.Random;
 
 public class ScreenSkins : ScreenItem
@@ -18,10 +19,10 @@ public class ScreenSkins : ScreenItem
     private const int FacesSocialStartId = FacesGeneralMax+1;
     private const int FacesPaybleStartId = FacesSocialStartId + 4;
 
-    private const int SkinFacebook = 101;//FacesSocialStartId;
-    private const int SkinTwitter = 101;//FacesSocialStartId + 1;
-    private const int SkinInstagram = 101;//FacesSocialStartId + 2;
-    private const int SkinSponsor = 101;//FacesSocialStartId + 3;
+    private const int SkinFacebook = FacesSocialStartId;
+    private const int SkinTwitter = FacesSocialStartId + 1;
+    private const int SkinInstagram = FacesSocialStartId + 2;
+    private const int SkinSponsor = FacesSocialStartId + 3;
     
     private const int IapSkin1 = FacesPaybleStartId;
     private const int IapSkin2 = FacesPaybleStartId + 1;
@@ -149,7 +150,8 @@ public class ScreenSkins : ScreenItem
 //            GlobalEvents<OnGameOverScreenShowActiveItems>.Call(new OnGameOverScreenShowActiveItems());
 //            return;
 //        }
-
+        Analytics.CustomEvent("SkinsSkinClick",
+            new Dictionary<string, object> {{"sessions", PrefsManager.GameplayCounter},{"id", id}});
         bool isAvailable = false;
         if (_faceAvailable[id] == 1)
         {
@@ -168,13 +170,13 @@ public class ScreenSkins : ScreenItem
         } else 
         if (id == SkinTwitter)
         {
-            Application.OpenURL("http://twitter.com");
+            Application.OpenURL("http://twitter.com/Soulghai");
             OpenSkin(id);
             isAvailable = true;
         } else 
         if (id == SkinInstagram)
         {
-            Application.OpenURL("http://instagram.com");
+            Application.OpenURL("https://www.instagram.com/squaredino/");
             OpenSkin(id);
             isAvailable = true;
         } else 
@@ -206,7 +208,7 @@ public class ScreenSkins : ScreenItem
             GlobalEvents<OnGameOverScreenShowActiveItems>.Call(new OnGameOverScreenShowActiveItems());
         } else
         {
-            GlobalEvents<OnShowScreenCoins>.Call(new OnShowScreenCoins());
+//            GlobalEvents<OnShowScreenCoins>.Call(new OnShowScreenCoins());
         }
     }
 
@@ -238,6 +240,8 @@ public class ScreenSkins : ScreenItem
 
     private void BuySkin(int id)
     {
+        Analytics.CustomEvent("SkinsSkinBuy",
+            new Dictionary<string, object> {{"sessions", PrefsManager.GameplayCounter},{"id", id}});
         GlobalEvents<OnBuySkin>.Call(new OnBuySkin{Id = id});
 
 //        GlobalEvents<AchievementProgress>.Call(new AchievementProgress

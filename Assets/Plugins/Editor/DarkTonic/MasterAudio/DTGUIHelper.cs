@@ -233,8 +233,6 @@ public static class DTGUIHelper {
         GUILayout.Space(rect.height);
         GUI.DrawTexture(rect, tex);
 
-		EditorGUIUtility.AddCursorRect(rect, MouseCursor.Link);
-
         var e = Event.current;
         if (e.type != EventType.MouseUp) {
             return;

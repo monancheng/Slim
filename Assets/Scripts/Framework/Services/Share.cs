@@ -43,7 +43,7 @@ public class Share : MonoBehaviour
 		var shareLink = "itms-apps://itunes.apple.com/app/id1288514456";
 
 		var shareText = "Wow! I Just Scored [" + PrefsManager.GameBestScore +
-                        "] in #SlimRing! Can You Beat Me? @Voodoo " + shareLink;
+                        "] in #SlimRing! Can You Beat Me? @Squaredino " + shareLink;
 
 
 		var screenShotPath = Application.persistentDataPath + "/promo1.jpg";
@@ -62,7 +62,7 @@ public class Share : MonoBehaviour
 		shareSheet.AttachImageAtPath (screenShotPath);
 
 		// Show composer
-		NPBinding.UI.SetPopoverPointAtLastTouchPosition ();
+//		NPBinding.UI.SetPopoverPointAtLastTouchPosition ();
 		NPBinding.Sharing.ShowView (shareSheet, FinishedSharing);
 
 		Debug.Log ("Finished sharing");
