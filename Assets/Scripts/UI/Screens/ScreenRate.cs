@@ -32,8 +32,9 @@ public class ScreenRate : ScreenItem
 #if UNITY_ANDROID
 			Application.OpenURL("market://details?id=com.crazylabs.nopixels");
 #elif UNITY_IOS
-			if (VersionState())
-			{
+		if (VersionState() && PlayerPrefs.GetInt("RateNativeCounter") < 3)
+		{
+			PlayerPrefs.SetInt("RateNativeCounter", PlayerPrefs.GetInt("RateNativeCounter")+1);
 				iOSReviewRequest.Request();
 			}
 			else
@@ -79,20 +80,21 @@ public class ScreenRate : ScreenItem
 
 	public override void Hide()
 	{
-//		UIManager.HideUiElement("ScreenRateMe");
-//		UIManager.HideUiElement("ScreenRatePanelThanks");
+		UIManager.HideUiElement("ScreenRateMe");
+		UIManager.HideUiElement("ScreenRatePanelThanks");
 		GlobalEvents<OnGameInputEnable>.Call(new OnGameInputEnable{Flag = true});
 	}
 
 	public void GoToRate()
 	{
-		if (_voteValue > 3)
-		{
+//		if (_voteValue > 3)
+//		{
 #if UNITY_ANDROID
 			Application.OpenURL("market://details?id=com.crazylabs.nopixels");
 #elif UNITY_IOS
-			if (VersionState())
+			if (VersionState() && PlayerPrefs.GetInt("RateNativeCounter") < 3)
 			{
+				PlayerPrefs.SetInt("RateNativeCounter", PlayerPrefs.GetInt("RateNativeCounter")+1);
 				iOSReviewRequest.Request();
 			}
 			else
@@ -103,7 +105,7 @@ public class ScreenRate : ScreenItem
 			PrefsManager.RateCounter = 1;
 			PlayerPrefs.SetInt("RateCounter", 1);
 			PlayerPrefs.SetInt("RateForVersion", PrefsManager.GameVersion);
-		}
+//		}
 //		else
 //		{
 //			ShareMail();

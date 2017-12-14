@@ -12,8 +12,8 @@ public class TubeManager : MonoBehaviour
     [SerializeField] private Color[] _colors;
     [SerializeField] private GameObject[] _smiles;
     private int _smileID;
-    
-    public float StartSpeed = 154f;
+
+    public float StartSpeed = 160f;//154f;
     public float MaxSpeed = 229f;
     public float AccelerationStart = 3.2f;
     private float _acceleration;

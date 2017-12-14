@@ -2,7 +2,6 @@
 
 public class PlayerTubeBad : MonoBehaviour
 {
-    [HideInInspector] public GameObject Ps;
     private void Update()
     {
         Move();
@@ -25,23 +24,9 @@ public class PlayerTubeBad : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
-    {
-//        if (Ps)
-//        {
-//            Ps.GetComponent<ParticleSystem>().Stop();
-//            Ps.SetActive(false);
-//        }
-    }
-
     protected void Move()
     {
         transform.position = new Vector3(transform.position.x, transform.position.y - TubeManager.CurrentSpeed * Time.deltaTime,
             transform.position.z);
-//        if (Ps)
-//        {
-//            Ps.transform.position =
-//                new Vector3(transform.position.x, transform.position.y + 15.0f, transform.position.z);
-//        }
     }
 }

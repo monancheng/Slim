@@ -251,7 +251,6 @@ public class MyPlayer : MonoBehaviour
         go.GetComponent<Renderer>().material.SetColor("_Color", new Color(255f / 255.0f, 201f / 255f, 104f / 255f, 0.8f));
         go.transform.position = transform.position + new Vector3(0,7f,0);
         go.AddComponent<PlayerTubeBad>();
-//        go.AddComponent<PlayerTubeBad>().Ps = _psSlice.gameObject;
 //        _psSlice.gameObject.SetActive(true);
 //        _psSlice.Play();
     }
@@ -267,6 +266,12 @@ public class MyPlayer : MonoBehaviour
                 transform.position.y - TubeManager.CurrentSpeed * Time.deltaTime, transform.position.z);
             return;
         }
+        
+//        if (_psSlice&& _psSlice.isPlaying)
+//        {
+//            _psSlice.transform.position =
+//                new Vector3(transform.position.x, transform.position.y + TubeManager.CurrentSpeed * Time.deltaTime, transform.position.z);
+//        }
 
 //        transform.Rotate(Vector3.up, -1f);
 
